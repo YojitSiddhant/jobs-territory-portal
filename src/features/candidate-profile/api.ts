@@ -17,3 +17,11 @@ export async function updateProfile(input: ProfileUpdateInput): Promise<Candidat
   if (!res.ok) throw new Error(data?.error?.message ?? "Failed to save profile.");
   return data.profile as CandidateProfile;
 }
+
+export async function uploadCandidateFile(kind: "profile-photo" | "resume", file: File): Promise<{ key: string }> {
+  const form = new FormData(); form.set("kind", kind); form.set("file", file);
+  const res = await fetch("/api/candidate/profile/files", { method: "POST", body: form });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data?.error?.message ?? "Failed to upload file.");
+  return { key: data.key as string };
+}

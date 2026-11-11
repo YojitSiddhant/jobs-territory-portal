@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import type { CompanyDocument, CompanyProfile } from "../types";
-import { registerDocument } from "../api";
+import { registerDocument, uploadCompanyDocument } from "../api";
 
 const documentTypeLabels: Record<string, string> = {
   REGISTRATION_CERTIFICATE: "Registration certificate",
@@ -30,22 +30,23 @@ export function DocumentsSection({ companyId, documents, canEdit }: Omit<Props, 
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [file, setFile] = useState<File | null>(null);
 
   const prefix = `private/companies/${companyId}/company-document/`;
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    if (!form.storageKey.startsWith(prefix)) {
+    if (!file && !form.storageKey.startsWith(prefix)) {
       setError(`Storage key must start with: ${prefix}`);
       return;
     }
     startTransition(async () => {
       try {
-        await registerDocument(form);
-        setSuccess("Document reference registered. Reload to see the updated list.");
+        if (file) await uploadCompanyDocument(form.type, file); else await registerDocument(form);
+        setSuccess(file ? "Document uploaded privately. Reload to see the updated list." : "Document reference registered. Reload to see the updated list.");
         setShowForm(false);
-        setForm({ type: "REGISTRATION_CERTIFICATE", storageKey: "", originalName: "", mimeType: "application/pdf" });
+        setForm({ type: "REGISTRATION_CERTIFICATE", storageKey: "", originalName: "", mimeType: "application/pdf" }); setFile(null);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to register document.");
       }
@@ -65,7 +66,7 @@ export function DocumentsSection({ companyId, documents, canEdit }: Omit<Props, 
 
       {/* Storage not configured notice */}
       <div className="rounded-xl border border-zinc-700/50 bg-zinc-800/40 px-4 py-3 text-xs text-zinc-500">
-        File upload is not yet available — the private storage adapter is not configured. Register a storage key reference manually below if you have one.
+        Upload files directly for private storage, or register an existing private reference.
       </div>
 
       {documents.length > 0 ? (
@@ -91,6 +92,11 @@ export function DocumentsSection({ companyId, documents, canEdit }: Omit<Props, 
       {showForm && (
         <form onSubmit={handleSubmit} className="rounded-xl bg-zinc-800 border border-zinc-700 p-4 space-y-3">
           <p className="text-xs font-semibold text-zinc-300">Register document reference</p>
+          <div>
+            <label htmlFor="doc-file" className="block text-xs text-zinc-400 mb-1">Private file upload</label>
+            <input id="doc-file" type="file" accept=".pdf,.doc,.docx" onChange={(e) => setFile(e.target.files?.[0] ?? null)} className="w-full text-xs text-zinc-400" />
+          </div>
+          <div className="text-center text-xs text-zinc-500">or register an existing reference</div>
           <div>
             <label htmlFor="doc-type" className="block text-xs text-zinc-400 mb-1">Document type</label>
             <select id="doc-type" value={form.type} onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))} className="w-full rounded-lg bg-zinc-900 border border-zinc-600 px-3 py-2 text-sm text-zinc-100 focus:border-emerald-500 focus:outline-none">
