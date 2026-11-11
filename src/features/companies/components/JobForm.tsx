@@ -67,12 +67,12 @@ export function JobForm({ job, onSaved, onCancel }: Props) {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div>
-        <label htmlFor="job-title" className={labelCls}>Job title <span className="text-zinc-600">*</span></label>
+        <label htmlFor="job-title" className={labelCls}>Job title <span className="text-gray-400">*</span></label>
         <input id="job-title" type="text" value={form.title} onChange={(e) => set("title", e.target.value)} required maxLength={180} className={inputCls} />
       </div>
 
       <div>
-        <label htmlFor="job-desc" className={labelCls}>Description <span className="text-zinc-600">*</span></label>
+        <label htmlFor="job-desc" className={labelCls}>Description <span className="text-gray-400">*</span></label>
         <textarea id="job-desc" rows={6} value={form.description} onChange={(e) => set("description", e.target.value)} required maxLength={20000} className={`${inputCls} resize-y`} />
       </div>
 
@@ -82,11 +82,11 @@ export function JobForm({ job, onSaved, onCancel }: Props) {
           <input id="job-location" type="text" value={form.location ?? ""} onChange={(e) => set("location", e.target.value)} maxLength={180} placeholder="City or remote" className={inputCls} />
         </div>
         <div>
-          <label htmlFor="job-experience" className={labelCls}>Experience requirement <span className="text-zinc-600">*</span></label>
+          <label htmlFor="job-experience" className={labelCls}>Experience requirement <span className="text-gray-400">*</span></label>
           <input id="job-experience" type="text" value={form.experienceRequirement} onChange={(e) => set("experienceRequirement", e.target.value)} required maxLength={160} placeholder="e.g. 0–1 years" className={inputCls} />
         </div>
         <div>
-          <label htmlFor="job-workplace" className={labelCls}>Workplace type <span className="text-zinc-600">*</span></label>
+          <label htmlFor="job-workplace" className={labelCls}>Workplace type <span className="text-gray-400">*</span></label>
           <select id="job-workplace" value={form.workplaceType} onChange={(e) => set("workplaceType", e.target.value as JobFormInput["workplaceType"])} className={selectCls}>
             <option value="ONSITE">On-site</option>
             <option value="HYBRID">Hybrid</option>
@@ -94,7 +94,7 @@ export function JobForm({ job, onSaved, onCancel }: Props) {
           </select>
         </div>
         <div>
-          <label htmlFor="job-employment" className={labelCls}>Employment type <span className="text-zinc-600">*</span></label>
+          <label htmlFor="job-employment" className={labelCls}>Employment type <span className="text-gray-400">*</span></label>
           <select id="job-employment" value={form.employmentType} onChange={(e) => set("employmentType", e.target.value as JobFormInput["employmentType"])} className={selectCls}>
             <option value="FULL_TIME">Full-time</option>
             <option value="PART_TIME">Part-time</option>
@@ -117,24 +117,24 @@ export function JobForm({ job, onSaved, onCancel }: Props) {
       </div>
 
       <div>
-        <label htmlFor="job-skills" className={labelCls}>Required skills <span className="text-zinc-600">*</span> <span className="text-zinc-600 font-normal">(comma-separated)</span></label>
+        <label htmlFor="job-skills" className={labelCls}>Required skills <span className="text-gray-400">*</span> <span className="text-gray-400 font-normal">(comma-separated)</span></label>
         <input id="job-skills" type="text" value={form.skillsStr} onChange={(e) => set("skillsStr", e.target.value)} required placeholder="React, TypeScript, Node.js" className={inputCls} />
       </div>
 
-      {error && <p className="text-sm text-red-400">{error}</p>}
+      {error && <p className="text-sm text-red-600">{error}</p>}
 
       <div className="flex items-center gap-3">
-        <button type="submit" disabled={isPending} className="rounded-xl bg-emerald-500 px-5 py-2.5 text-sm font-semibold text-zinc-950 hover:bg-emerald-400 disabled:opacity-60 transition-colors">
+        <button type="submit" disabled={isPending} className="rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-60 transition-colors">
           {isPending ? "Saving…" : job ? "Save changes" : "Create draft"}
         </button>
         {onCancel && (
-          <button type="button" onClick={onCancel} className="text-sm text-zinc-400 hover:text-zinc-200 transition-colors">Cancel</button>
+          <button type="button" onClick={onCancel} className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Cancel</button>
         )}
       </div>
     </form>
   );
 }
 
-const labelCls = "block text-xs font-medium text-zinc-400 mb-1.5";
-const inputCls = "w-full rounded-xl bg-zinc-800 border border-zinc-700 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500 focus:border-emerald-500 focus:outline-none transition-colors";
-const selectCls = "w-full rounded-xl bg-zinc-800 border border-zinc-700 px-3 py-2 text-sm text-zinc-100 focus:border-emerald-500 focus:outline-none transition-colors";
+const labelCls = "block text-xs font-medium text-gray-500 mb-1.5";
+const inputCls = "w-full rounded-xl bg-white border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none transition-colors";
+const selectCls = "w-full rounded-xl bg-white border border-gray-200 px-3 py-2 text-sm text-gray-900 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none transition-colors";

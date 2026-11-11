@@ -34,12 +34,12 @@ export function JobFilters({ query, onChange, onReset }: Props) {
   return (
     <aside className="space-y-5">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-zinc-100">Filters</h2>
+        <h2 className="text-sm font-semibold text-gray-900">Filters</h2>
         {hasFilters && (
           <button
             type="button"
             onClick={onReset}
-            className="text-xs text-emerald-400 hover:text-emerald-300 transition-colors"
+            className="text-xs text-emerald-600 hover:text-emerald-500 transition-colors"
           >
             Clear all
           </button>
@@ -48,7 +48,7 @@ export function JobFilters({ query, onChange, onReset }: Props) {
 
       {/* Location */}
       <div>
-        <label htmlFor="filter-location" className="block text-xs font-medium text-zinc-400 mb-1.5">
+        <label htmlFor="filter-location" className="block text-xs font-medium text-gray-500 mb-1.5">
           Location
         </label>
         <input
@@ -57,13 +57,13 @@ export function JobFilters({ query, onChange, onReset }: Props) {
           placeholder="City, state, or country"
           value={query.location ?? ""}
           onChange={(e) => onChange({ location: e.target.value || undefined, page: 1 })}
-          className="w-full rounded-lg bg-zinc-800 border border-zinc-700 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500 focus:border-emerald-500 focus:outline-none transition-colors"
+          className="w-full rounded-lg bg-white border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 focus:outline-none transition-colors"
         />
       </div>
 
       {/* Workplace type */}
       <fieldset>
-        <legend className="text-xs font-medium text-zinc-400 mb-1.5">Workplace type</legend>
+        <legend className="text-xs font-medium text-gray-500 mb-1.5">Workplace type</legend>
         <div className="space-y-1.5">
           {workplaceOptions.map((opt) => (
             <label key={opt.value} className="flex items-center gap-2.5 cursor-pointer group">
@@ -81,9 +81,9 @@ export function JobFilters({ query, onChange, onReset }: Props) {
                 onClick={() => {
                   if (query.workplaceType === opt.value) onChange({ workplaceType: undefined, page: 1 });
                 }}
-                className="accent-emerald-500 w-4 h-4"
+                className="accent-emerald-600 w-4 h-4"
               />
-              <span className="text-sm text-zinc-300 group-hover:text-zinc-100 transition-colors">
+              <span className="text-sm text-gray-700 group-hover:text-gray-900 transition-colors">
                 {opt.label}
               </span>
             </label>
@@ -93,7 +93,7 @@ export function JobFilters({ query, onChange, onReset }: Props) {
 
       {/* Employment type */}
       <fieldset>
-        <legend className="text-xs font-medium text-zinc-400 mb-1.5">Employment type</legend>
+        <legend className="text-xs font-medium text-gray-500 mb-1.5">Employment type</legend>
         <div className="space-y-1.5">
           {employmentOptions.map((opt) => (
             <label key={opt.value} className="flex items-center gap-2.5 cursor-pointer group">
@@ -111,9 +111,9 @@ export function JobFilters({ query, onChange, onReset }: Props) {
                 onClick={() => {
                   if (query.employmentType === opt.value) onChange({ employmentType: undefined, page: 1 });
                 }}
-                className="accent-emerald-500 w-4 h-4"
+                className="accent-emerald-600 w-4 h-4"
               />
-              <span className="text-sm text-zinc-300 group-hover:text-zinc-100 transition-colors">
+              <span className="text-sm text-gray-700 group-hover:text-gray-900 transition-colors">
                 {opt.label}
               </span>
             </label>
@@ -123,7 +123,7 @@ export function JobFilters({ query, onChange, onReset }: Props) {
 
       {/* Skills */}
       <div>
-        <label htmlFor="filter-skill" className="block text-xs font-medium text-zinc-400 mb-1.5">
+        <label htmlFor="filter-skill" className="block text-xs font-medium text-gray-500 mb-1.5">
           Skill
         </label>
         <input
@@ -132,13 +132,13 @@ export function JobFilters({ query, onChange, onReset }: Props) {
           placeholder="e.g. React, Python"
           value={query.skill ?? ""}
           onChange={(e) => onChange({ skill: e.target.value || undefined, page: 1 })}
-          className="w-full rounded-lg bg-zinc-800 border border-zinc-700 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500 focus:border-emerald-500 focus:outline-none transition-colors"
+          className="w-full rounded-lg bg-white border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 focus:outline-none transition-colors"
         />
       </div>
 
       {/* Company */}
       <div>
-        <label htmlFor="filter-company" className="block text-xs font-medium text-zinc-400 mb-1.5">
+        <label htmlFor="filter-company" className="block text-xs font-medium text-gray-500 mb-1.5">
           Company
         </label>
         <input
@@ -147,13 +147,13 @@ export function JobFilters({ query, onChange, onReset }: Props) {
           placeholder="Company name or ID"
           value={query.company ?? ""}
           onChange={(e) => onChange({ company: e.target.value || undefined, page: 1 })}
-          className="w-full rounded-lg bg-zinc-800 border border-zinc-700 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500 focus:border-emerald-500 focus:outline-none transition-colors"
+          className="w-full rounded-lg bg-white border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 focus:outline-none transition-colors"
         />
       </div>
 
       {/* Salary range */}
       <div>
-        <span className="block text-xs font-medium text-zinc-400 mb-1.5">Salary range (₹)</span>
+        <span className="block text-xs font-medium text-gray-500 mb-1.5">Salary range (₹)</span>
         <div className="flex items-center gap-2">
           <input
             type="number"
@@ -164,9 +164,9 @@ export function JobFilters({ query, onChange, onReset }: Props) {
             onChange={(e) =>
               onChange({ salaryMin: e.target.value ? Number(e.target.value) : undefined, page: 1 })
             }
-            className="w-full rounded-lg bg-zinc-800 border border-zinc-700 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500 focus:border-emerald-500 focus:outline-none transition-colors"
+            className="w-full rounded-lg bg-white border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 focus:outline-none transition-colors"
           />
-          <span className="text-zinc-500">–</span>
+          <span className="text-gray-400">–</span>
           <input
             type="number"
             aria-label="Maximum salary"
@@ -176,7 +176,7 @@ export function JobFilters({ query, onChange, onReset }: Props) {
             onChange={(e) =>
               onChange({ salaryMax: e.target.value ? Number(e.target.value) : undefined, page: 1 })
             }
-            className="w-full rounded-lg bg-zinc-800 border border-zinc-700 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500 focus:border-emerald-500 focus:outline-none transition-colors"
+            className="w-full rounded-lg bg-white border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 focus:outline-none transition-colors"
           />
         </div>
       </div>

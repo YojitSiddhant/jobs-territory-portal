@@ -18,7 +18,7 @@ const emptyEntry = (): Experience => ({
 });
 
 const inputClass =
-  "w-full rounded-lg bg-zinc-800 border border-zinc-700 px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors";
+  "w-full rounded-lg bg-white border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors";
 
 function formatDateForDisplay(iso: string | null | undefined): string {
   if (!iso) return "";
@@ -55,11 +55,11 @@ function ExperienceForm({
     onChange({ ...entry, [key]: v });
 
   return (
-    <div className="rounded-xl border border-zinc-700 bg-zinc-800/40 p-4 space-y-3">
+    <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-3">
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div className="space-y-1.5">
-          <label className="block text-xs font-medium text-zinc-400">
-            Employer <span className="text-red-400">*</span>
+          <label className="block text-xs font-medium text-gray-500">
+            Employer <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
@@ -71,8 +71,8 @@ function ExperienceForm({
           />
         </div>
         <div className="space-y-1.5">
-          <label className="block text-xs font-medium text-zinc-400">
-            Job title <span className="text-red-400">*</span>
+          <label className="block text-xs font-medium text-gray-500">
+            Job title <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
@@ -87,8 +87,8 @@ function ExperienceForm({
 
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
-          <label className="block text-xs font-medium text-zinc-400">
-            Start date <span className="text-red-400">*</span>
+          <label className="block text-xs font-medium text-gray-500">
+            Start date <span className="text-red-500">*</span>
           </label>
           <input
             type="date"
@@ -98,7 +98,7 @@ function ExperienceForm({
           />
         </div>
         <div className="space-y-1.5">
-          <label className="block text-xs font-medium text-zinc-400">End date</label>
+          <label className="block text-xs font-medium text-gray-500">End date</label>
           <input
             type="date"
             disabled={entry.isCurrent}
@@ -116,13 +116,13 @@ function ExperienceForm({
           onChange={(e) => {
             onChange({ ...entry, isCurrent: e.target.checked, endDate: e.target.checked ? null : entry.endDate });
           }}
-          className="h-4 w-4 rounded border-zinc-600 bg-zinc-800 accent-emerald-500"
+          className="h-4 w-4 rounded border-gray-300 accent-emerald-600"
         />
-        <span className="text-xs text-zinc-400">I currently work here</span>
+        <span className="text-xs text-gray-500">I currently work here</span>
       </label>
 
       <div className="space-y-1.5">
-        <label className="block text-xs font-medium text-zinc-400">Description</label>
+        <label className="block text-xs font-medium text-gray-500">Description</label>
         <textarea
           maxLength={5000}
           rows={2}
@@ -133,20 +133,20 @@ function ExperienceForm({
         />
       </div>
 
-      {error && <p className="text-xs text-red-400">{error}</p>}
+      {error && <p className="text-xs text-red-600">{error}</p>}
 
       <div className="flex gap-2 pt-1">
         <button
           type="button"
           onClick={onSave}
-          className="rounded-lg bg-emerald-500 px-3 py-1.5 text-xs font-semibold text-zinc-950 hover:bg-emerald-400 transition-colors"
+          className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-500 transition-colors"
         >
           Save
         </button>
         <button
           type="button"
           onClick={onCancel}
-          className="rounded-lg border border-zinc-700 px-3 py-1.5 text-xs font-medium text-zinc-400 hover:border-zinc-500 hover:text-zinc-300 transition-colors"
+          className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-700 hover:border-gray-300 hover:bg-white transition-colors"
         >
           Cancel
         </button>
@@ -209,14 +209,14 @@ export function ExperienceSection({ value, onChange }: Props) {
   }
 
   return (
-    <section className="rounded-2xl bg-zinc-900 border border-zinc-800 p-6 space-y-4">
+    <section className="rounded-2xl bg-white border border-gray-200 p-6 space-y-4 shadow-sm">
       <div className="flex items-center justify-between">
-        <h2 className="text-base font-semibold text-zinc-100">Work experience</h2>
+        <h2 className="text-base font-semibold text-gray-900">Work experience</h2>
         {!isAdding && (
           <button
             type="button"
             onClick={startAdd}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-700 px-3 py-1.5 text-xs font-medium text-zinc-300 hover:border-zinc-500 hover:text-zinc-100 transition-colors"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-700 hover:border-gray-300 hover:bg-gray-50 transition-colors"
           >
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
               <path d="M6 1v10M1 6h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -227,7 +227,7 @@ export function ExperienceSection({ value, onChange }: Props) {
       </div>
 
       {value.length === 0 && !isAdding && (
-        <p className="text-sm text-zinc-500 py-2">
+        <p className="text-sm text-gray-400 py-2">
           No experience entries yet. Add your work history or internships.
         </p>
       )}
@@ -246,12 +246,12 @@ export function ExperienceSection({ value, onChange }: Props) {
           ) : (
             <div
               key={i}
-              className="flex items-start justify-between gap-3 rounded-xl border border-zinc-800 bg-zinc-800/30 px-4 py-3"
+              className="flex items-start justify-between gap-3 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3"
             >
               <div className="min-w-0">
-                <p className="text-sm font-medium text-zinc-100">{exp.jobTitle}</p>
-                <p className="text-sm text-zinc-400">{exp.employer}</p>
-                <p className="text-xs text-zinc-500 mt-0.5">
+                <p className="text-sm font-medium text-gray-900">{exp.jobTitle}</p>
+                <p className="text-sm text-gray-500">{exp.employer}</p>
+                <p className="text-xs text-gray-400 mt-0.5">
                   {formatDateForDisplay(exp.startDate)} –{" "}
                   {exp.isCurrent ? "Present" : formatDateForDisplay(exp.endDate)}
                 </p>
@@ -260,14 +260,14 @@ export function ExperienceSection({ value, onChange }: Props) {
                 <button
                   type="button"
                   onClick={() => startEdit(i)}
-                  className="text-xs text-zinc-400 hover:text-zinc-200 transition-colors"
+                  className="text-xs text-gray-500 hover:text-gray-900 transition-colors"
                 >
                   Edit
                 </button>
                 <button
                   type="button"
                   onClick={() => remove(i)}
-                  className="text-xs text-red-400 hover:text-red-300 transition-colors"
+                  className="text-xs text-red-500 hover:text-red-600 transition-colors"
                 >
                   Remove
                 </button>

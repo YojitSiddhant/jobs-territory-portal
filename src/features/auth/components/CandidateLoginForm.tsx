@@ -32,13 +32,13 @@ export function CandidateLoginForm() {
       <FormField id="login-password" label="Password" type="password" value={password} onChange={setPassword} required disabled={isPending} autoComplete="current-password" />
 
       {error && (
-        <div className="rounded-xl border border-red-800/40 bg-red-900/10 px-4 py-3 text-sm text-red-400">{error}</div>
+        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">{error}</div>
       )}
 
       <button
         type="submit"
         disabled={isPending}
-        className="w-full rounded-xl bg-emerald-500 px-4 py-2.5 text-sm font-semibold text-zinc-950 hover:bg-emerald-400 disabled:opacity-60 transition-colors"
+        className="w-full rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-60 transition-colors"
       >
         {isPending ? "Signing in…" : "Sign in"}
       </button>

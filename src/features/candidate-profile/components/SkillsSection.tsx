@@ -39,8 +39,8 @@ export function SkillsSection({ value, onChange }: Props) {
   }
 
   return (
-    <section className="rounded-2xl bg-zinc-900 border border-zinc-800 p-6 space-y-4">
-      <h2 className="text-base font-semibold text-zinc-100">Skills</h2>
+    <section className="rounded-2xl bg-white border border-gray-200 p-6 space-y-4 shadow-sm">
+      <h2 className="text-base font-semibold text-gray-900">Skills</h2>
 
       <div className="flex gap-2">
         <input
@@ -51,34 +51,34 @@ export function SkillsSection({ value, onChange }: Props) {
           value={input}
           onChange={(e) => { setInput(e.target.value); setInputError(null); }}
           onKeyDown={handleKeyDown}
-          className="flex-1 rounded-lg bg-zinc-800 border border-zinc-700 px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors"
+          className="flex-1 rounded-lg bg-white border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors"
         />
         <button
           type="button"
           onClick={addSkill}
-          className="rounded-lg bg-emerald-500 px-3 py-2 text-sm font-semibold text-zinc-950 hover:bg-emerald-400 transition-colors shrink-0"
+          className="rounded-lg bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-500 transition-colors shrink-0"
         >
           Add
         </button>
       </div>
 
-      {inputError && <p className="text-xs text-red-400">{inputError}</p>}
+      {inputError && <p className="text-xs text-red-600">{inputError}</p>}
 
       {value.length === 0 ? (
-        <p className="text-sm text-zinc-500">No skills added yet. Type a skill and press Enter or Add.</p>
+        <p className="text-sm text-gray-400">No skills added yet. Type a skill and press Enter or Add.</p>
       ) : (
         <div className="flex flex-wrap gap-2">
           {value.map((skill, i) => (
             <span
               key={i}
-              className="inline-flex items-center gap-1.5 rounded-full border border-zinc-700 bg-zinc-800 px-3 py-1 text-xs font-medium text-zinc-200"
+              className="inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-medium text-gray-700"
             >
               {skill}
               <button
                 type="button"
                 onClick={() => removeSkill(i)}
                 aria-label={`Remove ${skill}`}
-                className="text-zinc-500 hover:text-red-400 transition-colors"
+                className="text-gray-400 hover:text-red-500 transition-colors"
               >
                 <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
                   <path d="M1.5 1.5l7 7M8.5 1.5l-7 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -88,7 +88,7 @@ export function SkillsSection({ value, onChange }: Props) {
           ))}
         </div>
       )}
-      <p className="text-xs text-zinc-500">{value.length}/50 skills</p>
+      <p className="text-xs text-gray-400">{value.length}/50 skills</p>
     </section>
   );
 }

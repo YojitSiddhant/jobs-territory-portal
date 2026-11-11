@@ -48,15 +48,15 @@ export function JobsPage({ initialJobs, initialPagination, initialQuery }: Props
   }
 
   return (
-    <main className="min-h-screen bg-zinc-950 px-4 py-10 sm:px-6">
+    <main className="min-h-screen bg-white px-4 py-10 sm:px-6">
       <div className="mx-auto max-w-6xl">
         {/* Header */}
         <div className="mb-8">
-          <p className="text-xs font-medium uppercase tracking-widest text-emerald-400 mb-1">
+          <p className="text-xs font-medium uppercase tracking-widest text-emerald-600 mb-1">
             Jobs Territory
           </p>
-          <h1 className="text-3xl font-semibold tracking-tight text-zinc-100">Find your next role</h1>
-          <p className="mt-1 text-sm text-zinc-400">
+          <h1 className="text-3xl font-semibold tracking-tight text-gray-900">Find your next role</h1>
+          <p className="mt-1 text-sm text-gray-500">
             {pagination.total > 0 ? `${pagination.total} open position${pagination.total !== 1 ? "s" : ""}` : "Browse open positions"}
           </p>
         </div>
@@ -70,7 +70,7 @@ export function JobsPage({ initialJobs, initialPagination, initialQuery }: Props
             type="button"
             onClick={() => setShowFilters((v) => !v)}
             aria-expanded={showFilters}
-            className="lg:hidden flex items-center gap-2 rounded-lg border border-zinc-700 px-3 py-2 text-sm text-zinc-300 hover:border-zinc-500 hover:text-zinc-100 transition-colors"
+            className="lg:hidden flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 hover:border-gray-300 hover:bg-gray-50 transition-colors"
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
               <path d="M1 3h12M3 7h8M5 11h4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
@@ -78,7 +78,7 @@ export function JobsPage({ initialJobs, initialPagination, initialQuery }: Props
             Filters
           </button>
           <div className="flex items-center gap-2 ml-auto">
-            <span className="text-xs text-zinc-500">Sort:</span>
+            <span className="text-xs text-gray-400">Sort:</span>
             <SortButton
               active={query.sort !== "deadline"}
               onClick={() => handleQueryChange({ sort: "newest", page: 1 })}
@@ -97,7 +97,7 @@ export function JobsPage({ initialJobs, initialPagination, initialQuery }: Props
         <div className="mt-6 flex gap-8">
           {/* Filters sidebar */}
           <div className={`lg:block w-64 shrink-0 ${showFilters ? "block" : "hidden"}`}>
-            <div className="rounded-2xl bg-zinc-900 border border-zinc-800 p-5">
+            <div className="rounded-2xl bg-gray-50 border border-gray-200 p-5">
               <JobFilters query={query} onChange={handleQueryChange} onReset={handleReset} />
             </div>
           </div>
@@ -105,7 +105,7 @@ export function JobsPage({ initialJobs, initialPagination, initialQuery }: Props
           {/* Jobs list */}
           <div className="flex-1 min-w-0">
             {error && (
-              <div className="mb-4 rounded-xl border border-red-800/50 bg-red-900/20 px-4 py-3 text-sm text-red-400">
+              <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
                 {error}
               </div>
             )}
@@ -157,12 +157,12 @@ function SearchBar({
         placeholder="Search by title, description, company, or skill…"
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        className="flex-1 rounded-xl bg-zinc-900 border border-zinc-700 px-4 py-3 text-sm text-zinc-100 placeholder:text-zinc-500 focus:border-emerald-500 focus:outline-none transition-colors"
+        className="flex-1 rounded-xl bg-white border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 focus:outline-none transition-colors"
       />
       <button
         type="submit"
         disabled={isPending}
-        className="rounded-xl bg-emerald-500 px-5 py-3 text-sm font-semibold text-zinc-950 hover:bg-emerald-400 disabled:opacity-60 transition-colors"
+        className="rounded-xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-60 transition-colors"
       >
         Search
       </button>
@@ -185,8 +185,8 @@ function SortButton({
       onClick={onClick}
       className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
         active
-          ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40"
-          : "text-zinc-400 hover:text-zinc-200 border border-zinc-700 hover:border-zinc-500"
+          ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
+          : "text-gray-500 hover:text-gray-900 border border-gray-200 hover:border-gray-300"
       }`}
     >
       {children}
@@ -196,16 +196,16 @@ function SortButton({
 
 function EmptyState({ hasFilters, onReset }: { hasFilters: boolean; onReset: () => void }) {
   return (
-    <div className="rounded-2xl border border-dashed border-zinc-700 p-12 text-center">
-      <p className="text-sm font-medium text-zinc-300">No jobs found</p>
-      <p className="mt-1 text-xs text-zinc-500">
+    <div className="rounded-2xl border border-dashed border-gray-300 p-12 text-center">
+      <p className="text-sm font-medium text-gray-700">No jobs found</p>
+      <p className="mt-1 text-xs text-gray-400">
         {hasFilters ? "Try adjusting your search or filters." : "Check back soon for new openings."}
       </p>
       {hasFilters && (
         <button
           type="button"
           onClick={onReset}
-          className="mt-4 rounded-lg border border-zinc-700 px-4 py-2 text-xs text-zinc-300 hover:border-zinc-500 hover:text-zinc-100 transition-colors"
+          className="mt-4 rounded-lg border border-gray-200 px-4 py-2 text-xs text-gray-700 hover:border-gray-300 hover:bg-gray-50 transition-colors"
         >
           Clear filters
         </button>
@@ -243,13 +243,13 @@ function Pagination({
         disabled={current === 1 || isPending}
         onClick={() => onPage(current - 1)}
         aria-label="Previous page"
-        className="rounded-lg border border-zinc-700 px-3 py-2 text-xs text-zinc-400 hover:border-zinc-500 hover:text-zinc-200 disabled:opacity-30 transition-colors"
+        className="rounded-lg border border-gray-200 px-3 py-2 text-xs text-gray-500 hover:border-gray-300 hover:text-gray-900 disabled:opacity-30 transition-colors"
       >
         ←
       </button>
       {pages.map((p, i) =>
         p === "…" ? (
-          <span key={`ellipsis-${i}`} className="px-2 text-xs text-zinc-500">
+          <span key={`ellipsis-${i}`} className="px-2 text-xs text-gray-400">
             …
           </span>
         ) : (
@@ -261,8 +261,8 @@ function Pagination({
             aria-current={p === current ? "page" : undefined}
             className={`rounded-lg px-3 py-2 text-xs font-medium transition-colors ${
               p === current
-                ? "bg-emerald-500/20 border border-emerald-500/40 text-emerald-400"
-                : "border border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-zinc-200"
+                ? "bg-emerald-50 border border-emerald-200 text-emerald-600"
+                : "border border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-900"
             }`}
           >
             {p}
@@ -274,7 +274,7 @@ function Pagination({
         disabled={current === total || isPending}
         onClick={() => onPage(current + 1)}
         aria-label="Next page"
-        className="rounded-lg border border-zinc-700 px-3 py-2 text-xs text-zinc-400 hover:border-zinc-500 hover:text-zinc-200 disabled:opacity-30 transition-colors"
+        className="rounded-lg border border-gray-200 px-3 py-2 text-xs text-gray-500 hover:border-gray-300 hover:text-gray-900 disabled:opacity-30 transition-colors"
       >
         →
       </button>

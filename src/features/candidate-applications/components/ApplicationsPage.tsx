@@ -32,16 +32,16 @@ export function ApplicationsPage({ initialApplications }: Props) {
   }
 
   return (
-    <main className="min-h-screen bg-zinc-950 px-4 py-10 sm:px-6">
+    <main className="min-h-screen bg-white px-4 py-10 sm:px-6">
       <div className="mx-auto max-w-3xl space-y-6">
         {/* Header */}
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-medium uppercase tracking-widest text-emerald-400 mb-1">
+            <p className="text-xs font-medium uppercase tracking-widest text-emerald-600 mb-1">
               Jobs Territory
             </p>
-            <h1 className="text-2xl font-semibold tracking-tight text-zinc-100">My applications</h1>
-            <p className="mt-1 text-sm text-zinc-400">
+            <h1 className="text-2xl font-semibold tracking-tight text-gray-900">My applications</h1>
+            <p className="mt-1 text-sm text-gray-500">
               {applications.length > 0
                 ? `${applications.length} application${applications.length !== 1 ? "s" : ""}`
                 : "Track all your job applications here."}
@@ -50,7 +50,7 @@ export function ApplicationsPage({ initialApplications }: Props) {
           <div className="flex items-center gap-2">
             <Link
               href="/jobs"
-              className="rounded-lg border border-zinc-700 px-3 py-2 text-xs text-zinc-300 hover:border-zinc-500 hover:text-zinc-100 transition-colors"
+              className="rounded-lg border border-gray-200 px-3 py-2 text-xs text-gray-700 hover:border-gray-300 hover:bg-gray-50 transition-colors"
             >
               Browse jobs
             </Link>
@@ -59,7 +59,7 @@ export function ApplicationsPage({ initialApplications }: Props) {
               onClick={handleRefresh}
               disabled={isRefreshing}
               aria-label="Refresh applications"
-              className="shrink-0 rounded-lg border border-zinc-700 p-2 text-zinc-400 hover:border-zinc-500 hover:text-zinc-200 disabled:opacity-40 transition-colors"
+              className="shrink-0 rounded-lg border border-gray-200 p-2 text-gray-500 hover:border-gray-300 hover:text-gray-900 disabled:opacity-40 transition-colors"
             >
               <svg
                 width="16"
@@ -77,7 +77,7 @@ export function ApplicationsPage({ initialApplications }: Props) {
         </div>
 
         {error && (
-          <div className="rounded-xl border border-red-800/50 bg-red-900/20 px-4 py-3 text-sm text-red-400">
+          <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
             {error}
           </div>
         )}
@@ -89,14 +89,14 @@ export function ApplicationsPage({ initialApplications }: Props) {
 
         {/* Applications list */}
         {applications.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-zinc-700 p-12 text-center">
-            <p className="text-sm font-medium text-zinc-300">No applications yet</p>
-            <p className="mt-1 text-xs text-zinc-500">
+          <div className="rounded-2xl border border-dashed border-gray-300 p-12 text-center">
+            <p className="text-sm font-medium text-gray-700">No applications yet</p>
+            <p className="mt-1 text-xs text-gray-400">
               Apply to jobs and track your progress here.
             </p>
             <Link
               href="/jobs"
-              className="mt-4 inline-block rounded-lg bg-emerald-500 px-4 py-2 text-xs font-semibold text-zinc-950 hover:bg-emerald-400 transition-colors"
+              className="mt-4 inline-block rounded-lg bg-emerald-600 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-500 transition-colors"
             >
               Browse open jobs
             </Link>
