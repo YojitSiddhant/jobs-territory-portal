@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { FormField } from "./FormField";
-import { registerCompany } from "../api";
+import { ApiRequestError, registerCompany } from "../api";
 
 export function CompanyRegisterForm() {
   const router = useRouter();
@@ -12,27 +12,35 @@ export function CompanyRegisterForm() {
   const [contactEmail, setContactEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isPending, startTransition] = useTransition();
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    const next: Record<string, string> = {};
+    if (!companyName.trim()) next.companyName = "Company name is required.";
+    if (!/^\S+@\S+\.\S+$/.test(email)) next.email = "Enter a valid account email.";
+    if (!/^\S+@\S+\.\S+$/.test(contactEmail)) next.contactEmail = "Enter a valid company contact email.";
+    if (password.length < 12) next.password = "Password must be at least 12 characters.";
+    setFieldErrors(next); if (Object.keys(next).length) return;
     startTransition(async () => {
       try {
         await registerCompany(email, password, companyName, contactEmail);
         router.push("/company/dashboard");
         router.refresh();
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Registration failed.");
+        if (err instanceof ApiRequestError && err.issues?.length) { const issues: Record<string, string> = {}; for (const issue of err.issues) { const key = String(issue.path?.[0] ?? ""); if (key) issues[key] = issue.message ?? "Invalid value."; } setFieldErrors(issues); }
+        else setError(err instanceof Error ? err.message : "Registration failed.");
       }
     });
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <FormField id="creg-name" label="Company name" value={companyName} onChange={setCompanyName} required disabled={isPending} autoComplete="organization" />
-      <FormField id="creg-email" label="Account email" type="email" value={email} onChange={setEmail} required disabled={isPending} autoComplete="email" />
-      <FormField id="creg-contact" label="Company contact email" type="email" value={contactEmail} onChange={setContactEmail} required disabled={isPending} autoComplete="off" hint="Public contact email shown to candidates." />
+      <FormField id="creg-name" label="Company name" value={companyName} onChange={setCompanyName} required disabled={isPending} autoComplete="organization" error={fieldErrors.companyName} />
+      <FormField id="creg-email" label="Account email" type="email" value={email} onChange={setEmail} required disabled={isPending} autoComplete="email" error={fieldErrors.email} />
+      <FormField id="creg-contact" label="Company contact email" type="email" value={contactEmail} onChange={setContactEmail} required disabled={isPending} autoComplete="off" hint="Public contact email shown to candidates." error={fieldErrors.contactEmail} />
       <FormField
         id="creg-password"
         label="Password"
@@ -43,6 +51,7 @@ export function CompanyRegisterForm() {
         disabled={isPending}
         autoComplete="new-password"
         hint="Minimum 12 characters."
+        error={fieldErrors.password}
       />
 
       {error && (

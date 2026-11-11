@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { FormField } from "./FormField";
-import { registerCandidate } from "../api";
+import { ApiRequestError, registerCandidate } from "../api";
 
 export function CandidateRegisterForm() {
   const router = useRouter();
@@ -11,26 +11,33 @@ export function CandidateRegisterForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isPending, startTransition] = useTransition();
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    const next: Record<string, string> = {};
+    if (!fullName.trim()) next.fullName = "Full name is required.";
+    if (!/^\S+@\S+\.\S+$/.test(email)) next.email = "Enter a valid email address.";
+    if (password.length < 12) next.password = "Password must be at least 12 characters.";
+    setFieldErrors(next); if (Object.keys(next).length) return;
     startTransition(async () => {
       try {
         await registerCandidate(email, password, fullName);
         router.push("/candidate/applications");
         router.refresh();
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Registration failed.");
+        if (err instanceof ApiRequestError && err.issues?.length) { const issues: Record<string, string> = {}; for (const issue of err.issues) { const key = String(issue.path?.[0] ?? ""); if (key) issues[key] = issue.message ?? "Invalid value."; } setFieldErrors(issues); }
+        else setError(err instanceof Error ? err.message : "Registration failed.");
       }
     });
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <FormField id="reg-name" label="Full name" value={fullName} onChange={setFullName} required disabled={isPending} autoComplete="name" />
-      <FormField id="reg-email" label="Email" type="email" value={email} onChange={setEmail} required disabled={isPending} autoComplete="email" />
+      <FormField id="reg-name" label="Full name" value={fullName} onChange={setFullName} required disabled={isPending} autoComplete="name" error={fieldErrors.fullName} />
+      <FormField id="reg-email" label="Email" type="email" value={email} onChange={setEmail} required disabled={isPending} autoComplete="email" error={fieldErrors.email} />
       <FormField
         id="reg-password"
         label="Password"
@@ -41,6 +48,7 @@ export function CandidateRegisterForm() {
         disabled={isPending}
         autoComplete="new-password"
         hint="Minimum 12 characters."
+        error={fieldErrors.password}
       />
 
       {error && (
