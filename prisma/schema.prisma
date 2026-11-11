@@ -138,11 +138,16 @@ model Company {
   ownerId         String        @unique @map("owner_id")
   name            String
   slug            String        @unique
+  registrationNumber String?     @unique @map("registration_number")
   description     String?       @db.Text
   website         String?
   contactEmail    String        @map("contact_email")
+  phone           String?
+  address         String?       @db.Text
+  industry        String?
   status          CompanyStatus @default(PENDING)
   rejectionReason String?       @map("rejection_reason") @db.Text
+  verificationSubmittedAt DateTime? @map("verification_submitted_at")
   createdAt       DateTime      @default(now()) @map("created_at")
   updatedAt       DateTime      @updatedAt @map("updated_at")
   owner           User                  @relation(fields: [ownerId], references: [id], onDelete: Cascade)
