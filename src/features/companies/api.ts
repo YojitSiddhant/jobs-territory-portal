@@ -51,6 +51,14 @@ export async function registerDocument(input: {
   return data.document;
 }
 
+export async function uploadCompanyDocument(type: string, file: File): Promise<{ id: string; type: string; status: string; originalName: string; mimeType: string }> {
+  const form = new FormData(); form.set("type", type); form.set("file", file);
+  const res = await fetch("/api/company/profile/documents/upload", { method: "POST", body: form });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data?.error?.message ?? "Failed to upload document.");
+  return data.document;
+}
+
 // ── Jobs ─────────────────────────────────────────────────────────────────────
 
 export async function fetchCompanyJobs(): Promise<CompanyJob[]> {

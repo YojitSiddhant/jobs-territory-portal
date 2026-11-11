@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import type { CandidateProfile, Education, Experience } from "../types";
-import { fetchProfile, updateProfile } from "../api";
+import { fetchProfile, updateProfile, uploadCandidateFile } from "../api";
 import { ProfileCompletion } from "./ProfileCompletion";
 import { PersonalInfoSection } from "./PersonalInfoSection";
 import { EducationSection } from "./EducationSection";
@@ -111,6 +111,14 @@ export function ProfilePage({ initialProfile }: Props) {
     }
   }
 
+  async function handleUpload(kind: "profile-photo" | "resume", file: File) {
+    try {
+      const result = await uploadCandidateFile(kind, file);
+      setForm((current) => ({ ...current, [kind === "resume" ? "resumeKey" : "profilePhotoKey"]: result.key }));
+      setSaveSuccess(true);
+    } catch (err) { setSaveError(err instanceof Error ? err.message : "Upload failed."); }
+  }
+
   return (
     <main className="min-h-screen bg-zinc-950 px-4 py-10 sm:px-6">
       <div className="mx-auto max-w-2xl space-y-6">
@@ -166,6 +174,7 @@ export function ProfilePage({ initialProfile }: Props) {
             profilePhotoKey: form.profilePhotoKey,
           }}
           onChange={(v) => setForm((f) => ({ ...f, ...v }))}
+          onUpload={(file) => handleUpload("profile-photo", file)}
         />
 
         {/* Resume */}
@@ -176,6 +185,7 @@ export function ProfilePage({ initialProfile }: Props) {
             kind="resume"
             fileKey={form.resumeKey}
             onClear={() => setForm((f) => ({ ...f, resumeKey: null }))}
+            onUpload={(file) => handleUpload("resume", file)}
           />
         </section>
 

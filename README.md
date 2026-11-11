@@ -70,6 +70,8 @@ PATCH /api/candidate/profile
 
 `PATCH` accepts personal details, `skills`, education entries, experience entries, and private `profilePhotoKey`/`resumeKey` references. The response includes `completionPercentage`. File objects themselves are not stored in MySQL or committed to the repository; only private storage keys are stored. Future upload handlers must use the private storage abstraction and must never place files under `public/`.
 
+Candidate files can be uploaded through `POST /api/candidate/profile/files` as multipart form data with `kind` (`profile-photo` or `resume`) and `file`. Companies can upload verification files through `POST /api/company/profile/documents/upload` with `type` and `file`. Local development uses `STORAGE_DRIVER=local` and stores files under the ignored `STORAGE_LOCAL_DIR`; production requires a configured private provider adapter. Files are served only through the authenticated `/api/private-files/...` route after ownership or admin checks, never as public URLs.
+
 ## Admin company verification API
 
 Admin verification endpoints require a session whose server-side role is `ADMIN`. Company and candidate sessions receive `403`, and company users cannot approve or reject their own records.

@@ -11,6 +11,7 @@ const envSchema = z.object({
   STORAGE_ENDPOINT: z.string().optional(),
   STORAGE_ACCESS_KEY_ID: z.string().optional(),
   STORAGE_SECRET_ACCESS_KEY: z.string().optional(),
+  STORAGE_LOCAL_DIR: z.string().default(".private-storage"),
 });
 
 export function getEnv() {
@@ -25,5 +26,6 @@ export function getEnv() {
     STORAGE_ENDPOINT: process.env.STORAGE_ENDPOINT,
     STORAGE_ACCESS_KEY_ID: process.env.STORAGE_ACCESS_KEY_ID,
     STORAGE_SECRET_ACCESS_KEY: process.env.STORAGE_SECRET_ACCESS_KEY,
+    STORAGE_LOCAL_DIR: process.env.STORAGE_LOCAL_DIR,
   });
 }

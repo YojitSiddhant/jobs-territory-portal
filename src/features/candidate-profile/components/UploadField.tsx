@@ -5,9 +5,10 @@ type Props = {
   fileKey: string | null;
   kind: "profile-photo" | "resume";
   onClear: () => void;
+  onUpload: (file: File) => Promise<void>;
 };
 
-export function UploadField({ label, fileKey, onClear }: Props) {
+export function UploadField({ label, fileKey, onClear, onUpload }: Props) {
   const hasFile = Boolean(fileKey);
 
   return (
@@ -35,21 +36,16 @@ export function UploadField({ label, fileKey, onClear }: Props) {
       ) : (
         <div className="space-y-2">
           <div className="flex items-center gap-3">
-            <button
-              type="button"
-              disabled
-              className="inline-flex items-center gap-2 rounded-lg border border-zinc-700 px-3 py-2 text-xs font-medium text-zinc-500 cursor-not-allowed"
-            >
+            <label className="inline-flex items-center gap-2 rounded-lg border border-zinc-700 px-3 py-2 text-xs font-medium text-zinc-300 hover:border-zinc-500 cursor-pointer">
+              <input type="file" className="sr-only" onChange={(e) => { const file = e.target.files?.[0]; if (file) void onUpload(file); e.currentTarget.value = ""; }} />
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
                 <path d="M8 2v9M4 6l4-4 4 4M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
               Choose file
-            </button>
+            </label>
             <span className="text-xs text-zinc-500">No file selected</span>
           </div>
-          <p className="text-xs text-amber-500/80">
-            File upload is not yet available. A storage adapter must be configured first.
-          </p>
+          <p className="text-xs text-zinc-500">Files are stored privately and are available only to authorized users.</p>
         </div>
       )}
     </div>
