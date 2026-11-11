@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getSessionUser } from "@/server/auth/session";
 import { LogoutButton } from "./LogoutButton";
+import { CandidateNavLinks } from "./CandidateNavLinks";
 
 export async function SiteNav() {
   const user = await getSessionUser();
@@ -22,11 +23,7 @@ export async function SiteNav() {
           )}
 
           {user?.role === "CANDIDATE" && (
-            <>
-              <Link href="/jobs" className={linkCls}>Browse jobs</Link>
-              <Link href="/candidate/applications" className={linkCls}>Applications</Link>
-              <LogoutButton />
-            </>
+            <CandidateNavLinks />
           )}
 
           {user?.role === "COMPANY" && (
