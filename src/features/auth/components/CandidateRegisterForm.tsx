@@ -28,7 +28,7 @@ export function CandidateRegisterForm() {
         await registerCandidate(email, password, fullName); setSuccess(true);
         setTimeout(() => { router.push("/candidate/applications"); router.refresh(); }, 1200);
       } catch (err) {
-        if (err instanceof ApiRequestError && err.issues?.length) { const issues: Record<string, string> = {}; for (const issue of err.issues) { const key = String(issue.path?.[0] ?? ""); if (key) issues[key] = issue.message ?? "Invalid value."; } setFieldErrors(issues); }
+        if (err instanceof ApiRequestError && err.issues?.length) { const issues: Record<string, string> = {}; for (const issue of err.issues) { const key = String(issue.path?.[0] ?? ""); if (key === "fullName" || key === "email" || key === "password") issues[key] = issue.message ?? "Invalid value."; } setFieldErrors(issues); if (!Object.keys(issues).length) setError(err.message); }
         else setError(err instanceof Error ? err.message : "Registration failed.");
       }
     });

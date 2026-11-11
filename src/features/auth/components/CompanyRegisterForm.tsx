@@ -30,7 +30,7 @@ export function CompanyRegisterForm() {
         await registerCompany(email, password, companyName, contactEmail); setSuccess(true);
         setTimeout(() => { router.push("/company/dashboard"); router.refresh(); }, 1200);
       } catch (err) {
-        if (err instanceof ApiRequestError && err.issues?.length) { const issues: Record<string, string> = {}; for (const issue of err.issues) { const key = String(issue.path?.[0] ?? ""); if (key) issues[key] = issue.message ?? "Invalid value."; } setFieldErrors(issues); }
+        if (err instanceof ApiRequestError && err.issues?.length) { const issues: Record<string, string> = {}; for (const issue of err.issues) { const key = String(issue.path?.[0] ?? ""); if (key === "companyName" || key === "email" || key === "contactEmail" || key === "password") issues[key] = issue.message ?? "Invalid value."; } setFieldErrors(issues); if (!Object.keys(issues).length) setError(err.message); }
         else setError(err instanceof Error ? err.message : "Registration failed.");
       }
     });
