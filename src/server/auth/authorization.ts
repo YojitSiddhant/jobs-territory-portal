@@ -23,3 +23,9 @@ export async function requireRole(...roles: UserRole[]): Promise<SessionUser> {
   if (!roles.includes(user.role)) throw new AuthorizationError();
   return user;
 }
+
+export async function requireAuthenticatedUser(): Promise<SessionUser> {
+  const user = await getSessionUser();
+  if (!user) throw new AuthenticationError();
+  return user;
+}
