@@ -6,9 +6,11 @@ type Props = {
   kind: "profile-photo" | "resume";
   onClear: () => void;
   onUpload: (file: File) => Promise<void>;
+  isUploading?: boolean;
+  uploadProgress?: number;
 };
 
-export function UploadField({ label, fileKey, onClear, onUpload }: Props) {
+export function UploadField({ label, fileKey, onClear, onUpload, isUploading = false, uploadProgress = 0 }: Props) {
   const hasFile = Boolean(fileKey);
 
   return (
@@ -36,12 +38,12 @@ export function UploadField({ label, fileKey, onClear, onUpload }: Props) {
       ) : (
         <div className="space-y-2">
           <div className="flex items-center gap-3">
-            <label className="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-xs font-medium text-gray-700 hover:border-gray-300 hover:bg-white cursor-pointer transition-colors">
+            <label className={`inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-xs font-medium text-gray-700 hover:border-gray-300 hover:bg-white cursor-pointer transition-colors ${isUploading ? "pointer-events-none opacity-60" : ""}`}>
               <input type="file" className="sr-only" onChange={(e) => { const file = e.target.files?.[0]; if (file) void onUpload(file); e.currentTarget.value = ""; }} />
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
                 <path d="M8 2v9M4 6l4-4 4 4M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-              Choose file
+              {isUploading ? `Uploading ${uploadProgress}%…` : "Choose file"}
             </label>
             <span className="text-xs text-gray-400">No file selected</span>
           </div>

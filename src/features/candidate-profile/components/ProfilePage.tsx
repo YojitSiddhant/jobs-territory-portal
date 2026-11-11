@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import type { CandidateProfile, Education, Experience } from "../types";
-import { fetchProfile, updateProfile, uploadCandidateFile } from "../api";
+import { emptyCandidateProfile, fetchProfile, normalizeCandidateProfile, updateProfile, uploadCandidateFile } from "../api";
 import { ProfileCompletion } from "./ProfileCompletion";
 import { PersonalInfoSection } from "./PersonalInfoSection";
 import { EducationSection } from "./EducationSection";
@@ -39,16 +39,20 @@ function profileToForm(p: CandidateProfile): FormState {
 }
 
 type Props = {
-  initialProfile: CandidateProfile;
+  initialProfile?: CandidateProfile | null;
 };
 
 export function ProfilePage({ initialProfile }: Props) {
-  const [profile, setProfile] = useState<CandidateProfile>(initialProfile);
-  const [form, setForm] = useState<FormState>(profileToForm(initialProfile));
+  const safeInitialProfile = normalizeCandidateProfile(initialProfile ?? emptyCandidateProfile());
+  const [profile, setProfile] = useState<CandidateProfile>(safeInitialProfile);
+  const [form, setForm] = useState<FormState>(profileToForm(safeInitialProfile));
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [uploadingKind, setUploadingKind] = useState<"profile-photo" | "resume" | null>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!saveSuccess) return;
@@ -100,22 +104,30 @@ export function ProfilePage({ initialProfile }: Props) {
   async function handleRefresh() {
     setIsRefreshing(true);
     try {
-      const fresh = await fetchProfile();
+      const fresh = normalizeCandidateProfile(await fetchProfile());
       setProfile(fresh);
       setForm(profileToForm(fresh));
-    } catch {
-      // silent — keep existing data
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : "Failed to load your profile.");
     } finally {
       setIsRefreshing(false);
     }
   }
 
   async function handleUpload(kind: "profile-photo" | "resume", file: File) {
+    const allowed = kind === "profile-photo" ? ["image/jpeg", "image/png", "image/webp"] : ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
+    const limit = kind === "profile-photo" ? 5 * 1024 * 1024 : 10 * 1024 * 1024;
+    if (!allowed.includes(file.type)) { setUploadError("This file type is not supported."); return; }
+    if (file.size <= 0 || file.size > limit) { setUploadError(`File is too large. Maximum size is ${limit / 1024 / 1024} MB.`); return; }
+    setUploadError(null); setUploadingKind(kind); setUploadProgress(0);
     try {
-      const result = await uploadCandidateFile(kind, file);
-      setForm((current) => ({ ...current, [kind === "resume" ? "resumeKey" : "profilePhotoKey"]: result.key }));
+      await uploadCandidateFile(kind, file, setUploadProgress);
+      const fresh = normalizeCandidateProfile(await fetchProfile());
+      setProfile(fresh);
+      setForm(profileToForm(fresh));
       setSaveSuccess(true);
-    } catch (err) { setSaveError(err instanceof Error ? err.message : "Upload failed."); }
+    } catch (err) { setUploadError(err instanceof Error ? err.message : "Upload failed."); }
+    finally { setUploadingKind(null); }
   }
 
   return (
@@ -174,6 +186,8 @@ export function ProfilePage({ initialProfile }: Props) {
           }}
           onChange={(v) => setForm((f) => ({ ...f, ...v }))}
           onUpload={(file) => handleUpload("profile-photo", file)}
+          isUploading={uploadingKind === "profile-photo"}
+          uploadProgress={uploadingKind === "profile-photo" ? uploadProgress : 0}
         />
 
         {/* Resume */}
@@ -185,7 +199,10 @@ export function ProfilePage({ initialProfile }: Props) {
             fileKey={form.resumeKey}
             onClear={() => setForm((f) => ({ ...f, resumeKey: null }))}
             onUpload={(file) => handleUpload("resume", file)}
+            isUploading={uploadingKind === "resume"}
+            uploadProgress={uploadingKind === "resume" ? uploadProgress : 0}
           />
+          {uploadError && <p className="text-sm text-red-600">{uploadError}</p>}
         </section>
 
         {/* Education */}

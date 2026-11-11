@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { calculateProfileCompletion } from "../../src/server/candidates/profile-completion";
 import { candidateProfileSchema } from "../../src/shared/validation/candidate-profile";
+import { normalizeCandidateProfile } from "../../src/features/candidate-profile/api";
 
 describe("candidate profile", () => {
   it("calculates completion from profile sections", () => {
@@ -23,5 +24,14 @@ describe("candidate profile", () => {
     assert.equal(valid.success, true);
     assert.equal(candidateProfileSchema.safeParse({ profilePhotoKey: "public/photo.png" }).success, false);
     assert.equal(candidateProfileSchema.safeParse({ experience: [{ employer: "Company", jobTitle: "Developer", startDate: "2023-01-01", endDate: "2022-01-01", isCurrent: false }] }).success, false);
+  });
+
+  it("normalizes an empty or partial API profile safely", () => {
+    const profile = normalizeCandidateProfile({ fullName: "Candidate" });
+    assert.equal(profile.fullName, "Candidate");
+    assert.equal(profile.completionPercentage, 0);
+    assert.deepEqual(profile.education, []);
+    assert.deepEqual(profile.experience, []);
+    assert.deepEqual(profile.skills, []);
   });
 });
