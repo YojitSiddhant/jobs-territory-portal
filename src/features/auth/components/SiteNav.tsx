@@ -6,9 +6,9 @@ export async function SiteNav() {
   const user = await getSessionUser();
 
   return (
-    <header className="border-b border-zinc-800 bg-zinc-950 px-4 py-3 sm:px-6">
+    <header className="border-b border-gray-200 bg-white px-4 py-3 sm:px-6">
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-4">
-        <Link href="/" className="text-sm font-semibold text-zinc-100 hover:text-white transition-colors">
+        <Link href="/" className="text-sm font-semibold text-gray-900 hover:text-gray-700 transition-colors">
           Jobs Territory
         </Link>
 
@@ -51,5 +51,5 @@ export async function SiteNav() {
   );
 }
 
-const linkCls = "rounded-lg px-3 py-1.5 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-colors";
-const ctaCls = "rounded-lg bg-emerald-500 px-3 py-1.5 text-sm font-semibold text-zinc-950 hover:bg-emerald-400 transition-colors";
+const linkCls = "rounded-lg px-3 py-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors";
+const ctaCls = "rounded-lg bg-emerald-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-emerald-500 transition-colors";

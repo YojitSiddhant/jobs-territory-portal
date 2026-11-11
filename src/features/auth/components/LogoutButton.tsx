@@ -21,7 +21,7 @@ export function LogoutButton({ className }: { className?: string }) {
       type="button"
       onClick={handleLogout}
       disabled={isPending}
-      className={className ?? "text-sm text-zinc-400 hover:text-zinc-200 disabled:opacity-50 transition-colors"}
+      className={className ?? "text-sm text-gray-500 hover:text-gray-900 disabled:opacity-50 transition-colors"}
     >
       {isPending ? "Signing out…" : "Sign out"}
     </button>

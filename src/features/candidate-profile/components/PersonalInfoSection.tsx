@@ -28,7 +28,7 @@ function Field({
 }) {
   return (
     <div className="space-y-1.5">
-      <label htmlFor={id} className="block text-sm font-medium text-zinc-300">
+      <label htmlFor={id} className="block text-sm font-medium text-gray-700">
         {label}
       </label>
       {children}
@@ -37,15 +37,15 @@ function Field({
 }
 
 const inputClass =
-  "w-full rounded-lg bg-zinc-800 border border-zinc-700 px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors";
+  "w-full rounded-lg bg-white border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors";
 
 export function PersonalInfoSection({ value, onChange, onUpload }: Props) {
   const set = (key: keyof PersonalInfo, v: string | null) =>
     onChange({ ...value, [key]: v });
 
   return (
-    <section className="rounded-2xl bg-zinc-900 border border-zinc-800 p-6 space-y-5">
-      <h2 className="text-base font-semibold text-zinc-100">Personal information</h2>
+    <section className="rounded-2xl bg-white border border-gray-200 p-6 space-y-5 shadow-sm">
+      <h2 className="text-base font-semibold text-gray-900">Personal information</h2>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Field label="Full name" id="fullName">
@@ -107,7 +107,7 @@ export function PersonalInfoSection({ value, onChange, onUpload }: Props) {
           onChange={(e) => set("bio", e.target.value)}
           className={`${inputClass} resize-none`}
         />
-        <p className="text-right text-xs text-zinc-500">{value.bio.length}/5000</p>
+        <p className="text-right text-xs text-gray-400">{value.bio.length}/5000</p>
       </Field>
 
       <UploadField

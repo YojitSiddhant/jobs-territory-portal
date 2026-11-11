@@ -50,7 +50,6 @@ export function ProfilePage({ initialProfile }: Props) {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // Clear success banner after 3 s
   useEffect(() => {
     if (!saveSuccess) return;
     const id = setTimeout(() => setSaveSuccess(false), 3000);
@@ -120,18 +119,18 @@ export function ProfilePage({ initialProfile }: Props) {
   }
 
   return (
-    <main className="min-h-screen bg-zinc-950 px-4 py-10 sm:px-6">
+    <main className="min-h-screen bg-white px-4 py-10 sm:px-6">
       <div className="mx-auto max-w-2xl space-y-6">
         {/* Header */}
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-medium uppercase tracking-widest text-emerald-400 mb-1">
+            <p className="text-xs font-medium uppercase tracking-widest text-emerald-600 mb-1">
               Jobs Territory
             </p>
-            <h1 className="text-2xl font-semibold tracking-tight text-zinc-100">
+            <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
               Your profile
             </h1>
-            <p className="mt-1 text-sm text-zinc-400">
+            <p className="mt-1 text-sm text-gray-500">
               Keep your profile up to date so employers can find you.
             </p>
           </div>
@@ -140,7 +139,7 @@ export function ProfilePage({ initialProfile }: Props) {
             onClick={handleRefresh}
             disabled={isRefreshing}
             aria-label="Refresh profile"
-            className="shrink-0 rounded-lg border border-zinc-700 p-2 text-zinc-400 hover:border-zinc-500 hover:text-zinc-200 disabled:opacity-40 transition-colors"
+            className="shrink-0 rounded-lg border border-gray-200 p-2 text-gray-500 hover:border-gray-300 hover:text-gray-900 disabled:opacity-40 transition-colors"
           >
             <svg
               width="16"
@@ -178,8 +177,8 @@ export function ProfilePage({ initialProfile }: Props) {
         />
 
         {/* Resume */}
-        <section className="rounded-2xl bg-zinc-900 border border-zinc-800 p-6 space-y-3">
-          <h2 className="text-base font-semibold text-zinc-100">Resume</h2>
+        <section className="rounded-2xl bg-white border border-gray-200 p-6 space-y-3 shadow-sm">
+          <h2 className="text-base font-semibold text-gray-900">Resume</h2>
           <UploadField
             label="Your resume / CV"
             kind="resume"
@@ -208,13 +207,13 @@ export function ProfilePage({ initialProfile }: Props) {
         />
 
         {/* Save bar */}
-        <div className="sticky bottom-0 -mx-4 sm:-mx-6 px-4 sm:px-6 py-4 bg-zinc-950/90 backdrop-blur border-t border-zinc-800">
+        <div className="sticky bottom-0 -mx-4 sm:-mx-6 px-4 sm:px-6 py-4 bg-white/90 backdrop-blur border-t border-gray-200">
           <div className="mx-auto max-w-2xl flex items-center gap-3">
             <button
               type="button"
               onClick={handleSave}
               disabled={isSaving}
-              className="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-5 py-2.5 text-sm font-semibold text-zinc-950 hover:bg-emerald-400 disabled:opacity-60 transition-colors"
+              className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-60 transition-colors"
             >
               {isSaving ? (
                 <>
@@ -229,7 +228,7 @@ export function ProfilePage({ initialProfile }: Props) {
             </button>
 
             {saveSuccess && (
-              <span className="flex items-center gap-1.5 text-sm text-emerald-400">
+              <span className="flex items-center gap-1.5 text-sm text-emerald-600">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                   <path d="M12 3.5L5.5 10 2 6.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
@@ -238,7 +237,7 @@ export function ProfilePage({ initialProfile }: Props) {
             )}
 
             {saveError && (
-              <span className="text-sm text-red-400">{saveError}</span>
+              <span className="text-sm text-red-600">{saveError}</span>
             )}
           </div>
         </div>

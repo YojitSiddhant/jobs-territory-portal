@@ -84,12 +84,12 @@ export function CompanyProfileForm({ profile, onSaved, readonly = false }: Props
 
       {!readonly && (
         <div className="flex items-center gap-3">
-          <button type="submit" disabled={isPending} className="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-5 py-2.5 text-sm font-semibold text-zinc-950 hover:bg-emerald-400 disabled:opacity-60 transition-colors">
+          <button type="submit" disabled={isPending} className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-60 transition-colors">
             {isPending ? <Spinner /> : null}
             {isPending ? "Saving…" : profile ? "Save changes" : "Create profile"}
           </button>
-          {success && <span className="text-sm text-emerald-400">Saved</span>}
-          {error && <span className="text-sm text-red-400">{error}</span>}
+          {success && <span className="text-sm text-emerald-600">Saved</span>}
+          {error && <span className="text-sm text-red-600">{error}</span>}
         </div>
       )}
     </form>
@@ -97,14 +97,14 @@ export function CompanyProfileForm({ profile, onSaved, readonly = false }: Props
 }
 
 function inputCls(disabled: boolean) {
-  return `w-full rounded-xl bg-zinc-800 border ${disabled ? "border-zinc-700 text-zinc-400 cursor-not-allowed" : "border-zinc-700 text-zinc-100 focus:border-emerald-500"} px-3 py-2 text-sm placeholder:text-zinc-500 focus:outline-none transition-colors`;
+  return `w-full rounded-xl bg-white border ${disabled ? "border-gray-200 text-gray-400 cursor-not-allowed" : "border-gray-200 text-gray-900 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"} px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none transition-colors`;
 }
 
 function Field({ label, id, required, children }: { label: string; id: string; required?: boolean; children: React.ReactNode }) {
   return (
     <div>
-      <label htmlFor={id} className="block text-xs font-medium text-zinc-400 mb-1.5">
-        {label}{required && <span className="text-zinc-600 ml-1">*</span>}
+      <label htmlFor={id} className="block text-xs font-medium text-gray-500 mb-1.5">
+        {label}{required && <span className="text-gray-400 ml-1">*</span>}
       </label>
       {children}
     </div>

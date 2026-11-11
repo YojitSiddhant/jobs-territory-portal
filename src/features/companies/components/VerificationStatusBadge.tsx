@@ -1,10 +1,10 @@
 import type { CompanyStatus } from "../types";
 
 const config: Record<CompanyStatus, { label: string; classes: string; dot: string }> = {
-  PENDING: { label: "Pending review", classes: "border-yellow-700/50 bg-yellow-900/20 text-yellow-400", dot: "bg-yellow-400" },
-  APPROVED: { label: "Approved", classes: "border-emerald-700/50 bg-emerald-900/20 text-emerald-400", dot: "bg-emerald-400" },
-  REJECTED: { label: "Rejected", classes: "border-red-800/50 bg-red-900/20 text-red-400", dot: "bg-red-400" },
-  SUSPENDED: { label: "Suspended", classes: "border-orange-800/50 bg-orange-900/20 text-orange-400", dot: "bg-orange-400" },
+  PENDING: { label: "Pending review", classes: "border-yellow-200 bg-yellow-50 text-yellow-600", dot: "bg-yellow-500" },
+  APPROVED: { label: "Approved", classes: "border-emerald-200 bg-emerald-50 text-emerald-600", dot: "bg-emerald-500" },
+  REJECTED: { label: "Rejected", classes: "border-red-200 bg-red-50 text-red-600", dot: "bg-red-500" },
+  SUSPENDED: { label: "Suspended", classes: "border-orange-200 bg-orange-50 text-orange-600", dot: "bg-orange-500" },
 };
 
 export function VerificationStatusBadge({ status }: { status: CompanyStatus }) {

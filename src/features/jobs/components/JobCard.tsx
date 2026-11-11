@@ -45,12 +45,12 @@ export function JobCard({ job, now }: Props & { now: Date }) {
   return (
     <Link
       href={job.slug ? `/jobs/${job.slug}` : "#"}
-      className="group block rounded-2xl bg-zinc-900 border border-zinc-800 p-5 hover:border-zinc-600 transition-colors"
+      className="group block rounded-2xl bg-white border border-gray-200 p-5 hover:border-gray-300 hover:shadow-sm transition-all"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-xs text-zinc-500 mb-0.5">{job.company.name}</p>
-          <h3 className="text-base font-semibold text-zinc-100 group-hover:text-emerald-400 transition-colors truncate">
+          <p className="text-xs text-gray-400 mb-0.5">{job.company.name}</p>
+          <h3 className="text-base font-semibold text-gray-900 group-hover:text-emerald-600 transition-colors truncate">
             {job.title}
           </h3>
         </div>
@@ -58,8 +58,8 @@ export function JobCard({ job, now }: Props & { now: Date }) {
           <span
             className={`shrink-0 text-xs font-medium px-2.5 py-1 rounded-full border ${
               isUrgent
-                ? "border-amber-500/40 bg-amber-500/10 text-amber-400"
-                : "border-zinc-700 text-zinc-400"
+                ? "border-amber-200 bg-amber-50 text-amber-600"
+                : "border-gray-200 text-gray-500"
             }`}
           >
             {deadline}
@@ -67,7 +67,7 @@ export function JobCard({ job, now }: Props & { now: Date }) {
         )}
       </div>
 
-      <div className="mt-3 flex flex-wrap gap-2 text-xs text-zinc-400">
+      <div className="mt-3 flex flex-wrap gap-2 text-xs text-gray-500">
         {job.location && (
           <span className="flex items-center gap-1">
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden>
@@ -82,17 +82,17 @@ export function JobCard({ job, now }: Props & { now: Date }) {
           </span>
         )}
         {job.workplaceType && (
-          <span className="rounded-md border border-zinc-700 px-2 py-0.5">
+          <span className="rounded-md border border-gray-200 px-2 py-0.5">
             {workplaceLabels[job.workplaceType] ?? job.workplaceType}
           </span>
         )}
         {job.employmentType && (
-          <span className="rounded-md border border-zinc-700 px-2 py-0.5">
+          <span className="rounded-md border border-gray-200 px-2 py-0.5">
             {employmentLabels[job.employmentType] ?? job.employmentType}
           </span>
         )}
         {salary && (
-          <span className="rounded-md border border-emerald-800/60 bg-emerald-900/20 px-2 py-0.5 text-emerald-400">
+          <span className="rounded-md border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-emerald-600">
             {salary}
           </span>
         )}
@@ -103,13 +103,13 @@ export function JobCard({ job, now }: Props & { now: Date }) {
           {job.requiredSkills.slice(0, 5).map((skill) => (
             <span
               key={skill}
-              className="rounded-md bg-zinc-800 px-2 py-0.5 text-xs text-zinc-300"
+              className="rounded-md bg-gray-100 px-2 py-0.5 text-xs text-gray-700"
             >
               {skill}
             </span>
           ))}
           {job.requiredSkills.length > 5 && (
-            <span className="text-xs text-zinc-500">+{job.requiredSkills.length - 5} more</span>
+            <span className="text-xs text-gray-400">+{job.requiredSkills.length - 5} more</span>
           )}
         </div>
       )}
