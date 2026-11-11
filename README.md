@@ -102,6 +102,20 @@ GET   /api/jobs                 # published, non-expired jobs only
 
 The public endpoint returns job/company listing fields only; it does not expose company verification documents, private storage keys, credentials, or draft/closed jobs.
 
+## Candidate job discovery API
+
+Public discovery returns only jobs whose status is `PUBLISHED`, whose company is `APPROVED`, and whose deadline has not passed. Results are bounded to 50 per page and support normalized search, filters, and sorting.
+
+```text
+GET /api/jobs?q=typescript&location=remote&workplaceType=REMOTE
+    &employmentType=FULL_TIME&experience=2%20years&skill=TypeScript
+    &company=company-id&salaryMin=50000&salaryMax=100000
+    &page=1&pageSize=20&sort=newest|deadline
+GET /api/jobs/:slug
+```
+
+The detail response includes only safe public job/company data and `{ application: { hasApplied } }` for the current authenticated candidate. It never returns another candidate’s application data, private documents, credentials, or internal review records.
+
 ## Architecture
 
 - `src/app` contains App Router pages and Route Handlers. Backend endpoints use `route.ts` files and the Web Request/Response APIs.
