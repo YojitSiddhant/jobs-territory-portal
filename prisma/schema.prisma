@@ -54,8 +54,8 @@ enum EmploymentType {
 }
 
 enum ApplicationStatus {
-  SUBMITTED
-  UNDER_REVIEW
+  APPLIED
+  REVIEWING
   SHORTLISTED
   REJECTED
   HIRED
@@ -79,6 +79,7 @@ model User {
   candidateProfile  CandidateProfile?
   company           Company?
   applications      Application[]
+  applicationStatusChanges ApplicationStatusHistory[] @relation("ApplicationStatusActors")
   reviewRecords     AdminReviewRecord[]
   sessions          Session[]
   @@index([role])
@@ -218,15 +219,31 @@ model Application {
   id          String            @id @default(cuid())
   jobId       String            @map("job_id")
   candidateId String            @map("candidate_id")
+  resumeKey   String?           @map("resume_key")
   coverNote   String?           @map("cover_note") @db.Text
-  status      ApplicationStatus @default(SUBMITTED)
+  status      ApplicationStatus @default(APPLIED)
   createdAt   DateTime          @default(now()) @map("created_at")
   updatedAt   DateTime          @updatedAt @map("updated_at")
   job         Job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
   candidate   User              @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  statusHistory ApplicationStatusHistory[]
   @@unique([jobId, candidateId])
   @@index([candidateId, status])
+  @@index([jobId, status])
   @@map("applications")
+}
+
+model ApplicationStatusHistory {
+  id            String            @id @default(cuid())
+  applicationId String            @map("application_id")
+  status        ApplicationStatus
+  actorId       String            @map("actor_id")
+  createdAt     DateTime          @default(now()) @map("created_at")
+  application   Application       @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  actor         User              @relation("ApplicationStatusActors", fields: [actorId], references: [id], onDelete: Restrict)
+  @@index([applicationId, createdAt])
+  @@index([actorId, createdAt])
+  @@map("application_status_history")
 }
 
 model AdminReviewRecord {
