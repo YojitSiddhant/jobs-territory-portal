@@ -45,6 +45,17 @@ Successful registration/login creates a server-side session and sets an HttpOnly
 
 Use `requireAuthenticatedUser()` or `requireRole("CANDIDATE")`, `requireRole("COMPANY")`, or `requireRole("ADMIN")` from `src/server/auth/authorization.ts` inside future protected Route Handlers. Do not trust role values from request bodies.
 
+## Candidate profile API
+
+The candidate profile endpoint is private to the currently authenticated candidate; it does not accept a user ID and cannot be used by companies, admins, or another candidate to select someone else’s profile.
+
+```text
+GET   /api/candidate/profile
+PATCH /api/candidate/profile
+```
+
+`PATCH` accepts personal details, `skills`, education entries, experience entries, and private `profilePhotoKey`/`resumeKey` references. The response includes `completionPercentage`. File objects themselves are not stored in MySQL or committed to the repository; only private storage keys are stored. Future upload handlers must use the private storage abstraction and must never place files under `public/`.
+
 ## Architecture
 
 - `src/app` contains App Router pages and Route Handlers. Backend endpoints use `route.ts` files and the Web Request/Response APIs.

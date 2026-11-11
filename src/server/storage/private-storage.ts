@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { getEnv } from "@/server/config/env";
 
 export type PrivateObject = {
@@ -5,6 +6,16 @@ export type PrivateObject = {
   contentType: string;
   sizeBytes: number;
 };
+
+export function createPrivateObjectKey(userId: string, kind: "profile-photo" | "resume", filename: string) {
+  const safeName = filename.toLowerCase().replace(/[^a-z0-9.-]+/g, "-").replace(/^-|-$/g, "");
+  if (!safeName) throw new Error("A valid filename is required.");
+  return `private/candidates/${userId}/${kind}/${randomUUID()}-${safeName}`;
+}
+
+export function isPrivateObjectKey(key: string) {
+  return /^private\/candidates\/[^/]+\/(profile-photo|resume)\/[^/]+$/.test(key);
+}
 
 export interface PrivateStorage {
   put(input: PrivateObject & { body: ReadableStream<Uint8Array> }): Promise<void>;

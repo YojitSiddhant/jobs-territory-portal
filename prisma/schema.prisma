@@ -92,10 +92,45 @@ model CandidateProfile {
   location        String?
   profilePhotoKey String?  @map("profile_photo_key")
   resumeKey       String?  @map("resume_key")
+  skills          Json?
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  education       CandidateEducation[]
+  experience      CandidateExperience[]
   @@map("candidate_profiles")
+}
+
+model CandidateEducation {
+  id           String   @id @default(cuid())
+  profileId    String   @map("profile_id")
+  institution  String
+  qualification String
+  fieldOfStudy String?  @map("field_of_study")
+  startYear    Int?     @map("start_year")
+  endYear      Int?     @map("end_year")
+  description  String?  @db.Text
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  profile      CandidateProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  @@index([profileId])
+  @@map("candidate_education")
+}
+
+model CandidateExperience {
+  id          String    @id @default(cuid())
+  profileId   String    @map("profile_id")
+  employer    String
+  jobTitle    String    @map("job_title")
+  startDate   DateTime  @map("start_date")
+  endDate     DateTime? @map("end_date")
+  isCurrent   Boolean   @default(false) @map("is_current")
+  description String?   @db.Text
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  profile     CandidateProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  @@index([profileId, startDate])
+  @@map("candidate_experience")
 }
 
 model Company {
