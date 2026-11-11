@@ -53,6 +53,7 @@ enum ReviewDecision {
   APPROVED
   REJECTED
   SUSPENDED
+  RESTORED
 }
 
 model User {
@@ -219,5 +220,6 @@ model AdminReviewRecord {
   admin     User           @relation(fields: [adminId], references: [id], onDelete: Restrict)
   company   Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
   @@index([companyId, createdAt])
+  @@index([decision, createdAt])
   @@map("admin_review_records")
 }

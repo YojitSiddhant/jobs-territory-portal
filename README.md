@@ -70,6 +70,22 @@ PATCH /api/candidate/profile
 
 `PATCH` accepts personal details, `skills`, education entries, experience entries, and private `profilePhotoKey`/`resumeKey` references. The response includes `completionPercentage`. File objects themselves are not stored in MySQL or committed to the repository; only private storage keys are stored. Future upload handlers must use the private storage abstraction and must never place files under `public/`.
 
+## Admin company verification API
+
+Admin verification endpoints require a session whose server-side role is `ADMIN`. Company and candidate sessions receive `403`, and company users cannot approve or reject their own records.
+
+```text
+GET  /api/admin/companies
+GET  /api/admin/companies/:companyId
+POST /api/admin/companies/:companyId/approve
+POST /api/admin/companies/:companyId/reject   { reason }
+POST /api/admin/companies/:companyId/suspend  { reason }
+POST /api/admin/companies/:companyId/restore
+GET  /api/admin/verification/counts
+```
+
+Approval requires complete company registration data and a pending registration-proof reference. Rejection and suspension require reasons. Every transition records the admin, action, reason, and timestamp in `AdminReviewRecord`. Documents are returned only as controlled private metadata; no public file URLs are generated.
+
 ## Architecture
 
 - `src/app` contains App Router pages and Route Handlers. Backend endpoints use `route.ts` files and the Web Request/Response APIs.
