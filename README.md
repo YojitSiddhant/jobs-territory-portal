@@ -17,6 +17,20 @@ npm run dev
 
 The app runs at <http://localhost:3000>. The starter health endpoint is available at `/api/health`.
 
+## Company verification API
+
+Company profile and verification endpoints are restricted to the authenticated company owner. Registration creates a pending company shell during company account registration; the profile endpoint completes the required company details. A company remains `PENDING` until a later admin workflow approves it, and only `APPROVED` companies may use future job-management endpoints.
+
+```text
+POST  /api/company/profile
+GET   /api/company/profile
+PATCH /api/company/profile
+POST  /api/company/profile/documents
+POST  /api/company/profile/submit
+```
+
+`/documents` records metadata and an already-created private storage reference only. It does not upload or expose files. Document keys must belong to the current company’s private namespace. No admin approval endpoint is included in this phase.
+
 ## Commands
 
 ```bash

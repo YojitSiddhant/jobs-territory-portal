@@ -7,14 +7,15 @@ export type PrivateObject = {
   sizeBytes: number;
 };
 
-export function createPrivateObjectKey(userId: string, kind: "profile-photo" | "resume", filename: string) {
+export function createPrivateObjectKey(userId: string, kind: "profile-photo" | "resume" | "company-document", filename: string) {
   const safeName = filename.toLowerCase().replace(/[^a-z0-9.-]+/g, "-").replace(/^-|-$/g, "");
   if (!safeName) throw new Error("A valid filename is required.");
-  return `private/candidates/${userId}/${kind}/${randomUUID()}-${safeName}`;
+  const ownerPath = kind === "company-document" ? "companies" : "candidates";
+  return `private/${ownerPath}/${userId}/${kind}/${randomUUID()}-${safeName}`;
 }
 
 export function isPrivateObjectKey(key: string) {
-  return /^private\/candidates\/[^/]+\/(profile-photo|resume)\/[^/]+$/.test(key);
+  return /^private\/(candidates\/[^/]+\/(profile-photo|resume)|companies\/[^/]+\/company-document)\/[^/]+$/.test(key);
 }
 
 export interface PrivateStorage {
