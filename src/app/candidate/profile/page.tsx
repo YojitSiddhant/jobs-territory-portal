@@ -30,7 +30,7 @@ export default async function CandidateProfilePage() {
 
   const profile: CandidateProfile = {
     id: raw.id,
-    fullName: raw.fullName,
+    fullName: raw.fullName ?? null,
     phone: raw.phone,
     headline: raw.headline,
     bio: raw.bio,
