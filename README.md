@@ -86,6 +86,22 @@ GET  /api/admin/verification/counts
 
 Approval requires complete company registration data and a pending registration-proof reference. Rejection and suspension require reasons. Every transition records the admin, action, reason, and timestamp in `AdminReviewRecord`. Documents are returned only as controlled private metadata; no public file URLs are generated.
 
+## Company job management API
+
+Only approved company owners can create and manage their own jobs. Drafts can be edited and published; published jobs can be closed. Pending, rejected, and suspended companies are denied by `requireApprovedCompany()`, and job queries always scope to the authenticated company ID.
+
+```text
+GET   /api/company/jobs
+POST  /api/company/jobs
+GET   /api/company/jobs/:jobId
+PATCH /api/company/jobs/:jobId
+POST  /api/company/jobs/:jobId/publish
+POST  /api/company/jobs/:jobId/close
+GET   /api/jobs                 # published, non-expired jobs only
+```
+
+The public endpoint returns job/company listing fields only; it does not expose company verification documents, private storage keys, credentials, or draft/closed jobs.
+
 ## Architecture
 
 - `src/app` contains App Router pages and Route Handlers. Backend endpoints use `route.ts` files and the Web Request/Response APIs.

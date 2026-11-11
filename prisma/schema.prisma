@@ -40,6 +40,19 @@ enum JobStatus {
   SUSPENDED
 }
 
+enum WorkplaceType {
+  ONSITE
+  HYBRID
+  REMOTE
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  INTERNSHIP
+  CONTRACT
+}
+
 enum ApplicationStatus {
   SUBMITTED
   UNDER_REVIEW
@@ -179,11 +192,16 @@ model Job {
   id             String    @id @default(cuid())
   companyId      String    @map("company_id")
   title          String
+  slug           String?   @unique
   description    String    @db.Text
   location       String?
+  workplaceType  WorkplaceType? @map("workplace_type")
   employmentType String?   @map("employment_type")
+  experienceRequirement String? @map("experience_requirement")
+  requiredSkills Json?     @map("required_skills")
   salaryMin      Decimal?  @map("salary_min") @db.Decimal(12, 2)
   salaryMax      Decimal?  @map("salary_max") @db.Decimal(12, 2)
+  applicationDeadline DateTime? @map("application_deadline")
   status         JobStatus @default(DRAFT)
   publishedAt    DateTime? @map("published_at")
   createdAt      DateTime  @default(now()) @map("created_at")
@@ -191,6 +209,7 @@ model Job {
   company        Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
   applications   Application[]
   @@index([status, publishedAt])
+  @@index([status, applicationDeadline])
   @@index([companyId, status])
   @@map("jobs")
 }
