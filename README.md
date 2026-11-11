@@ -9,7 +9,7 @@ Requirements: Node.js 20+, npm, and a MySQL database.
 ```bash
 npm install
 cp .env.example .env.local
-# Set DATABASE_URL, AUTH_SECRET, and SESSION_TTL_DAYS in .env.local.
+# Set DATABASE_URL, AUTH_SECRET, and SESSION_TTL_DAYS in .env.local. AUTH_SECRET must be a long random value and the server must be restarted after changing it; registration and login require it to create the HttpOnly session cookie.
 npx prisma generate
 npx prisma migrate deploy
 npm run dev
