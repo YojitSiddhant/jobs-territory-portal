@@ -9,9 +9,9 @@ Requirements: Node.js 20+, npm, and a MySQL database.
 ```bash
 npm install
 cp .env.example .env.local
-# Set DATABASE_URL and a long AUTH_SECRET in .env.local.
+# Set DATABASE_URL, AUTH_SECRET, and SESSION_TTL_DAYS in .env.local.
 npx prisma generate
-npx prisma migrate dev --name init
+npx prisma migrate deploy
 npm run dev
 ```
 
@@ -24,8 +24,26 @@ npm run dev       # development server
 npm run lint      # ESLint
 npm run typecheck # TypeScript without emitting files
 npm run build     # production build
+npm test          # focused auth unit tests
 npx prisma studio # inspect local data
 ```
+
+## Authentication API
+
+Candidate and company registration are separate endpoints so roles are assigned by the server; registration input never accepts a role. Admin accounts are not publicly registered and must be provisioned through a controlled database/operations process, then can use the admin login endpoint.
+
+```text
+POST /api/auth/register/candidate  { email, password, fullName }
+POST /api/auth/register/company    { email, password, companyName, contactEmail }
+POST /api/auth/login               { email, password }
+POST /api/auth/admin/login         { email, password }
+POST /api/auth/logout
+GET  /api/auth/me
+```
+
+Successful registration/login creates a server-side session and sets an HttpOnly, SameSite cookie. Only a SHA-256 hash of the random session token is stored in MySQL. Passwords are hashed with bcrypt and password hashes are never returned. Invalid credentials return `401`; duplicate emails return `409`; unauthenticated protected requests return `401` and role failures return `403`.
+
+Use `requireAuthenticatedUser()` or `requireRole("CANDIDATE")`, `requireRole("COMPANY")`, or `requireRole("ADMIN")` from `src/server/auth/authorization.ts` inside future protected Route Handlers. Do not trust role values from request bodies.
 
 ## Architecture
 
