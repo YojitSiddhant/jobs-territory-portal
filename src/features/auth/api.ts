@@ -1,5 +1,10 @@
 import type { SafeUser } from "./types";
 
+export class ApiRequestError extends Error {
+  issues?: { path?: (string | number)[]; message?: string }[];
+  constructor(message: string, issues?: { path?: (string | number)[]; message?: string }[]) { super(message); this.name = "ApiRequestError"; this.issues = issues; }
+}
+
 async function post<T>(url: string, body: unknown): Promise<T> {
   const res = await fetch(url, {
     method: "POST",
@@ -7,7 +12,7 @@ async function post<T>(url: string, body: unknown): Promise<T> {
     body: JSON.stringify(body),
   });
   const data = await res.json();
-  if (!res.ok) throw new Error(data?.error?.message ?? "Request failed.");
+  if (!res.ok) throw new ApiRequestError(data?.error?.message ?? "Request failed.", data?.error?.issues);
   return data.data as T;
 }
 
