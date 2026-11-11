@@ -100,6 +100,12 @@ export function ApplicationsPage({ initialApplications }: Props) {
             >
               Browse open jobs
             </Link>
+            <Link
+              href="/candidate/profile"
+              className="mt-2 inline-block rounded-lg border border-gray-200 px-4 py-2 text-xs font-semibold text-gray-700 hover:border-gray-300 hover:bg-gray-50 transition-colors"
+            >
+              Complete your profile
+            </Link>
           </div>
         ) : (
           <div className={`space-y-3 ${isRefreshing ? "opacity-60 pointer-events-none" : ""} transition-opacity`}>
