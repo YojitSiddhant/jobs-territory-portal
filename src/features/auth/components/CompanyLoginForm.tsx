@@ -3,33 +3,41 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { FormField } from "./FormField";
-import { loginCandidate } from "../api";
+import { ApiRequestError, loginCompany } from "../api";
 
 export function CompanyLoginForm() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [success, setSuccess] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    const next: Record<string, string> = {};
+    if (!/^\S+@\S+\.\S+$/.test(email)) next.email = "Enter a valid email address.";
+    if (!password) next.password = "Password is required.";
+    setFieldErrors(next); if (Object.keys(next).length) return;
     startTransition(async () => {
       try {
-        await loginCandidate(email, password);
-        router.push("/company/dashboard");
-        router.refresh();
+        await loginCompany(email, password); setSuccess(true);
+        setTimeout(() => { router.push("/company/dashboard"); router.refresh(); }, 700);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Login failed.");
+        if (err instanceof ApiRequestError && err.issues?.length) { const issues: Record<string, string> = {}; for (const issue of err.issues) { const key = String(issue.path?.[0] ?? ""); if (key) issues[key] = issue.message ?? "Invalid value."; } setFieldErrors(issues); }
+        else setError(err instanceof Error ? err.message : "Login failed.");
       }
     });
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <FormField id="clogin-email" label="Email" type="email" value={email} onChange={setEmail} required disabled={isPending} autoComplete="email" />
-      <FormField id="clogin-password" label="Password" type="password" value={password} onChange={setPassword} required disabled={isPending} autoComplete="current-password" />
+      <FormField id="clogin-email" label="Email" type="email" value={email} onChange={setEmail} required disabled={isPending} autoComplete="email" error={fieldErrors.email} />
+      <FormField id="clogin-password" label="Password" type="password" value={password} onChange={setPassword} required disabled={isPending} autoComplete="current-password" error={fieldErrors.password} />
+
+      {success && <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">Signed in successfully. Redirecting…</div>}
 
       {error && (
         <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">{error}</div>

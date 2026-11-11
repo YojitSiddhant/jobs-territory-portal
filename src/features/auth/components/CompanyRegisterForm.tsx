@@ -13,6 +13,7 @@ export function CompanyRegisterForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [success, setSuccess] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   function handleSubmit(e: React.FormEvent) {
@@ -26,9 +27,8 @@ export function CompanyRegisterForm() {
     setFieldErrors(next); if (Object.keys(next).length) return;
     startTransition(async () => {
       try {
-        await registerCompany(email, password, companyName, contactEmail);
-        router.push("/company/dashboard");
-        router.refresh();
+        await registerCompany(email, password, companyName, contactEmail); setSuccess(true);
+        setTimeout(() => { router.push("/company/dashboard"); router.refresh(); }, 1200);
       } catch (err) {
         if (err instanceof ApiRequestError && err.issues?.length) { const issues: Record<string, string> = {}; for (const issue of err.issues) { const key = String(issue.path?.[0] ?? ""); if (key) issues[key] = issue.message ?? "Invalid value."; } setFieldErrors(issues); }
         else setError(err instanceof Error ? err.message : "Registration failed.");
@@ -57,6 +57,7 @@ export function CompanyRegisterForm() {
       {error && (
         <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">{error}</div>
       )}
+      {success && <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">Account created successfully. You can now log in.</div>}
 
       <button
         type="submit"

@@ -21,6 +21,11 @@ export async function loginCandidate(email: string, password: string): Promise<S
   return result.user;
 }
 
+export async function loginCompany(email: string, password: string): Promise<SafeUser> {
+  const result = await post<{ user: SafeUser }>("/api/auth/login", { email, password });
+  return result.user;
+}
+
 export async function loginAdmin(email: string, password: string): Promise<SafeUser> {
   const result = await post<{ user: SafeUser }>("/api/auth/admin/login", { email, password });
   return result.user;
