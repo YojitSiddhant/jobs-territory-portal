@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "admin:bootstrap": "tsx scripts/bootstrap-admin.ts",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "tsx --test tests/auth/*.test.ts tests/candidate/*.test.ts tests/company/*.test.ts tests/storage/*.test.ts"
