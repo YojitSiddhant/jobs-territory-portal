@@ -27,7 +27,7 @@ export function ApplicationCard({ application, onClick }: Props) {
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-xs text-gray-400 mb-0.5">{application.job.company.name}</p>
-          <h3 className="text-base font-semibold text-gray-900 group-hover:text-emerald-600 transition-colors truncate">
+          <h3 className="text-base font-semibold text-gray-900 group-hover:text-blue-600 transition-colors truncate">
             {application.job.title}
           </h3>
         </div>

@@ -48,11 +48,11 @@ export function JobsPage({ initialJobs, initialPagination, initialQuery }: Props
   }
 
   return (
-    <main className="min-h-screen bg-white px-4 py-10 sm:px-6">
-      <div className="mx-auto max-w-6xl">
+    <main className="min-h-screen bg-white">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <p className="text-xs font-medium uppercase tracking-widest text-emerald-600 mb-1">
+          <p className="text-xs font-medium uppercase tracking-widest text-blue-600 mb-1">
             Jobs Territory
           </p>
           <h1 className="text-3xl font-semibold tracking-tight text-gray-900">Find your next role</h1>
@@ -157,12 +157,12 @@ function SearchBar({
         placeholder="Search by title, description, company, or skill…"
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        className="flex-1 rounded-xl bg-white border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 focus:outline-none transition-colors"
+        className="flex-1 rounded-xl bg-white border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none transition-colors"
       />
       <button
         type="submit"
         disabled={isPending}
-        className="rounded-xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-60 transition-colors"
+        className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-500 disabled:opacity-60 transition-colors"
       >
         Search
       </button>
@@ -185,7 +185,7 @@ function SortButton({
       onClick={onClick}
       className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
         active
-          ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
+          ? "bg-blue-50 text-blue-600 border border-blue-200"
           : "text-gray-500 hover:text-gray-900 border border-gray-200 hover:border-gray-300"
       }`}
     >
@@ -261,7 +261,7 @@ function Pagination({
             aria-current={p === current ? "page" : undefined}
             className={`rounded-lg px-3 py-2 text-xs font-medium transition-colors ${
               p === current
-                ? "bg-emerald-50 border border-emerald-200 text-emerald-600"
+                ? "bg-blue-50 border border-blue-200 text-blue-600"
                 : "border border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-900"
             }`}
           >

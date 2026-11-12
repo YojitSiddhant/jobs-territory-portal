@@ -46,12 +46,13 @@ export function CompanyDashboardClient({ initialProfile }: Props) {
   }
 
   return (
-    <main className="min-h-screen bg-white px-4 py-10 sm:px-6">
-      <div className="mx-auto max-w-2xl space-y-6">
+    <main className="min-h-screen bg-white">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-3xl space-y-6">
         {/* Header */}
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-medium uppercase tracking-widest text-emerald-600 mb-1">Jobs Territory</p>
+            <p className="text-xs font-medium uppercase tracking-widest text-blue-600 mb-1">Jobs Territory</p>
             <h1 className="text-2xl font-semibold tracking-tight text-gray-900">Company dashboard</h1>
           </div>
           <div className="flex items-center gap-2">
@@ -123,12 +124,13 @@ export function CompanyDashboardClient({ initialProfile }: Props) {
             <h2 className="text-sm font-semibold text-gray-900 mb-1">Submit for verification</h2>
             <p className="text-xs text-gray-500 mb-4">Make sure your profile is complete and you have added a pending registration certificate before submitting.</p>
             {error && <p className="text-sm text-red-600 mb-3">{error}</p>}
-            {submitSuccess && <p className="text-sm text-emerald-600 mb-3">Submitted for review successfully.</p>}
-            <button type="button" onClick={handleSubmit} disabled={isSubmitting} className="rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-60 transition-colors">
+            {submitSuccess && <p className="text-sm text-blue-600 mb-3">Submitted for review successfully.</p>}
+            <button type="button" onClick={handleSubmit} disabled={isSubmitting} className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-500 disabled:opacity-60 transition-colors">
               {isSubmitting ? "Submitting…" : "Submit for review"}
             </button>
           </div>
         )}
+      </div>
       </div>
     </main>
   );

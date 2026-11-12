@@ -143,12 +143,13 @@ export function ProfilePage({ initialProfile }: Props) {
   }
 
   return (
-    <main className="min-h-screen bg-white px-4 py-10 sm:px-6">
+    <main className="min-h-screen bg-white">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-2xl space-y-6">
         {/* Header */}
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-medium uppercase tracking-widest text-emerald-600 mb-1">
+            <p className="text-xs font-medium uppercase tracking-widest text-blue-600 mb-1">
               Jobs Territory
             </p>
             <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
@@ -249,7 +250,7 @@ export function ProfilePage({ initialProfile }: Props) {
               type="button"
               onClick={handleSave}
               disabled={isSaving}
-              className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-60 transition-colors"
+              className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-500 disabled:opacity-60 transition-colors"
             >
               {isSaving ? (
                 <>
@@ -264,7 +265,7 @@ export function ProfilePage({ initialProfile }: Props) {
             </button>
 
             {saveSuccess && (
-              <span className="flex items-center gap-1.5 text-sm text-emerald-600">
+              <span className="flex items-center gap-1.5 text-sm text-blue-600">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                   <path d="M12 3.5L5.5 10 2 6.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
@@ -279,6 +280,7 @@ export function ProfilePage({ initialProfile }: Props) {
         </div>
       </div>
       {previewKind && privateFileUrl(previewKind === "profile-photo" ? form.profilePhotoKey : form.resumeKey) && <FilePreviewModal kind={previewKind} previewUrl={privateFileUrl(previewKind === "profile-photo" ? form.profilePhotoKey : form.resumeKey)!} onClose={() => setPreviewKind(null)} />}
+      </div>
     </main>
   );
 }

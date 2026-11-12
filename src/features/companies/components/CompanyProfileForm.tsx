@@ -84,11 +84,11 @@ export function CompanyProfileForm({ profile, onSaved, readonly = false }: Props
 
       {!readonly && (
         <div className="flex items-center gap-3">
-          <button type="submit" disabled={isPending} className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-60 transition-colors">
+          <button type="submit" disabled={isPending} className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-500 disabled:opacity-60 transition-colors">
             {isPending ? <Spinner /> : null}
             {isPending ? "Saving…" : "Save company details"}
           </button>
-          {success && <span className="text-sm text-emerald-600">Company details saved successfully.</span>}
+          {success && <span className="text-sm text-blue-600">Company details saved successfully.</span>}
           {error && <span className="text-sm text-red-600">{error}</span>}
         </div>
       )}
@@ -97,7 +97,7 @@ export function CompanyProfileForm({ profile, onSaved, readonly = false }: Props
 }
 
 function inputCls(disabled: boolean) {
-  return `w-full rounded-xl bg-white border ${disabled ? "border-gray-200 text-gray-400 cursor-not-allowed" : "border-gray-200 text-gray-900 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"} px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none transition-colors`;
+  return `w-full rounded-xl bg-white border ${disabled ? "border-gray-200 text-gray-400 cursor-not-allowed" : "border-gray-200 text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"} px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none transition-colors`;
 }
 
 function Field({ label, id, required, children }: { label: string; id: string; required?: boolean; children: React.ReactNode }) {

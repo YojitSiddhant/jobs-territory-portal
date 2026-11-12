@@ -50,7 +50,7 @@ export function JobCard({ job, now }: Props & { now: Date }) {
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-xs text-gray-400 mb-0.5">{job.company.name}</p>
-          <h3 className="text-base font-semibold text-gray-900 group-hover:text-emerald-600 transition-colors truncate">
+          <h3 className="text-base font-semibold text-gray-900 group-hover:text-blue-600 transition-colors truncate">
             {job.title}
           </h3>
         </div>
@@ -92,7 +92,7 @@ export function JobCard({ job, now }: Props & { now: Date }) {
           </span>
         )}
         {salary && (
-          <span className="rounded-md border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-emerald-600">
+          <span className="rounded-md border border-blue-200 bg-blue-50 px-2 py-0.5 text-blue-600">
             {salary}
           </span>
         )}

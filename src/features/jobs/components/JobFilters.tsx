@@ -39,7 +39,7 @@ export function JobFilters({ query, onChange, onReset }: Props) {
           <button
             type="button"
             onClick={onReset}
-            className="text-xs text-emerald-600 hover:text-emerald-500 transition-colors"
+            className="text-xs text-blue-600 hover:text-blue-500 transition-colors"
           >
             Clear all
           </button>
@@ -57,7 +57,7 @@ export function JobFilters({ query, onChange, onReset }: Props) {
           placeholder="City, state, or country"
           value={query.location ?? ""}
           onChange={(e) => onChange({ location: e.target.value || undefined, page: 1 })}
-          className="w-full rounded-lg bg-white border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 focus:outline-none transition-colors"
+          className="w-full rounded-lg bg-white border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none transition-colors"
         />
       </div>
 
@@ -81,7 +81,7 @@ export function JobFilters({ query, onChange, onReset }: Props) {
                 onClick={() => {
                   if (query.workplaceType === opt.value) onChange({ workplaceType: undefined, page: 1 });
                 }}
-                className="accent-emerald-600 w-4 h-4"
+                className="accent-blue-600 w-4 h-4"
               />
               <span className="text-sm text-gray-700 group-hover:text-gray-900 transition-colors">
                 {opt.label}
@@ -111,7 +111,7 @@ export function JobFilters({ query, onChange, onReset }: Props) {
                 onClick={() => {
                   if (query.employmentType === opt.value) onChange({ employmentType: undefined, page: 1 });
                 }}
-                className="accent-emerald-600 w-4 h-4"
+                className="accent-blue-600 w-4 h-4"
               />
               <span className="text-sm text-gray-700 group-hover:text-gray-900 transition-colors">
                 {opt.label}
@@ -132,7 +132,7 @@ export function JobFilters({ query, onChange, onReset }: Props) {
           placeholder="e.g. React, Python"
           value={query.skill ?? ""}
           onChange={(e) => onChange({ skill: e.target.value || undefined, page: 1 })}
-          className="w-full rounded-lg bg-white border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 focus:outline-none transition-colors"
+          className="w-full rounded-lg bg-white border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none transition-colors"
         />
       </div>
 
@@ -147,7 +147,7 @@ export function JobFilters({ query, onChange, onReset }: Props) {
           placeholder="Company name or ID"
           value={query.company ?? ""}
           onChange={(e) => onChange({ company: e.target.value || undefined, page: 1 })}
-          className="w-full rounded-lg bg-white border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 focus:outline-none transition-colors"
+          className="w-full rounded-lg bg-white border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none transition-colors"
         />
       </div>
 
@@ -164,7 +164,7 @@ export function JobFilters({ query, onChange, onReset }: Props) {
             onChange={(e) =>
               onChange({ salaryMin: e.target.value ? Number(e.target.value) : undefined, page: 1 })
             }
-            className="w-full rounded-lg bg-white border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 focus:outline-none transition-colors"
+            className="w-full rounded-lg bg-white border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none transition-colors"
           />
           <span className="text-gray-400">–</span>
           <input
@@ -176,7 +176,7 @@ export function JobFilters({ query, onChange, onReset }: Props) {
             onChange={(e) =>
               onChange({ salaryMax: e.target.value ? Number(e.target.value) : undefined, page: 1 })
             }
-            className="w-full rounded-lg bg-white border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 focus:outline-none transition-colors"
+            className="w-full rounded-lg bg-white border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none transition-colors"
           />
         </div>
       </div>

@@ -138,7 +138,7 @@ export function JobForm({ job, onSaved, onCancel }: Props) {
       {error && <p className="text-sm text-red-600">{error}</p>}
 
       <div className="flex items-center gap-3">
-        <button type="submit" disabled={isPending} className="rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-60 transition-colors">
+        <button type="submit" disabled={isPending} className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-500 disabled:opacity-60 transition-colors">
           {isPending ? "Saving…" : job ? "Save changes" : "Create draft"}
         </button>
         {onCancel && (
@@ -150,5 +150,5 @@ export function JobForm({ job, onSaved, onCancel }: Props) {
 }
 
 const labelCls = "block text-xs font-medium text-gray-500 mb-1.5";
-const inputCls = "w-full rounded-xl bg-white border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none transition-colors";
-const selectCls = "w-full rounded-xl bg-white border border-gray-200 px-3 py-2 text-sm text-gray-900 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none transition-colors";
+const inputCls = "w-full rounded-xl bg-white border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none transition-colors";
+const selectCls = "w-full rounded-xl bg-white border border-gray-200 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none transition-colors";

@@ -78,7 +78,7 @@ export function ApplicationDetail({ application, onClose }: Props) {
       {/* View job link */}
       <Link
         href={application.job.slug ? `/jobs/${application.job.slug}` : "/jobs"}
-        className="inline-flex items-center gap-1.5 text-sm text-emerald-600 hover:text-emerald-500 transition-colors"
+        className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-500 transition-colors"
       >
         View job listing
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden>

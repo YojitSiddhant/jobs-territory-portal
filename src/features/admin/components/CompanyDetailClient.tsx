@@ -10,7 +10,7 @@ type Action = "approve" | "reject" | "suspend" | "restore" | "verify-item" | "re
 
 const statusConfig: Record<string, { label: string; cls: string }> = {
   PENDING: { label: "Pending review", cls: "border-yellow-200 bg-yellow-50 text-yellow-600" },
-  APPROVED: { label: "Approved", cls: "border-emerald-200 bg-emerald-50 text-emerald-600" },
+  APPROVED: { label: "Approved", cls: "border-blue-200 bg-blue-50 text-blue-600" },
   REJECTED: { label: "Rejected", cls: "border-red-200 bg-red-50 text-red-600" },
   SUSPENDED: { label: "Suspended", cls: "border-orange-200 bg-orange-50 text-orange-600" },
 };
@@ -24,7 +24,7 @@ const docTypeLabels: Record<string, string> = {
 
 const docStatusConfig: Record<string, { label: string; cls: string }> = {
   PENDING: { label: "Pending", cls: "text-yellow-600 border-yellow-200" },
-  VERIFIED: { label: "Verified", cls: "text-emerald-600 border-emerald-200" },
+  VERIFIED: { label: "Verified", cls: "text-blue-600 border-blue-200" },
   REJECTED: { label: "Rejected", cls: "text-red-600 border-red-200" },
 };
 
@@ -71,7 +71,7 @@ export function CompanyDetailClient({ initialCompany }: Props) {
     } finally { setIsActionPending(false); }
   }
 
-  if (!company) return <main className="min-h-screen bg-white px-4 py-10 sm:px-6"><div className="mx-auto max-w-3xl rounded-2xl border border-gray-200 bg-white p-6 text-sm text-gray-600 shadow-sm">Company details are unavailable. Refresh the page or return to the company list.</div></main>;
+  if (!company) return <main className="min-h-screen bg-white"><div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8"><div className="mx-auto max-w-4xl rounded-2xl border border-gray-200 bg-white p-6 text-sm text-gray-600 shadow-sm">Company details are unavailable. Refresh the page or return to the company list.</div></div></main>;
 
   const sc = statusConfig[company.status] ?? { label: company.status, cls: "border-zinc-700 text-zinc-400" };
 
@@ -81,7 +81,7 @@ export function CompanyDetailClient({ initialCompany }: Props) {
   if (company.status === "SUSPENDED") availableActions.push("restore");
 
   return (
-    <main className="min-h-screen bg-white px-4 py-10 sm:px-6">
+    <main className="min-h-screen bg-white">
       {dialog && (
         <ReviewDialog
           action={dialog}
@@ -90,7 +90,8 @@ export function CompanyDetailClient({ initialCompany }: Props) {
         />
       )}
 
-      <div className="mx-auto max-w-3xl space-y-6">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-4xl space-y-6">
         {/* Back + header */}
         <div className="flex items-start justify-between gap-4">
           <div>
@@ -112,7 +113,7 @@ export function CompanyDetailClient({ initialCompany }: Props) {
         </div>
 
         {error && <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">{error}</div>}
-        {success && <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{success}</div>}
+        {success && <div className="rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-700">{success}</div>}
 
         {/* Actions */}
         {availableActions.length > 0 && (
@@ -120,7 +121,7 @@ export function CompanyDetailClient({ initialCompany }: Props) {
             <h2 className="text-sm font-semibold text-gray-900 mb-3">Review actions</h2>
             <div className="flex flex-wrap gap-2">
               {availableActions.includes("approve") && (
-                <button type="button" onClick={() => setDialog("approve")} disabled={!company.canApprove || isActionPending} title={!company.canApprove ? "Verify all required fields and documents first" : undefined} className="rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-2 text-sm font-medium text-emerald-600 hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-40 transition-colors">Approve</button>
+                <button type="button" onClick={() => setDialog("approve")} disabled={!company.canApprove || isActionPending} title={!company.canApprove ? "Verify all required fields and documents first" : undefined} className="rounded-xl bg-blue-50 border border-blue-200 px-4 py-2 text-sm font-medium text-blue-600 hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-40 transition-colors">Approve</button>
               )}
               {availableActions.includes("reject") && (
                 <button type="button" onClick={() => setDialog("reject")} disabled={isActionPending} className="rounded-xl bg-red-50 border border-red-200 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-100 disabled:opacity-40 transition-colors">Reject</button>
@@ -129,7 +130,7 @@ export function CompanyDetailClient({ initialCompany }: Props) {
                 <button type="button" onClick={() => setDialog("suspend")} disabled={isActionPending} className="rounded-xl bg-orange-50 border border-orange-200 px-4 py-2 text-sm font-medium text-orange-600 hover:bg-orange-100 disabled:opacity-40 transition-colors">Suspend</button>
               )}
               {availableActions.includes("restore") && (
-                <button type="button" onClick={() => setDialog("restore")} disabled={isActionPending} className="rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-2 text-sm font-medium text-emerald-600 hover:bg-emerald-100 disabled:opacity-40 transition-colors">Restore</button>
+                <button type="button" onClick={() => setDialog("restore")} disabled={isActionPending} className="rounded-xl bg-blue-50 border border-blue-200 px-4 py-2 text-sm font-medium text-blue-600 hover:bg-blue-100 disabled:opacity-40 transition-colors">Restore</button>
               )}
             </div>
           </div>
@@ -151,7 +152,7 @@ export function CompanyDetailClient({ initialCompany }: Props) {
           <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
             <Detail label="Owner email" value={company.owner.email} />
             <Detail label="Registration no." value={company.registrationNumber} />
-            <div><dt className="text-xs text-gray-400 mb-0.5">Website</dt><dd className="text-sm text-gray-900">{company.website && /^https:\/\//i.test(company.website) ? <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-emerald-700 hover:underline">{company.website}</a> : company.website ?? "—"}</dd></div>
+            <div><dt className="text-xs text-gray-400 mb-0.5">Website</dt><dd className="text-sm text-gray-900">{company.website && /^https:\/\//i.test(company.website) ? <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline">{company.website}</a> : company.website ?? "—"}</dd></div>
             <Detail label="Official email" value={company.officialEmail} />
             <Detail label="Phone" value={company.phone} />
             <Detail label="Industry" value={company.industry} />
@@ -172,7 +173,7 @@ export function CompanyDetailClient({ initialCompany }: Props) {
 
         <div className="rounded-2xl bg-white border border-gray-200 p-6 space-y-3 shadow-sm">
           <div className="flex items-center justify-between"><h2 className="text-sm font-semibold text-gray-900">Field verification</h2><span className="text-xs text-gray-500">All required fields must be verified</span></div>
-          <ul className="divide-y divide-gray-100">{company.fields.map((item) => <li key={item.field} className="flex items-start justify-between gap-4 py-3"><div><p className="text-xs text-gray-400">{fieldLabels[item.field] ?? item.field}</p><p className="text-sm text-gray-900 whitespace-pre-wrap">{item.value ?? "—"}</p>{item.reason && <p className="text-xs text-red-600 mt-1">Rejected: {item.reason}</p>}</div><div className="flex shrink-0 items-center gap-2"><span className={`rounded-full border px-2 py-0.5 text-xs ${item.status === "VERIFIED" ? "text-emerald-600 border-emerald-200" : item.status === "REJECTED" ? "text-red-600 border-red-200" : "text-yellow-600 border-yellow-200"}`}>{item.status[0] + item.status.slice(1).toLowerCase()}</span><button type="button" onClick={() => { setReviewTarget({ kind: "field", id: item.field }); setDialog("verify-item"); }} className="text-xs text-emerald-700">Verify</button><button type="button" onClick={() => { setReviewTarget({ kind: "field", id: item.field }); setDialog("reject-item"); }} className="text-xs text-red-600">Reject</button></div></li>)}</ul>
+          <ul className="divide-y divide-gray-100">{company.fields.map((item) => <li key={item.field} className="flex items-start justify-between gap-4 py-3"><div><p className="text-xs text-gray-400">{fieldLabels[item.field] ?? item.field}</p><p className="text-sm text-gray-900 whitespace-pre-wrap">{item.value ?? "—"}</p>{item.reason && <p className="text-xs text-red-600 mt-1">Rejected: {item.reason}</p>}</div><div className="flex shrink-0 items-center gap-2"><span className={`rounded-full border px-2 py-0.5 text-xs ${item.status === "VERIFIED" ? "text-blue-600 border-blue-200" : item.status === "REJECTED" ? "text-red-600 border-red-200" : "text-yellow-600 border-yellow-200"}`}>{item.status[0] + item.status.slice(1).toLowerCase()}</span><button type="button" onClick={() => { setReviewTarget({ kind: "field", id: item.field }); setDialog("verify-item"); }} className="text-xs text-blue-700">Verify</button><button type="button" onClick={() => { setReviewTarget({ kind: "field", id: item.field }); setDialog("reject-item"); }} className="text-xs text-red-600">Reject</button></div></li>)}</ul>
         </div>
 
         {/* Documents — metadata only, no download links */}
@@ -189,7 +190,7 @@ export function CompanyDetailClient({ initialCompany }: Props) {
                       <p className="text-xs text-gray-500 mt-0.5">{docTypeLabels[doc.type] ?? doc.type} · {doc.mimeType} · uploaded {new Date(doc.createdAt).toLocaleDateString("en-IN")}</p>
                       {doc.rejectionReason && <p className="text-xs text-red-600 mt-0.5">{doc.rejectionReason}</p>}
                     </div>
-                    <div className="flex shrink-0 items-center gap-2"><a href={doc.previewPath} target="_blank" rel="noopener noreferrer" className="text-xs text-emerald-700">Preview</a><a href={`${doc.previewPath}?download=1`} className="text-xs text-gray-600">Download</a><button type="button" onClick={() => { setReviewTarget({ kind: "document", id: doc.id }); setDialog("verify-item"); }} className="text-xs text-emerald-700">Verify</button><button type="button" onClick={() => { setReviewTarget({ kind: "document", id: doc.id }); setDialog("reject-item"); }} className="text-xs text-red-600">Reject</button><span className={`rounded-full border px-2.5 py-0.5 text-xs font-medium ${dsc.cls}`}>{dsc.label}</span></div>
+                    <div className="flex shrink-0 items-center gap-2"><a href={doc.previewPath} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-700">Preview</a><a href={`${doc.previewPath}?download=1`} className="text-xs text-gray-600">Download</a><button type="button" onClick={() => { setReviewTarget({ kind: "document", id: doc.id }); setDialog("verify-item"); }} className="text-xs text-blue-700">Verify</button><button type="button" onClick={() => { setReviewTarget({ kind: "document", id: doc.id }); setDialog("reject-item"); }} className="text-xs text-red-600">Reject</button><span className={`rounded-full border px-2.5 py-0.5 text-xs font-medium ${dsc.cls}`}>{dsc.label}</span></div>
                   </li>
                 );
               })}
@@ -218,6 +219,7 @@ export function CompanyDetailClient({ initialCompany }: Props) {
             </ol>
           </div>
         )}
+      </div>
       </div>
     </main>
   );
