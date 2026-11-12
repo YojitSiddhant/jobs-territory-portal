@@ -71,7 +71,7 @@ export function CompanyDetailClient({ initialCompany }: Props) {
     } finally { setIsActionPending(false); }
   }
 
-  if (!company) return <main className="min-h-screen bg-white px-4 py-10 sm:px-6"><div className="mx-auto max-w-3xl rounded-2xl border border-gray-200 bg-white p-6 text-sm text-gray-600 shadow-sm">Company details are unavailable. Refresh the page or return to the company list.</div></main>;
+  if (!company) return <main className="min-h-screen bg-white"><div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8"><div className="mx-auto max-w-4xl rounded-2xl border border-gray-200 bg-white p-6 text-sm text-gray-600 shadow-sm">Company details are unavailable. Refresh the page or return to the company list.</div></div></main>;
 
   const sc = statusConfig[company.status] ?? { label: company.status, cls: "border-zinc-700 text-zinc-400" };
 
@@ -81,7 +81,7 @@ export function CompanyDetailClient({ initialCompany }: Props) {
   if (company.status === "SUSPENDED") availableActions.push("restore");
 
   return (
-    <main className="min-h-screen bg-white px-4 py-10 sm:px-6">
+    <main className="min-h-screen bg-white">
       {dialog && (
         <ReviewDialog
           action={dialog}
@@ -90,7 +90,8 @@ export function CompanyDetailClient({ initialCompany }: Props) {
         />
       )}
 
-      <div className="mx-auto max-w-3xl space-y-6">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-4xl space-y-6">
         {/* Back + header */}
         <div className="flex items-start justify-between gap-4">
           <div>
@@ -218,6 +219,7 @@ export function CompanyDetailClient({ initialCompany }: Props) {
             </ol>
           </div>
         )}
+      </div>
       </div>
     </main>
   );

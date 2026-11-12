@@ -46,8 +46,9 @@ export function CompanyDashboardClient({ initialProfile }: Props) {
   }
 
   return (
-    <main className="min-h-screen bg-white px-4 py-10 sm:px-6">
-      <div className="mx-auto max-w-2xl space-y-6">
+    <main className="min-h-screen bg-white">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-3xl space-y-6">
         {/* Header */}
         <div className="flex items-start justify-between gap-4">
           <div>
@@ -129,6 +130,7 @@ export function CompanyDashboardClient({ initialProfile }: Props) {
             </button>
           </div>
         )}
+      </div>
       </div>
     </main>
   );

@@ -68,7 +68,8 @@ export function JobDetailClient({ job, hasApplied: initialHasApplied, isCandidat
     : null;
 
   return (
-    <main className="min-h-screen bg-white px-4 py-10 sm:px-6">
+    <main className="min-h-screen bg-white">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-3xl">
         {/* Back link */}
         <Link
@@ -251,6 +252,7 @@ export function JobDetailClient({ job, hasApplied: initialHasApplied, isCandidat
             {job.description}
           </div>
         </div>
+      </div>
       </div>
     </main>
   );

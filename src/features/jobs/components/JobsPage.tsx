@@ -48,8 +48,8 @@ export function JobsPage({ initialJobs, initialPagination, initialQuery }: Props
   }
 
   return (
-    <main className="min-h-screen bg-white px-4 py-10 sm:px-6">
-      <div className="mx-auto max-w-6xl">
+    <main className="min-h-screen bg-white">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
           <p className="text-xs font-medium uppercase tracking-widest text-blue-600 mb-1">
