@@ -5,7 +5,7 @@ const envSchema = z.object({
   APP_URL: z.string().url().default("http://localhost:3000"),
   AUTH_SECRET: z.string().min(32),
   SESSION_TTL_DAYS: z.coerce.number().int().positive().default(7),
-  STORAGE_DRIVER: z.enum(["s3", "local"]).default("s3"),
+  STORAGE_DRIVER: z.enum(["s3", "local"]).default(process.env.NODE_ENV === "production" ? "s3" : "local"),
   STORAGE_BUCKET: z.string().optional(),
   STORAGE_REGION: z.string().optional(),
   STORAGE_ENDPOINT: z.string().optional(),

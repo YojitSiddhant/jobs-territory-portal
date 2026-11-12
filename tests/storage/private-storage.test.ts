@@ -36,3 +36,23 @@ test("local storage writes and reads privately", async () => {
     await rm(root, { recursive: true, force: true });
   }
 });
+
+test("local storage is the development default when no provider is configured", async () => {
+  const previous = { driver: process.env.STORAGE_DRIVER, database: process.env.DATABASE_URL, auth: process.env.AUTH_SECRET };
+  delete process.env.STORAGE_DRIVER; process.env.DATABASE_URL = "mysql://test"; process.env.AUTH_SECRET = "test-only-placeholder-secret-1234567890";
+  try {
+    assert.doesNotThrow(() => getPrivateStorage());
+  } finally {
+    for (const [key, value] of [["STORAGE_DRIVER", previous.driver], ["DATABASE_URL", previous.database], ["AUTH_SECRET", previous.auth]] as const) { if (value === undefined) delete process.env[key]; else process.env[key] = value; }
+  }
+});
+
+test("cloud storage configuration is required only when production mode is selected", async () => {
+  const previous = { driver: process.env.STORAGE_DRIVER, bucket: process.env.STORAGE_BUCKET, region: process.env.STORAGE_REGION, accessKey: process.env.STORAGE_ACCESS_KEY_ID, secret: process.env.STORAGE_SECRET_ACCESS_KEY, database: process.env.DATABASE_URL, auth: process.env.AUTH_SECRET };
+  process.env.STORAGE_DRIVER = "s3"; delete process.env.STORAGE_BUCKET; delete process.env.STORAGE_REGION; delete process.env.STORAGE_ACCESS_KEY_ID; delete process.env.STORAGE_SECRET_ACCESS_KEY; process.env.DATABASE_URL = "mysql://test"; process.env.AUTH_SECRET = "test-only-placeholder-secret-1234567890";
+  try {
+    assert.throws(() => getPrivateStorage(), /not configured/i);
+  } finally {
+    for (const [key, value] of [["STORAGE_DRIVER", previous.driver], ["STORAGE_BUCKET", previous.bucket], ["STORAGE_REGION", previous.region], ["STORAGE_ACCESS_KEY_ID", previous.accessKey], ["STORAGE_SECRET_ACCESS_KEY", previous.secret], ["DATABASE_URL", previous.database], ["AUTH_SECRET", previous.auth]] as const) { if (value === undefined) delete process.env[key]; else process.env[key] = value; }
+  }
+});
