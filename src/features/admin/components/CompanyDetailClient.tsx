@@ -30,36 +30,48 @@ const docStatusConfig: Record<string, { label: string; cls: string }> = {
 
 const fieldLabels: Record<string, string> = { NAME: "Company name", REGISTRATION_NUMBER: "Registration number", WEBSITE: "Website", CONTACT_EMAIL: "Official email", PHONE: "Phone", INDUSTRY: "Industry", ADDRESS: "Address", DESCRIPTION: "Description" };
 
-type Props = { initialCompany: AdminCompany };
+type Props = { initialCompany: AdminCompany | null };
 
 export function CompanyDetailClient({ initialCompany }: Props) {
-  const [company, setCompany] = useState(initialCompany);
+  const [company, setCompany] = useState<AdminCompany | null>(initialCompany);
   const [dialog, setDialog] = useState<Action | null>(null);
   const [reviewTarget, setReviewTarget] = useState<{ kind: "field" | "document"; id: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [isActionPending, setIsActionPending] = useState(false);
   const [isRefreshing, startRefreshTransition] = useTransition();
 
   function handleRefresh() {
     startRefreshTransition(async () => {
-      try { setCompany(await fetchAdminCompany(company.id)); } catch { /* silent */ }
+      if (!company) return;
+      try { setCompany(await fetchAdminCompany(company.id)); } catch (err) { setError(err instanceof Error ? err.message : "Failed to refresh company."); }
     });
   }
 
   async function handleAction(action: Action, reason?: string) {
-    setError(null);
-    let updated: AdminCompany;
-    if ((action === "verify-item" || action === "reject-item") && reviewTarget) {
-      updated = reviewTarget.kind === "field"
-        ? await reviewCompanyField(company.id, reviewTarget.id, action === "verify-item" ? "VERIFIED" : "REJECTED", reason)
-        : await reviewCompanyDocument(company.id, reviewTarget.id, action === "verify-item" ? "VERIFIED" : "REJECTED", reason);
-      setCompany(updated); setReviewTarget(null); return;
-    }
-    if (action === "approve") updated = await approveCompany(company.id);
-    else if (action === "reject") updated = await rejectCompany(company.id, reason!);
-    else if (action === "suspend") updated = await suspendCompany(company.id, reason!);
-    else updated = await restoreCompany(company.id);
-    setCompany(updated);
+    if (!company || isActionPending) return;
+    setError(null); setSuccess(null); setIsActionPending(true);
+    try {
+      let updated: AdminCompany;
+      if ((action === "verify-item" || action === "reject-item") && reviewTarget) {
+        updated = reviewTarget.kind === "field"
+          ? await reviewCompanyField(company.id, reviewTarget.id, action === "verify-item" ? "VERIFIED" : "REJECTED", reason)
+          : await reviewCompanyDocument(company.id, reviewTarget.id, action === "verify-item" ? "VERIFIED" : "REJECTED", reason);
+        setReviewTarget(null);
+      } else if (action === "approve") updated = await approveCompany(company.id);
+      else if (action === "reject") updated = await rejectCompany(company.id, reason!);
+      else if (action === "suspend") updated = await suspendCompany(company.id, reason!);
+      else if (action === "restore") updated = await restoreCompany(company.id);
+      else return;
+      setCompany((current) => current ? { ...current, ...updated, fields: updated.fields ?? current.fields, documents: updated.documents ?? current.documents, reviews: updated.reviews ?? current.reviews, itemReviewHistory: updated.itemReviewHistory ?? current.itemReviewHistory } : updated);
+      setSuccess(action === "approve" ? "Company approved successfully." : action === "reject" || action === "reject-item" ? "Rejection recorded successfully." : action === "verify-item" ? "Verification recorded successfully." : "Company status updated successfully.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "The review action failed.");
+      throw err;
+    } finally { setIsActionPending(false); }
   }
+
+  if (!company) return <main className="min-h-screen bg-white px-4 py-10 sm:px-6"><div className="mx-auto max-w-3xl rounded-2xl border border-gray-200 bg-white p-6 text-sm text-gray-600 shadow-sm">Company details are unavailable. Refresh the page or return to the company list.</div></main>;
 
   const sc = statusConfig[company.status] ?? { label: company.status, cls: "border-zinc-700 text-zinc-400" };
 
@@ -100,6 +112,7 @@ export function CompanyDetailClient({ initialCompany }: Props) {
         </div>
 
         {error && <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">{error}</div>}
+        {success && <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{success}</div>}
 
         {/* Actions */}
         {availableActions.length > 0 && (
@@ -107,16 +120,16 @@ export function CompanyDetailClient({ initialCompany }: Props) {
             <h2 className="text-sm font-semibold text-gray-900 mb-3">Review actions</h2>
             <div className="flex flex-wrap gap-2">
               {availableActions.includes("approve") && (
-                <button type="button" onClick={() => setDialog("approve")} disabled={!company.canApprove} title={!company.canApprove ? "Verify all required fields and documents first" : undefined} className="rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-2 text-sm font-medium text-emerald-600 hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-40 transition-colors">Approve</button>
+                <button type="button" onClick={() => setDialog("approve")} disabled={!company.canApprove || isActionPending} title={!company.canApprove ? "Verify all required fields and documents first" : undefined} className="rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-2 text-sm font-medium text-emerald-600 hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-40 transition-colors">Approve</button>
               )}
               {availableActions.includes("reject") && (
-                <button type="button" onClick={() => setDialog("reject")} className="rounded-xl bg-red-50 border border-red-200 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-100 transition-colors">Reject</button>
+                <button type="button" onClick={() => setDialog("reject")} disabled={isActionPending} className="rounded-xl bg-red-50 border border-red-200 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-100 disabled:opacity-40 transition-colors">Reject</button>
               )}
               {availableActions.includes("suspend") && (
-                <button type="button" onClick={() => setDialog("suspend")} className="rounded-xl bg-orange-50 border border-orange-200 px-4 py-2 text-sm font-medium text-orange-600 hover:bg-orange-100 transition-colors">Suspend</button>
+                <button type="button" onClick={() => setDialog("suspend")} disabled={isActionPending} className="rounded-xl bg-orange-50 border border-orange-200 px-4 py-2 text-sm font-medium text-orange-600 hover:bg-orange-100 disabled:opacity-40 transition-colors">Suspend</button>
               )}
               {availableActions.includes("restore") && (
-                <button type="button" onClick={() => setDialog("restore")} className="rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-2 text-sm font-medium text-emerald-600 hover:bg-emerald-100 transition-colors">Restore</button>
+                <button type="button" onClick={() => setDialog("restore")} disabled={isActionPending} className="rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-2 text-sm font-medium text-emerald-600 hover:bg-emerald-100 disabled:opacity-40 transition-colors">Restore</button>
               )}
             </div>
           </div>
