@@ -34,4 +34,36 @@ describe("candidate profile", () => {
     assert.deepEqual(profile.experience, []);
     assert.deepEqual(profile.skills, []);
   });
+
+  it("keeps the server response nested under the standard API success envelope", async () => {
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async () => new Response(JSON.stringify({ data: { profile: {
+      fullName: "Candidate", skills: ["TypeScript"], education: [{ institution: "University", qualification: "BSc" }],
+      experience: [{ employer: "Company", jobTitle: "Developer", startDate: "2022-01-01", isCurrent: true }], completionPercentage: 50,
+    } } }), { status: 200 });
+    try {
+      const { fetchProfile, updateProfile } = await import("../../src/features/candidate-profile/api");
+      const profile = await fetchProfile();
+      assert.equal(profile.skills?.[0], "TypeScript");
+      assert.equal(profile.education.length, 1);
+      assert.equal(profile.experience.length, 1);
+      assert.equal(profile.completionPercentage, 50);
+      const saved = await updateProfile({ skills: ["TypeScript"] });
+      assert.equal(saved.fullName, "Candidate");
+      assert.equal(saved.skills?.[0], "TypeScript");
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  it("does not turn a missing save response into an empty profile", async () => {
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async () => new Response(JSON.stringify({ data: {} }), { status: 200 });
+    try {
+      const { updateProfile } = await import("../../src/features/candidate-profile/api");
+      await assert.rejects(() => updateProfile({ fullName: "Candidate" }), /profile response was incomplete/i);
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
 });

@@ -10,11 +10,17 @@ export function normalizeCandidateProfile(value: Partial<CandidateProfile> | nul
   return { ...base, ...value, skills: Array.isArray(value?.skills) ? value.skills : [], education: Array.isArray(value?.education) ? value.education : [], experience: Array.isArray(value?.experience) ? value.experience : [], completionPercentage: typeof value?.completionPercentage === "number" ? value.completionPercentage : 0 };
 }
 
+function profileFromResponse(data: unknown): CandidateProfile {
+  const profile = (data as { data?: { profile?: Partial<CandidateProfile> } } | null)?.data?.profile;
+  if (!profile) throw new Error("The profile response was incomplete. Your changes were not discarded.");
+  return normalizeCandidateProfile(profile);
+}
+
 export async function fetchProfile(): Promise<CandidateProfile> {
   const res = await fetch("/api/candidate/profile");
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data?.error?.message ?? "Failed to load profile.");
-  return normalizeCandidateProfile(data.profile);
+  return profileFromResponse(data);
 }
 
 export async function updateProfile(input: ProfileUpdateInput): Promise<CandidateProfile> {
@@ -25,7 +31,7 @@ export async function updateProfile(input: ProfileUpdateInput): Promise<Candidat
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data?.error?.message ?? "Failed to save profile.");
-  return normalizeCandidateProfile(data.profile);
+  return profileFromResponse(data);
 }
 
 export async function uploadCandidateFile(kind: "profile-photo" | "resume", file: File, onProgress?: (percentage: number) => void): Promise<{ key: string }> {
