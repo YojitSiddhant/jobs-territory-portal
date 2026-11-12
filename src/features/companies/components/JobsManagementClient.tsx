@@ -66,9 +66,8 @@ export function JobsManagementClient({ initialJobs }: Props) {
   if (editing !== null) {
     const job = editing === "new" ? undefined : editing;
     return (
-      <main className="min-h-screen bg-white">
-        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-2xl space-y-6">
+      <main className="min-h-screen bg-white px-4 py-10 sm:px-6 lg:px-8">
+        <div className="space-y-6">
           <div>
             <p className="text-xs font-medium uppercase tracking-widest text-blue-600 mb-1">Jobs Territory</p>
             <h1 className="text-2xl font-semibold tracking-tight text-gray-900">{job ? "Edit job" : "Create job"}</h1>
@@ -77,14 +76,12 @@ export function JobsManagementClient({ initialJobs }: Props) {
             <JobForm job={job} onSaved={handleSaved} onCancel={() => setEditing(null)} />
           </div>
         </div>
-        </div>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-white">
-      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 space-y-6">
+    <main className="min-h-screen bg-white px-4 py-10 sm:px-6 lg:px-8 space-y-6">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs font-medium uppercase tracking-widest text-blue-600 mb-1">Jobs Territory</p>
@@ -152,7 +149,6 @@ export function JobsManagementClient({ initialJobs }: Props) {
             })}
           </ul>
         )}
-      </div>
     </main>
   );
 }

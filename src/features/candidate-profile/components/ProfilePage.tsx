@@ -143,9 +143,8 @@ export function ProfilePage({ initialProfile }: Props) {
   }
 
   return (
-    <main className="min-h-screen bg-white">
-      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-2xl space-y-6">
+    <main className="min-h-screen bg-white px-4 py-10 sm:px-6 lg:px-8">
+      <div className="space-y-6">
         {/* Header */}
         <div className="flex items-start justify-between gap-4">
           <div>
@@ -244,8 +243,8 @@ export function ProfilePage({ initialProfile }: Props) {
         />
 
         {/* Save bar */}
-        <div className="sticky bottom-0 -mx-4 sm:-mx-6 px-4 sm:px-6 py-4 bg-white/90 backdrop-blur border-t border-gray-200">
-          <div className="mx-auto max-w-2xl flex items-center gap-3">
+        <div className="sticky bottom-0 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-4 bg-white/90 backdrop-blur border-t border-gray-200">
+          <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={handleSave}
@@ -280,7 +279,6 @@ export function ProfilePage({ initialProfile }: Props) {
         </div>
       </div>
       {previewKind && privateFileUrl(previewKind === "profile-photo" ? form.profilePhotoKey : form.resumeKey) && <FilePreviewModal kind={previewKind} previewUrl={privateFileUrl(previewKind === "profile-photo" ? form.profilePhotoKey : form.resumeKey)!} onClose={() => setPreviewKind(null)} />}
-      </div>
     </main>
   );
 }
