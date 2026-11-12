@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { AuthorizationError } from "../../src/server/auth/authorization";
 import { assertJobTransition, isPublicJob } from "../../src/server/jobs/job-management";
+import { companyJobFromResponse } from "../../src/features/companies/api";
+import { emptyJobForm, jobToForm } from "../../src/features/companies/components/JobForm";
 import { jobCreateSchema, jobPublishSchema } from "../../src/shared/validation/job";
 
 const validJob = {
@@ -18,6 +20,27 @@ const validJob = {
 };
 
 describe("company job management", () => {
+  it("creates a complete safe empty form with nullable salary fields", () => {
+    const form = emptyJobForm();
+    assert.equal(form.title, "");
+    assert.equal(form.salaryMin, undefined);
+    assert.equal(form.salaryMax, undefined);
+    assert.equal(form.workplaceType, "ONSITE");
+  });
+
+  it("normalizes edit state and optional salary values", () => {
+    const form = jobToForm({ id: "job-1", companyId: "company-1", slug: "job-1", title: "Engineer", description: "Build things", location: null, workplaceType: "REMOTE", employmentType: "FULL_TIME", experienceRequirement: "0-1 years", requiredSkills: ["TypeScript"], salaryMin: null, salaryMax: null, applicationDeadline: null, status: "DRAFT", publishedAt: null, createdAt: "2026-01-01", updatedAt: "2026-01-01" });
+    assert.equal(form.salaryMin, undefined);
+    assert.equal(form.salaryMax, undefined);
+    assert.equal(form.skillsStr, "TypeScript");
+  });
+
+  it("normalizes standard and malformed job API responses safely", () => {
+    const job = { id: "job-1", status: "DRAFT", requiredSkills: [], salaryMin: null, salaryMax: null };
+    assert.equal(companyJobFromResponse({ data: { job } }), job);
+    assert.equal(companyJobFromResponse({ job }), job);
+    assert.throws(() => companyJobFromResponse({ data: {} }), /response was incomplete/i);
+  });
   it("validates job creation and publish requirements", () => {
     assert.equal(jobCreateSchema.safeParse(validJob).success, true);
     assert.equal(jobCreateSchema.safeParse({ ...validJob, workplaceType: "INVALID" }).success, false);

@@ -63,18 +63,26 @@ export async function uploadCompanyDocument(type: string, file: File): Promise<{
 
 // ── Jobs ─────────────────────────────────────────────────────────────────────
 
+export function companyJobFromResponse(value: unknown): CompanyJob {
+  const root = value as { data?: unknown; job?: unknown } | null;
+  const nested = root?.data as { job?: unknown } | null | undefined;
+  const job = nested?.job ?? root?.job ?? (root?.data && typeof root.data === "object" && "id" in root.data ? root.data : undefined);
+  if (!job || typeof job !== "object" || !("id" in job) || !("status" in job)) throw new Error("The job response was incomplete.");
+  return job as CompanyJob;
+}
+
 export async function fetchCompanyJobs(): Promise<CompanyJob[]> {
   const res = await fetch("/api/company/jobs");
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data?.error?.message ?? "Failed to load jobs.");
-  return (data.jobs ?? []) as CompanyJob[];
+  return Array.isArray(data.data?.jobs ?? data.jobs) ? (data.data?.jobs ?? data.jobs).map(toSafeJob) : [];
 }
 
 export async function fetchCompanyJob(jobId: string): Promise<CompanyJob> {
   const res = await fetch(`/api/company/jobs/${encodeURIComponent(jobId)}`);
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data?.error?.message ?? "Failed to load job.");
-  return data.job as CompanyJob;
+  return companyJobFromResponse(data);
 }
 
 export async function createJob(input: JobFormInput): Promise<CompanyJob> {
@@ -83,7 +91,7 @@ export async function createJob(input: JobFormInput): Promise<CompanyJob> {
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data?.error?.message ?? "Failed to create job.");
-  return data.job as CompanyJob;
+  return companyJobFromResponse(data);
 }
 
 export async function updateJob(jobId: string, input: Partial<JobFormInput>): Promise<CompanyJob> {
@@ -92,21 +100,27 @@ export async function updateJob(jobId: string, input: Partial<JobFormInput>): Pr
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data?.error?.message ?? "Failed to update job.");
-  return data.job as CompanyJob;
+  return companyJobFromResponse(data);
 }
 
 export async function publishJob(jobId: string): Promise<CompanyJob> {
   const res = await fetch(`/api/company/jobs/${encodeURIComponent(jobId)}/publish`, { method: "POST" });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data?.error?.message ?? "Failed to publish job.");
-  return data.job as CompanyJob;
+  return companyJobFromResponse(data);
 }
 
 export async function closeJob(jobId: string): Promise<CompanyJob> {
   const res = await fetch(`/api/company/jobs/${encodeURIComponent(jobId)}/close`, { method: "POST" });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data?.error?.message ?? "Failed to close job.");
-  return data.job as CompanyJob;
+  return companyJobFromResponse(data);
+}
+
+function toSafeJob(value: unknown): CompanyJob {
+  const job = (value && typeof value === "object" && "job" in value) ? companyJobFromResponse(value) : value as CompanyJob;
+  if (!job || typeof job !== "object" || !("id" in job) || !("status" in job)) throw new Error("The job list response was incomplete.");
+  return { ...job, requiredSkills: Array.isArray(job.requiredSkills) ? job.requiredSkills : [], salaryMin: job.salaryMin == null ? null : Number(job.salaryMin), salaryMax: job.salaryMax == null ? null : Number(job.salaryMax) };
 }
 
 // ── Applications ─────────────────────────────────────────────────────────────
