@@ -9,6 +9,7 @@ import { EducationSection } from "./EducationSection";
 import { ExperienceSection } from "./ExperienceSection";
 import { SkillsSection } from "./SkillsSection";
 import { UploadField } from "./UploadField";
+import { FilePreviewModal } from "./FilePreviewModal";
 
 type FormState = {
   fullName: string;
@@ -53,6 +54,8 @@ export function ProfilePage({ initialProfile }: Props) {
   const [uploadingKind, setUploadingKind] = useState<"profile-photo" | "resume" | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [previewKind, setPreviewKind] = useState<"profile-photo" | "resume" | null>(null);
+  const [removingKind, setRemovingKind] = useState<"profile-photo" | "resume" | null>(null);
 
   useEffect(() => {
     if (!saveSuccess) return;
@@ -130,6 +133,15 @@ export function ProfilePage({ initialProfile }: Props) {
     finally { setUploadingKind(null); }
   }
 
+  async function handleRemove(kind: "profile-photo" | "resume") {
+    setRemovingKind(kind); setUploadError(null);
+    try {
+      const updated = await updateProfile(kind === "profile-photo" ? { profilePhotoKey: null } : { resumeKey: null });
+      setProfile(updated); setForm((current) => ({ ...current, ...(kind === "profile-photo" ? { profilePhotoKey: null } : { resumeKey: null }) })); setSaveSuccess(true);
+    } catch (err) { setUploadError(err instanceof Error ? err.message : "Could not remove the file."); }
+    finally { setRemovingKind(null); }
+  }
+
   return (
     <main className="min-h-screen bg-white px-4 py-10 sm:px-6">
       <div className="mx-auto max-w-2xl space-y-6">
@@ -189,6 +201,9 @@ export function ProfilePage({ initialProfile }: Props) {
           isUploading={uploadingKind === "profile-photo"}
           uploadProgress={uploadingKind === "profile-photo" ? uploadProgress : 0}
           previewUrl={privateFileUrl(form.profilePhotoKey)}
+          onPreview={() => setPreviewKind("profile-photo")}
+          onRemove={() => void handleRemove("profile-photo")}
+          isRemoving={removingKind === "profile-photo"}
         />
 
         {/* Resume */}
@@ -198,11 +213,13 @@ export function ProfilePage({ initialProfile }: Props) {
             label="Your resume / CV"
             kind="resume"
             fileKey={form.resumeKey}
-            onClear={() => setForm((f) => ({ ...f, resumeKey: null }))}
+            onClear={() => void handleRemove("resume")}
             onUpload={(file) => handleUpload("resume", file)}
             isUploading={uploadingKind === "resume"}
             uploadProgress={uploadingKind === "resume" ? uploadProgress : 0}
             previewUrl={privateFileUrl(form.resumeKey)}
+            onPreview={() => setPreviewKind("resume")}
+            isRemoving={removingKind === "resume"}
           />
           {uploadError && <p className="text-sm text-red-600">{uploadError}</p>}
         </section>
@@ -261,6 +278,7 @@ export function ProfilePage({ initialProfile }: Props) {
           </div>
         </div>
       </div>
+      {previewKind && privateFileUrl(previewKind === "profile-photo" ? form.profilePhotoKey : form.resumeKey) && <FilePreviewModal kind={previewKind} previewUrl={privateFileUrl(previewKind === "profile-photo" ? form.profilePhotoKey : form.resumeKey)!} onClose={() => setPreviewKind(null)} />}
     </main>
   );
 }

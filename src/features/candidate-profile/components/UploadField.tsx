@@ -11,9 +11,11 @@ type Props = {
   isUploading?: boolean;
   uploadProgress?: number;
   previewUrl?: string | null;
+  onPreview: () => void;
+  isRemoving?: boolean;
 };
 
-export function UploadField({ label, fileKey, kind, onClear, onUpload, isUploading = false, uploadProgress = 0, previewUrl }: Props) {
+export function UploadField({ label, fileKey, kind, onClear, onUpload, isUploading = false, uploadProgress = 0, previewUrl, onPreview, isRemoving = false }: Props) {
   const hasFile = Boolean(fileKey);
 
   return (
@@ -29,15 +31,16 @@ export function UploadField({ label, fileKey, kind, onClear, onUpload, isUploadi
                 <path d="M13.5 5.5L6 13L2.5 9.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </span>
-            <span className="text-xs text-gray-500 truncate font-mono">{fileKey}</span>
-            {previewUrl && kind === "resume" && <a href={previewUrl} target="_blank" rel="noreferrer" className="text-xs text-emerald-700 hover:underline">Preview</a>}
+            <span className="text-xs text-gray-600">{kind === "profile-photo" ? "Photo uploaded" : "Resume uploaded"}</span>
+            {previewUrl && <button type="button" onClick={onPreview} className="text-xs font-medium text-emerald-700 hover:underline">Preview</button>}
           </div>
           <button
             type="button"
             onClick={onClear}
+            disabled={isRemoving}
             className="shrink-0 text-xs text-red-600 hover:text-red-500 transition-colors"
           >
-            Remove
+            {isRemoving ? "Removing…" : "Remove"}
           </button>
         </div>
       ) : (

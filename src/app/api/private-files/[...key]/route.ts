@@ -3,7 +3,7 @@ import { prisma } from "@/server/db/prisma";
 import { getPrivateStorage, isPrivateObjectKey, type PrivateDownload } from "@/server/storage/private-storage";
 import { apiError } from "@/server/http/api-error";
 
-export async function GET(_request: Request, { params }: { params: Promise<{ key: string[] }> }) {
+export async function GET(request: Request, { params }: { params: Promise<{ key: string[] }> }) {
   try {
     const user = await requireAuthenticatedUser();
     const key = (await params).key.join("/");
@@ -27,7 +27,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ key
       if (error instanceof Error && "code" in error && error.code === "ENOENT") return Response.json({ error: { code: "FILE_NOT_FOUND", message: "Private file not found." } }, { status: 404 });
       throw error;
     }
-    const isProfilePhoto = isCandidateFile && parts[3] === "profile-photo";
-    return new Response(Buffer.from(object.body), { headers: { "Content-Type": object.contentType, "Content-Disposition": `${isProfilePhoto ? "inline" : "attachment"}; filename="private-file"`, "Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff" } });
+    const download = new URL(request.url).searchParams.get("download") === "1";
+    return new Response(Buffer.from(object.body), { headers: { "Content-Type": object.contentType, "Content-Disposition": `${download ? "attachment" : "inline"}; filename="private-file"`, "Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff" } });
   } catch (error) { return apiError(error); }
 }
