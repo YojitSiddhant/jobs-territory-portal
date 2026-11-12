@@ -1,12 +1,19 @@
 import type { CompanyProfile, CompanyJob, CompanyApplication, JobFormInput } from "./types";
 
+export function companyFromResponse(value: unknown): CompanyProfile {
+  const data = value as { data?: { company?: CompanyProfile }; company?: CompanyProfile } | null;
+  const company = data?.data?.company ?? data?.company;
+  if (!company) throw new Error("The company profile response was incomplete.");
+  return company;
+}
+
 // ── Company profile ──────────────────────────────────────────────────────────
 
 export async function fetchCompanyProfile(): Promise<CompanyProfile> {
   const res = await fetch("/api/company/profile");
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data?.error?.message ?? "Failed to load company profile.");
-  return data.company as CompanyProfile;
+  return companyFromResponse(data);
 }
 
 export async function createCompanyProfile(input: {
@@ -18,7 +25,7 @@ export async function createCompanyProfile(input: {
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data?.error?.message ?? "Failed to create company profile.");
-  return data.company as CompanyProfile;
+  return companyFromResponse(data);
 }
 
 export async function updateCompanyProfile(input: Partial<{
@@ -30,14 +37,14 @@ export async function updateCompanyProfile(input: Partial<{
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data?.error?.message ?? "Failed to update company profile.");
-  return data.company as CompanyProfile;
+  return companyFromResponse(data);
 }
 
 export async function submitCompanyForReview(): Promise<CompanyProfile> {
   const res = await fetch("/api/company/profile/submit", { method: "POST" });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data?.error?.message ?? "Failed to submit for review.");
-  return data.company as CompanyProfile;
+  return companyFromResponse(data);
 }
 
 export async function removeCompanyDocument(documentId: string) {
