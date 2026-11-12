@@ -14,7 +14,7 @@ export const companyProfileSchema = z.object({
 export const companyProfileUpdateSchema = companyProfileSchema.partial();
 
 export const companyDocumentSchema = z.object({
-  type: z.enum(["REGISTRATION_CERTIFICATE", "TAX_DOCUMENT", "IDENTITY_DOCUMENT", "OTHER"]),
+  type: z.enum(["REGISTRATION_CERTIFICATE", "TAX_DOCUMENT", "IDENTITY_DOCUMENT", "ADDRESS_PROOF", "OTHER"]),
   storageKey: z.string().regex(/^private\/companies\/[^/]+\/company-document\/[^/]+$/, "Document reference must point to private company storage."),
   originalName: z.string().trim().min(1).max(255),
   mimeType: z.string().trim().min(1).max(120),

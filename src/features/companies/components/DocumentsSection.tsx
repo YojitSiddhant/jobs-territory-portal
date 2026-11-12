@@ -1,132 +1,39 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import type { CompanyDocument, CompanyProfile } from "../types";
-import { registerDocument, uploadCompanyDocument } from "../api";
+import type { CompanyDocument, DocumentType } from "../types";
+import { removeCompanyDocument, uploadCompanyDocument } from "../api";
 
-const documentTypeLabels: Record<string, string> = {
-  REGISTRATION_CERTIFICATE: "Registration certificate",
-  TAX_DOCUMENT: "Tax document",
-  IDENTITY_DOCUMENT: "Identity document",
-  OTHER: "Other",
-};
+const labels: Record<DocumentType, string> = { REGISTRATION_CERTIFICATE: "Registration certificate", TAX_DOCUMENT: "Tax document", IDENTITY_DOCUMENT: "Identity document", ADDRESS_PROOF: "Address proof", OTHER: "Other document" };
+const statuses: Record<string, string> = { PENDING: "Pending", APPROVED: "Approved", REJECTED: "Rejected" };
+const previewUrl = (key: string) => `/api/private-files/${key.split("/").map(encodeURIComponent).join("/")}`;
 
-const documentStatusConfig: Record<string, { label: string; cls: string }> = {
-  PENDING: { label: "Pending", cls: "text-yellow-600 border-yellow-200 bg-yellow-50" },
-  APPROVED: { label: "Approved", cls: "text-emerald-600 border-emerald-200 bg-emerald-50" },
-  REJECTED: { label: "Rejected", cls: "text-red-600 border-red-200 bg-red-50" },
-};
+type Props = { documents: CompanyDocument[]; canEdit: boolean; onRefresh: () => void };
 
-type Props = {
-  companyId: string;
-  documents: CompanyDocument[];
-  canEdit: boolean;
-  onDocumentAdded: (profile: CompanyProfile) => void;
-};
-
-export function DocumentsSection({ companyId, documents, canEdit }: Omit<Props, "onDocumentAdded"> & { onRefresh: () => void }) {
+export function DocumentsSection({ documents, canEdit, onRefresh }: Props) {
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ type: "REGISTRATION_CERTIFICATE", storageKey: "", originalName: "", mimeType: "application/pdf" });
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition();
+  const [type, setType] = useState<DocumentType>("REGISTRATION_CERTIFICATE");
   const [file, setFile] = useState<File | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [progress, setProgress] = useState(0);
+  const [removing, setRemoving] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
 
-  const prefix = `private/companies/${companyId}/company-document/`;
-
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
-    if (!file && !form.storageKey.startsWith(prefix)) {
-      setError(`Storage key must start with: ${prefix}`);
-      return;
-    }
-    startTransition(async () => {
-      try {
-        if (file) await uploadCompanyDocument(form.type, file); else await registerDocument(form);
-        setSuccess(file ? "Document uploaded privately. Reload to see the updated list." : "Document reference registered. Reload to see the updated list.");
-        setShowForm(false);
-        setForm({ type: "REGISTRATION_CERTIFICATE", storageKey: "", originalName: "", mimeType: "application/pdf" }); setFile(null);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to register document.");
-      }
-    });
+  function upload(event: React.FormEvent) {
+    event.preventDefault(); setMessage(null); setError(null);
+    if (!file) { setError("Choose a document to upload."); return; }
+    if (!["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"].includes(file.type)) { setError("Only PDF, DOC, and DOCX files are supported."); return; }
+    if (file.size <= 0 || file.size > 10 * 1024 * 1024) { setError("The document must be smaller than 10 MB."); return; }
+    startTransition(async () => { try { setProgress(25); await uploadCompanyDocument(type, file); setProgress(100); setMessage("Document uploaded successfully."); setFile(null); setShowForm(false); onRefresh(); } catch (err) { setError(err instanceof Error ? err.message : "Upload failed."); } });
   }
 
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-gray-900">Verification documents</h3>
-        {canEdit && !showForm && (
-          <button type="button" onClick={() => setShowForm(true)} className="text-xs text-emerald-600 hover:text-emerald-500 transition-colors">
-            + Register document reference
-          </button>
-        )}
-      </div>
+  function remove(id: string) { setRemoving(id); setError(null); startTransition(async () => { try { await removeCompanyDocument(id); setMessage("Document removed successfully."); onRefresh(); } catch (err) { setError(err instanceof Error ? err.message : "Could not remove document."); } finally { setRemoving(null); } }); }
 
-      {/* Storage not configured notice */}
-      <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-xs text-gray-500">
-        Upload files directly for private storage, or register an existing private reference.
-      </div>
-
-      {documents.length > 0 ? (
-        <ul className="space-y-2">
-          {documents.map((doc) => {
-            const sc = documentStatusConfig[doc.status] ?? { label: doc.status, cls: "text-gray-500 border-gray-200" };
-            return (
-              <li key={doc.id} className="flex items-start justify-between gap-3 rounded-xl bg-white border border-gray-200 px-4 py-3">
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">{doc.originalName}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">{documentTypeLabels[doc.type] ?? doc.type} · {doc.mimeType}</p>
-                  {doc.rejectionReason && <p className="text-xs text-red-600 mt-1">Rejected: {doc.rejectionReason}</p>}
-                </div>
-                <span className={`shrink-0 rounded-full border px-2.5 py-0.5 text-xs font-medium ${sc.cls}`}>{sc.label}</span>
-              </li>
-            );
-          })}
-        </ul>
-      ) : (
-        <p className="text-sm text-gray-400">No documents registered yet.</p>
-      )}
-
-      {showForm && (
-        <form onSubmit={handleSubmit} className="rounded-xl bg-gray-50 border border-gray-200 p-4 space-y-3">
-          <p className="text-xs font-semibold text-gray-700">Register document reference</p>
-          <div>
-            <label htmlFor="doc-file" className="block text-xs text-gray-500 mb-1">Private file upload</label>
-            <input id="doc-file" type="file" accept=".pdf,.doc,.docx" onChange={(e) => setFile(e.target.files?.[0] ?? null)} className="w-full text-xs text-gray-500" />
-          </div>
-          <div className="text-center text-xs text-gray-400">or register an existing reference</div>
-          <div>
-            <label htmlFor="doc-type" className="block text-xs text-gray-500 mb-1">Document type</label>
-            <select id="doc-type" value={form.type} onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))} className="w-full rounded-lg bg-white border border-gray-200 px-3 py-2 text-sm text-gray-900 focus:border-emerald-500 focus:outline-none">
-              {Object.entries(documentTypeLabels).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
-            </select>
-          </div>
-          <div>
-            <label htmlFor="doc-key" className="block text-xs text-gray-500 mb-1">Storage key</label>
-            <input id="doc-key" type="text" value={form.storageKey} onChange={(e) => setForm((f) => ({ ...f, storageKey: e.target.value }))} required placeholder={`${prefix}...`} className="w-full rounded-lg bg-white border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 focus:outline-none" />
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label htmlFor="doc-name" className="block text-xs text-gray-500 mb-1">File name</label>
-              <input id="doc-name" type="text" value={form.originalName} onChange={(e) => setForm((f) => ({ ...f, originalName: e.target.value }))} required maxLength={255} placeholder="document.pdf" className="w-full rounded-lg bg-white border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 focus:outline-none" />
-            </div>
-            <div>
-              <label htmlFor="doc-mime" className="block text-xs text-gray-500 mb-1">MIME type</label>
-              <input id="doc-mime" type="text" value={form.mimeType} onChange={(e) => setForm((f) => ({ ...f, mimeType: e.target.value }))} required maxLength={120} placeholder="application/pdf" className="w-full rounded-lg bg-white border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 focus:outline-none" />
-            </div>
-          </div>
-          {error && <p className="text-xs text-red-600">{error}</p>}
-          {success && <p className="text-xs text-emerald-600">{success}</p>}
-          <div className="flex items-center gap-2">
-            <button type="submit" disabled={isPending} className="rounded-lg bg-emerald-600 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-500 disabled:opacity-60 transition-colors">
-              {isPending ? "Registering…" : "Register"}
-            </button>
-            <button type="button" onClick={() => { setShowForm(false); setError(null); }} className="text-xs text-gray-500 hover:text-gray-900 transition-colors">Cancel</button>
-          </div>
-        </form>
-      )}
-    </div>
-  );
+  return <div className="space-y-4">
+    <div className="flex items-center justify-between"><h3 className="text-sm font-semibold text-gray-900">Verification documents</h3>{canEdit && !showForm && <button type="button" onClick={() => setShowForm(true)} className="text-xs text-emerald-600 hover:text-emerald-500">+ Upload document</button>}</div>
+    {documents.length ? <ul className="space-y-2">{documents.map((doc) => <li key={doc.id} className="flex items-start justify-between gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3"><div className="min-w-0"><p className="truncate text-sm font-medium text-gray-900">{doc.originalName}</p><p className="mt-0.5 text-xs text-gray-500">{labels[doc.type]} · {statuses[doc.status] ?? "Pending"}</p>{doc.rejectionReason && <p className="mt-1 text-xs text-red-600">Rejected: {doc.rejectionReason}</p>}<div className="mt-2 flex gap-3"><a href={previewUrl(doc.storageKey)} target="_blank" rel="noreferrer" className="text-xs font-medium text-emerald-700 hover:underline">Preview</a>{canEdit && <button type="button" onClick={() => remove(doc.id)} disabled={removing === doc.id} className="text-xs font-medium text-red-600">{removing === doc.id ? "Removing…" : "Remove"}</button>}</div></div></li>)}</ul> : <p className="text-sm text-gray-400">No documents uploaded yet.</p>}
+    {showForm && <form onSubmit={upload} className="space-y-3 rounded-xl border border-gray-200 bg-gray-50 p-4"><p className="text-xs font-semibold text-gray-700">Upload verification document</p><div><label htmlFor="doc-type" className="mb-1 block text-xs text-gray-500">Document type</label><select id="doc-type" value={type} onChange={(e) => setType(e.target.value as DocumentType)} className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900">{Object.entries(labels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></div><div><label htmlFor="doc-file" className="mb-1 block text-xs text-gray-500">File</label><input id="doc-file" type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={(e) => setFile(e.target.files?.[0] ?? null)} className="w-full text-xs text-gray-500" /></div>{isPending && <p className="text-xs text-emerald-600">Uploading {progress}%…</p>}{error && <p className="text-xs text-red-600">{error}</p>}<div className="flex gap-2"><button type="submit" disabled={isPending} className="rounded-lg bg-emerald-600 px-4 py-2 text-xs font-semibold text-white disabled:opacity-60">{isPending ? "Uploading…" : "Upload"}</button><button type="button" onClick={() => setShowForm(false)} className="text-xs text-gray-500">Cancel</button></div></form>}
+    {message && <p className="text-xs text-emerald-600">{message}</p>}
+  </div>;
 }

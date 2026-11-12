@@ -40,15 +40,10 @@ export async function submitCompanyForReview(): Promise<CompanyProfile> {
   return data.company as CompanyProfile;
 }
 
-export async function registerDocument(input: {
-  type: string; storageKey: string; originalName: string; mimeType: string;
-}): Promise<{ id: string; type: string; status: string; originalName: string; mimeType: string }> {
-  const res = await fetch("/api/company/profile/documents", {
-    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input),
-  });
+export async function removeCompanyDocument(documentId: string) {
+  const res = await fetch(`/api/company/profile/documents/${encodeURIComponent(documentId)}`, { method: "DELETE" });
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data?.error?.message ?? "Failed to register document.");
-  return data.document;
+  if (!res.ok) throw new Error(data?.error?.message ?? "Failed to remove document.");
 }
 
 export async function uploadCompanyDocument(type: string, file: File): Promise<{ id: string; type: string; status: string; originalName: string; mimeType: string }> {
@@ -56,7 +51,7 @@ export async function uploadCompanyDocument(type: string, file: File): Promise<{
   const res = await fetch("/api/company/profile/documents/upload", { method: "POST", body: form });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data?.error?.message ?? "Failed to upload document.");
-  return data.document;
+  return data.data?.document ?? data.document;
 }
 
 // ── Jobs ─────────────────────────────────────────────────────────────────────
