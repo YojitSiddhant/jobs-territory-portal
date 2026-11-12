@@ -243,7 +243,7 @@ export function ProfilePage({ initialProfile }: Props) {
         />
 
         {/* Save bar */}
-        <div className="sticky bottom-0 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-4 bg-white/90 backdrop-blur border-t border-gray-200">
+        <div className="sticky bottom-0 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-4 bg-white border-t border-gray-200 shadow-[0_-4px_12px_-4px_rgba(0,0,0,0.06)]">
           <div className="flex items-center gap-3">
             <button
               type="button"

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition, useMemo } from "react";
+import { Plus, RefreshCw, Pencil, Send, XCircle } from "lucide-react";
 import type { CompanyJob } from "../types";
 import { publishJob, closeJob, fetchCompanyJobs } from "../api";
 import { JobForm } from "./JobForm";
@@ -89,14 +90,12 @@ export function JobsManagementClient({ initialJobs }: Props) {
             <p className="mt-1 text-sm text-gray-500">{jobs.length} job{jobs.length !== 1 ? "s" : ""}</p>
           </div>
           <div className="flex items-center gap-2">
-            <button type="button" onClick={() => setEditing("new")} className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 transition-colors">
-              + New job
+            <button type="button" onClick={() => setEditing("new")} className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 transition-colors">
+              <Plus className="h-4 w-4" aria-hidden />
+              New job
             </button>
-            <button type="button" onClick={handleRefresh} disabled={isRefreshing} aria-label="Refresh" className="rounded-lg border border-gray-200 p-2 text-gray-500 hover:border-gray-300 hover:text-gray-900 disabled:opacity-40 transition-colors">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className={isRefreshing ? "animate-spin" : ""} aria-hidden>
-                <path d="M13.5 2.5A6.5 6.5 0 1 1 8 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                <path d="M13.5 2.5V6h-3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+            <button type="button" onClick={handleRefresh} disabled={isRefreshing} aria-label="Refresh job list" title="Refresh" className="rounded-lg border border-gray-200 p-2 text-gray-500 hover:border-gray-300 hover:text-gray-900 disabled:opacity-40 transition-colors">
+              <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} aria-hidden />
             </button>
           </div>
         </div>
@@ -132,12 +131,21 @@ export function JobsManagementClient({ initialJobs }: Props) {
                     <div className="flex items-center gap-2 shrink-0">
                       {job.status === "DRAFT" && (
                         <>
-                          <button type="button" onClick={() => setEditing(job)} className="text-xs text-gray-500 hover:text-gray-900 transition-colors">Edit</button>
-                          <button type="button" onClick={() => handlePublish(job.id)} disabled={isPending} className="rounded-lg bg-blue-50 border border-blue-200 px-3 py-1.5 text-xs font-medium text-blue-600 hover:bg-blue-100 disabled:opacity-50 transition-colors">Publish</button>
+                          <button type="button" onClick={() => setEditing(job)} aria-label={`Edit ${job.title}`} className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors">
+                            <Pencil className="h-3.5 w-3.5" aria-hidden />
+                            Edit
+                          </button>
+                          <button type="button" onClick={() => handlePublish(job.id)} disabled={isPending} aria-label={`Publish ${job.title}`} className="inline-flex items-center gap-1 rounded-lg bg-blue-50 border border-blue-200 px-3 py-1.5 text-xs font-medium text-blue-600 hover:bg-blue-100 disabled:opacity-50 transition-colors">
+                            <Send className="h-3.5 w-3.5" aria-hidden />
+                            Publish
+                          </button>
                         </>
                       )}
                       {job.status === "PUBLISHED" && (
-                        <button type="button" onClick={() => handleClose(job.id)} disabled={isPending} className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs text-gray-500 hover:border-gray-300 hover:text-gray-900 disabled:opacity-50 transition-colors">Close</button>
+                        <button type="button" onClick={() => handleClose(job.id)} disabled={isPending} aria-label={`Close ${job.title}`} className="inline-flex items-center gap-1 rounded-lg border border-gray-200 px-3 py-1.5 text-xs text-gray-500 hover:border-gray-300 hover:text-gray-900 disabled:opacity-50 transition-colors">
+                            <XCircle className="h-3.5 w-3.5" aria-hidden />
+                            Close
+                          </button>
                       )}
                     </div>
                   </div>

@@ -1,4 +1,30 @@
-import type { JobsResponse, JobDetailResponse, JobDiscoveryQuery } from "./types";
+import type { JobsResponse, JobDetailResponse, JobDiscoveryQuery, Pagination, PublicJob } from "./types";
+
+const defaultPagination: Pagination = { page: 1, pageSize: 20, total: 0, totalPages: 0 };
+
+export function normalizeJobsResponse(value: unknown): JobsResponse {
+  const root = value && typeof value === "object" ? value as { data?: unknown; jobs?: unknown; pagination?: unknown } : {};
+  const nested = root.data && typeof root.data === "object" ? root.data as { jobs?: unknown; pagination?: unknown } : {};
+  const jobsValue = nested.jobs ?? root.jobs;
+  const paginationValue = nested.pagination ?? root.pagination;
+  const pagination = paginationValue && typeof paginationValue === "object" ? paginationValue as Partial<Pagination> : {};
+  const page = positiveInteger(pagination.page, defaultPagination.page);
+  const pageSize = positiveInteger(pagination.pageSize, defaultPagination.pageSize);
+  const total = nonNegativeInteger(pagination.total, defaultPagination.total);
+  const totalPages = nonNegativeInteger(pagination.totalPages, total === 0 ? 0 : Math.ceil(total / pageSize));
+  return {
+    jobs: Array.isArray(jobsValue) ? jobsValue as PublicJob[] : [],
+    pagination: { page, pageSize, total, totalPages },
+  };
+}
+
+function positiveInteger(value: unknown, fallback: number) {
+  return typeof value === "number" && Number.isInteger(value) && value > 0 ? value : fallback;
+}
+
+function nonNegativeInteger(value: unknown, fallback: number) {
+  return typeof value === "number" && Number.isInteger(value) && value >= 0 ? value : fallback;
+}
 
 export async function fetchJobs(query: JobDiscoveryQuery = {}): Promise<JobsResponse> {
   const params = new URLSearchParams();
@@ -19,7 +45,7 @@ export async function fetchJobs(query: JobDiscoveryQuery = {}): Promise<JobsResp
   const res = await fetch(url);
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data?.error?.message ?? "Failed to load jobs.");
-  return data as JobsResponse;
+  return normalizeJobsResponse(data);
 }
 
 export async function fetchJob(slug: string): Promise<JobDetailResponse> {

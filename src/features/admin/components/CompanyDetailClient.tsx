@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
+import { ArrowLeft, RefreshCw } from "lucide-react";
 import type { AdminCompany } from "../types";
 import { approveCompany, rejectCompany, suspendCompany, restoreCompany, fetchAdminCompany, reviewCompanyField, reviewCompanyDocument } from "../api";
 import { ReviewDialog } from "./ReviewDialog";
@@ -95,7 +96,7 @@ export function CompanyDetailClient({ initialCompany }: Props) {
         <div className="flex items-start justify-between gap-4">
           <div>
             <Link href="/admin/companies" className="inline-flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-900 transition-colors mb-2">
-              <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden><path d="M9 2L4 7l5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              <ArrowLeft className="h-3 w-3" aria-hidden />
               Pending companies
             </Link>
             <div className="flex items-center gap-3">
@@ -103,11 +104,8 @@ export function CompanyDetailClient({ initialCompany }: Props) {
               <span className={`rounded-full border px-2.5 py-0.5 text-xs font-medium ${sc.cls}`}>{sc.label}</span>
             </div>
           </div>
-          <button type="button" onClick={handleRefresh} disabled={isRefreshing} aria-label="Refresh" className="rounded-lg border border-gray-200 p-2 text-gray-500 hover:border-gray-300 hover:text-gray-900 disabled:opacity-40 transition-colors">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className={isRefreshing ? "animate-spin" : ""} aria-hidden>
-              <path d="M13.5 2.5A6.5 6.5 0 1 1 8 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              <path d="M13.5 2.5V6h-3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+          <button type="button" onClick={handleRefresh} disabled={isRefreshing} aria-label="Refresh company details" title="Refresh" className="rounded-lg border border-gray-200 p-2 text-gray-500 hover:border-gray-300 hover:text-gray-900 disabled:opacity-40 transition-colors">
+            <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} aria-hidden />
           </button>
         </div>
 
