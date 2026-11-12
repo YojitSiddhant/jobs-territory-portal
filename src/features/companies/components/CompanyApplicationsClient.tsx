@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import type { CompanyApplication } from "../types";
-import { fetchCompanyApplications, updateApplicationStatus } from "../api";
+import { fetchCompanyApplication, fetchCompanyApplications, normalizeCompanyApplication, updateApplicationStatus } from "../api";
 
 const statusLabels: Record<string, { label: string; cls: string }> = {
   APPLIED: { label: "Applied", cls: "border-blue-200 bg-blue-50 text-blue-600" },
@@ -32,6 +32,8 @@ type Props = { initialApplications: CompanyApplication[] };
 export function CompanyApplicationsClient({ initialApplications }: Props) {
   const [applications, setApplications] = useState(initialApplications);
   const [selected, setSelected] = useState<CompanyApplication | null>(null);
+  const [isLoadingDetail, setIsLoadingDetail] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [actionError, setActionError] = useState<{ id: string; message: string } | null>(null);
   const [isPending, startTransition] = useTransition();
   const [isRefreshing, startRefreshTransition] = useTransition();
@@ -44,16 +46,29 @@ export function CompanyApplicationsClient({ initialApplications }: Props) {
 
   function handleStatusChange(applicationId: string, status: string) {
     setActionError(null);
+    setSuccessMessage(null);
     startTransition(async () => {
       try {
         const updated = await updateApplicationStatus(applicationId, status);
-        const app = toClientApp(updated);
-        setApplications((prev) => prev.map((a) => (a.id === applicationId ? app : a)));
-        if (selected?.id === applicationId) setSelected(app);
+        normalizeCompanyApplication(updated);
+        const complete = await fetchCompanyApplication(applicationId);
+        setApplications((prev) => prev.map((a) => (a.id === applicationId ? complete : a)));
+        if (selected?.id === applicationId) setSelected(complete);
+        setSuccessMessage(status === "SHORTLISTED" ? "Candidate shortlisted successfully." : `Application ${status.toLowerCase()} successfully.`);
       } catch (err) {
         setActionError({ id: applicationId, message: err instanceof Error ? err.message : "Failed to update." });
       }
     });
+  }
+
+  async function selectApplication(app: CompanyApplication) {
+    setSelected(normalizeCompanyApplication(app));
+    setActionError(null);
+    setSuccessMessage(null);
+    setIsLoadingDetail(true);
+    try { setSelected(await fetchCompanyApplication(app.id)); }
+    catch (err) { setActionError({ id: app.id, message: err instanceof Error ? err.message : "Failed to load application." }); }
+    finally { setIsLoadingDetail(false); }
   }
 
   return (
@@ -73,12 +88,13 @@ export function CompanyApplicationsClient({ initialApplications }: Props) {
         </div>
 
         {/* Detail panel */}
+        {successMessage && <p role="status" className="text-sm text-green-700">{successMessage}</p>}
         {selected && (
           <div className="rounded-2xl bg-white border border-gray-200 p-6 space-y-4 shadow-sm">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-xs text-gray-400 mb-0.5">{selected.job.title}</p>
-                <h2 className="text-base font-semibold text-gray-900">{selected.candidate?.fullName ?? "Anonymous"}</h2>
+                <p className="text-xs text-gray-400 mb-0.5">{isLoadingDetail ? "Loading application…" : selected.job?.title ?? "Job details unavailable"}</p>
+                <h2 className="text-base font-semibold text-gray-900">{selected.candidate?.fullName ?? "Candidate details unavailable"}</h2>
                 {selected.candidate?.headline && <p className="text-xs text-gray-500 mt-0.5">{selected.candidate.headline}</p>}
                 {selected.candidate?.location && <p className="text-xs text-gray-400 mt-0.5">{selected.candidate.location}</p>}
               </div>
@@ -100,7 +116,7 @@ export function CompanyApplicationsClient({ initialApplications }: Props) {
             {(transitions[selected.status] ?? []).length > 0 && (
               <div className="flex flex-wrap gap-2">
                 {(transitions[selected.status] ?? []).map((next) => (
-                  <button key={next} type="button" onClick={() => handleStatusChange(selected.id, next)} disabled={isPending} className={`rounded-lg border px-3 py-1.5 text-xs font-medium disabled:opacity-50 transition-colors ${next === "REJECTED" ? "border-red-200 text-red-600 hover:bg-red-50" : "border-blue-200 text-blue-600 hover:bg-blue-50"}`}>
+                  <button key={next} type="button" onClick={() => handleStatusChange(selected.id, next)} disabled={isPending || isLoadingDetail} className={`rounded-lg border px-3 py-1.5 text-xs font-medium disabled:opacity-50 transition-colors ${next === "REJECTED" ? "border-red-200 text-red-600 hover:bg-red-50" : "border-blue-200 text-blue-600 hover:bg-blue-50"}`}>
                     {transitionLabels[next] ?? next}
                   </button>
                 ))}
@@ -119,10 +135,10 @@ export function CompanyApplicationsClient({ initialApplications }: Props) {
           <ul className="space-y-3">
             {applications.map((app) => (
               <li key={app.id}>
-                <button type="button" onClick={() => setSelected(selected?.id === app.id ? null : app)} className={`group w-full text-left rounded-2xl border p-5 transition-colors ${selected?.id === app.id ? "bg-gray-50 border-gray-300" : "bg-white border-gray-200 hover:border-gray-300"}`}>
+                <button type="button" onClick={() => selected?.id === app.id ? setSelected(null) : selectApplication(app)} className={`group w-full text-left rounded-2xl border p-5 transition-colors ${selected?.id === app.id ? "bg-gray-50 border-gray-300" : "bg-white border-gray-200 hover:border-gray-300"}`}>
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="text-xs text-gray-400 mb-0.5">{app.job.title}</p>
+                      <p className="text-xs text-gray-400 mb-0.5">{app.job?.title ?? "Job details unavailable"}</p>
                       <p className="text-sm font-semibold text-gray-900 truncate group-hover:text-blue-600 transition-colors">{app.candidate?.fullName ?? "Anonymous"}</p>
                       {app.candidate?.headline && <p className="text-xs text-gray-500 mt-0.5 truncate">{app.candidate.headline}</p>}
                     </div>
@@ -137,12 +153,7 @@ export function CompanyApplicationsClient({ initialApplications }: Props) {
     </main>
   );
 }
-
 function StatusChip({ status }: { status: string }) {
   const { label, cls } = statusLabels[status] ?? { label: status, cls: "border-gray-200 text-gray-500" };
   return <span className={`rounded-full border px-2.5 py-0.5 text-xs font-medium ${cls}`}>{label}</span>;
-}
-
-function toClientApp(app: CompanyApplication): CompanyApplication {
-  return { ...app };
 }

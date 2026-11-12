@@ -129,7 +129,9 @@ export async function fetchCompanyApplications(): Promise<CompanyApplication[]> 
   const res = await fetch("/api/company/applications");
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data?.error?.message ?? "Failed to load applications.");
-  return (data.applications ?? []) as CompanyApplication[];
+  const applications = data.data?.applications ?? data.applications;
+  if (!Array.isArray(applications)) throw new Error("The applications response was incomplete.");
+  return applications.map(normalizeCompanyApplication);
 }
 
 export async function updateApplicationStatus(applicationId: string, status: string): Promise<CompanyApplication> {
@@ -138,5 +140,30 @@ export async function updateApplicationStatus(applicationId: string, status: str
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data?.error?.message ?? "Failed to update application status.");
-  return data.application as CompanyApplication;
+  return normalizeCompanyApplication(data.data?.application ?? data.application);
+}
+
+export async function fetchCompanyApplication(applicationId: string): Promise<CompanyApplication> {
+  const res = await fetch(`/api/company/applications/${encodeURIComponent(applicationId)}`);
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data?.error?.message ?? "Failed to load application.");
+  return normalizeCompanyApplication(data.data?.application ?? data.application);
+}
+
+export function normalizeCompanyApplication(value: unknown): CompanyApplication {
+  const application = value && typeof value === "object" && "data" in value
+    ? ((value as { data?: { application?: unknown } }).data?.application ?? value)
+    : value;
+  if (!application || typeof application !== "object") throw new Error("The application response was incomplete.");
+  const candidate = application as Partial<CompanyApplication>;
+  if (typeof candidate.id !== "string" || typeof candidate.status !== "string" || !candidate.job || typeof candidate.job !== "object") {
+    throw new Error("The application response was incomplete.");
+  }
+  return {
+    ...candidate,
+    job: candidate.job as CompanyApplication["job"],
+    candidate: candidate.candidate ?? null,
+    coverNote: candidate.coverNote ?? null,
+    statusHistory: Array.isArray(candidate.statusHistory) ? candidate.statusHistory : [],
+  } as CompanyApplication;
 }
