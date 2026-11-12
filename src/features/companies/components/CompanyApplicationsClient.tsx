@@ -7,9 +7,9 @@ import { fetchCompanyApplications, updateApplicationStatus } from "../api";
 const statusLabels: Record<string, { label: string; cls: string }> = {
   APPLIED: { label: "Applied", cls: "border-blue-200 bg-blue-50 text-blue-600" },
   REVIEWING: { label: "In review", cls: "border-yellow-200 bg-yellow-50 text-yellow-600" },
-  SHORTLISTED: { label: "Shortlisted", cls: "border-emerald-200 bg-emerald-50 text-emerald-600" },
+  SHORTLISTED: { label: "Shortlisted", cls: "border-blue-200 bg-blue-50 text-blue-600" },
   REJECTED: { label: "Not selected", cls: "border-red-200 bg-red-50 text-red-600" },
-  HIRED: { label: "Hired", cls: "border-emerald-200 bg-emerald-100 text-emerald-700" },
+  HIRED: { label: "Hired", cls: "border-blue-200 bg-blue-100 text-blue-700" },
   WITHDRAWN: { label: "Withdrawn", cls: "border-gray-200 bg-gray-100 text-gray-500" },
 };
 
@@ -61,7 +61,7 @@ export function CompanyApplicationsClient({ initialApplications }: Props) {
       <div className="mx-auto max-w-3xl space-y-6">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-medium uppercase tracking-widest text-emerald-600 mb-1">Jobs Territory</p>
+            <p className="text-xs font-medium uppercase tracking-widest text-blue-600 mb-1">Jobs Territory</p>
             <h1 className="text-2xl font-semibold tracking-tight text-gray-900">Applications</h1>
             <p className="mt-1 text-sm text-gray-500">{applications.length} application{applications.length !== 1 ? "s" : ""} received</p>
           </div>
@@ -101,7 +101,7 @@ export function CompanyApplicationsClient({ initialApplications }: Props) {
             {(transitions[selected.status] ?? []).length > 0 && (
               <div className="flex flex-wrap gap-2">
                 {(transitions[selected.status] ?? []).map((next) => (
-                  <button key={next} type="button" onClick={() => handleStatusChange(selected.id, next)} disabled={isPending} className={`rounded-lg border px-3 py-1.5 text-xs font-medium disabled:opacity-50 transition-colors ${next === "REJECTED" ? "border-red-200 text-red-600 hover:bg-red-50" : "border-emerald-200 text-emerald-600 hover:bg-emerald-50"}`}>
+                  <button key={next} type="button" onClick={() => handleStatusChange(selected.id, next)} disabled={isPending} className={`rounded-lg border px-3 py-1.5 text-xs font-medium disabled:opacity-50 transition-colors ${next === "REJECTED" ? "border-red-200 text-red-600 hover:bg-red-50" : "border-blue-200 text-blue-600 hover:bg-blue-50"}`}>
                     {transitionLabels[next] ?? next}
                   </button>
                 ))}
@@ -124,7 +124,7 @@ export function CompanyApplicationsClient({ initialApplications }: Props) {
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="text-xs text-gray-400 mb-0.5">{app.job.title}</p>
-                      <p className="text-sm font-semibold text-gray-900 truncate group-hover:text-emerald-600 transition-colors">{app.candidate?.fullName ?? "Anonymous"}</p>
+                      <p className="text-sm font-semibold text-gray-900 truncate group-hover:text-blue-600 transition-colors">{app.candidate?.fullName ?? "Anonymous"}</p>
                       {app.candidate?.headline && <p className="text-xs text-gray-500 mt-0.5 truncate">{app.candidate.headline}</p>}
                     </div>
                     <StatusChip status={app.status} />

@@ -148,7 +148,7 @@ export function ProfilePage({ initialProfile }: Props) {
         {/* Header */}
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-medium uppercase tracking-widest text-emerald-600 mb-1">
+            <p className="text-xs font-medium uppercase tracking-widest text-blue-600 mb-1">
               Jobs Territory
             </p>
             <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
@@ -249,7 +249,7 @@ export function ProfilePage({ initialProfile }: Props) {
               type="button"
               onClick={handleSave}
               disabled={isSaving}
-              className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-60 transition-colors"
+              className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-500 disabled:opacity-60 transition-colors"
             >
               {isSaving ? (
                 <>
@@ -264,7 +264,7 @@ export function ProfilePage({ initialProfile }: Props) {
             </button>
 
             {saveSuccess && (
-              <span className="flex items-center gap-1.5 text-sm text-emerald-600">
+              <span className="flex items-center gap-1.5 text-sm text-blue-600">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                   <path d="M12 3.5L5.5 10 2 6.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>

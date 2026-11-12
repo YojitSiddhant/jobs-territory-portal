@@ -2,7 +2,7 @@ import type { CompanyStatus } from "../types";
 
 const config: Record<CompanyStatus, { label: string; classes: string; dot: string }> = {
   PENDING: { label: "Pending review", classes: "border-yellow-200 bg-yellow-50 text-yellow-600", dot: "bg-yellow-500" },
-  APPROVED: { label: "Approved", classes: "border-emerald-200 bg-emerald-50 text-emerald-600", dot: "bg-emerald-500" },
+  APPROVED: { label: "Approved", classes: "border-blue-200 bg-blue-50 text-blue-600", dot: "bg-blue-500" },
   REJECTED: { label: "Rejected", classes: "border-red-200 bg-red-50 text-red-600", dot: "bg-red-500" },
   SUSPENDED: { label: "Suspended", classes: "border-orange-200 bg-orange-50 text-orange-600", dot: "bg-orange-500" },
 };

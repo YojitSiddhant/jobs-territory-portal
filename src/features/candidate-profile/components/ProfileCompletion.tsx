@@ -7,11 +7,11 @@ export function ProfileCompletion({ percentage }: Props) {
     <div className="rounded-2xl bg-white border border-gray-200 p-5 shadow-sm">
       <div className="flex items-center justify-between mb-3">
         <span className="text-sm font-medium text-gray-700">Profile completion</span>
-        <span className="text-sm font-semibold text-emerald-600">{percentage}%</span>
+        <span className="text-sm font-semibold text-blue-600">{percentage}%</span>
       </div>
       <div className="h-2 w-full rounded-full bg-gray-100 overflow-hidden">
         <div
-          className="h-full rounded-full bg-emerald-500 transition-all duration-500"
+          className="h-full rounded-full bg-blue-500 transition-all duration-500"
           style={{ width: `${percentage}%` }}
         />
       </div>

@@ -26,13 +26,13 @@ export function UploadField({ label, fileKey, kind, onClear, onUpload, isUploadi
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2 min-w-0">
             {previewUrl && kind === "profile-photo" && <Image src={previewUrl} alt="Profile preview" width={40} height={40} className="h-10 w-10 rounded-full object-cover" unoptimized />}
-            <span className="text-emerald-600">
+            <span className="text-blue-600">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <path d="M13.5 5.5L6 13L2.5 9.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </span>
             <span className="text-xs text-gray-600">{kind === "profile-photo" ? "Photo uploaded" : "Resume uploaded"}</span>
-            {previewUrl && <button type="button" onClick={onPreview} className="text-xs font-medium text-emerald-700 hover:underline">Preview</button>}
+            {previewUrl && <button type="button" onClick={onPreview} className="text-xs font-medium text-blue-700 hover:underline">Preview</button>}
           </div>
           <button
             type="button"

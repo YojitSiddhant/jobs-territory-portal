@@ -5,11 +5,11 @@ import { useState, useTransition } from "react";
 type Action = "approve" | "reject" | "suspend" | "restore" | "verify-item" | "reject-item";
 
 const config: Record<Action, { title: string; desc: string; needsReason: boolean; btnCls: string; btnLabel: string }> = {
-  approve: { title: "Approve company", desc: "This will approve the company and allow it to post jobs.", needsReason: false, btnCls: "bg-emerald-600 hover:bg-emerald-500 text-white", btnLabel: "Approve" },
+  approve: { title: "Approve company", desc: "This will approve the company and allow it to post jobs.", needsReason: false, btnCls: "bg-blue-600 hover:bg-blue-500 text-white", btnLabel: "Approve" },
   reject: { title: "Reject company", desc: "The company will be notified of the rejection. A reason is required.", needsReason: true, btnCls: "bg-red-600 hover:bg-red-500 text-white", btnLabel: "Reject" },
   suspend: { title: "Suspend company", desc: "The company's jobs will be hidden and cannot post new ones. A reason is required.", needsReason: true, btnCls: "bg-orange-600 hover:bg-orange-500 text-white", btnLabel: "Suspend" },
-  restore: { title: "Restore company", desc: "This will restore the company from suspension to approved status.", needsReason: false, btnCls: "bg-emerald-600 hover:bg-emerald-500 text-white", btnLabel: "Restore" },
-  "verify-item": { title: "Verify item", desc: "Confirm that this company information or document is valid.", needsReason: false, btnCls: "bg-emerald-600 hover:bg-emerald-500 text-white", btnLabel: "Verify" },
+  restore: { title: "Restore company", desc: "This will restore the company from suspension to approved status.", needsReason: false, btnCls: "bg-blue-600 hover:bg-blue-500 text-white", btnLabel: "Restore" },
+  "verify-item": { title: "Verify item", desc: "Confirm that this company information or document is valid.", needsReason: false, btnCls: "bg-blue-600 hover:bg-blue-500 text-white", btnLabel: "Verify" },
   "reject-item": { title: "Reject item", desc: "Explain what must be corrected before review can continue.", needsReason: true, btnCls: "bg-red-600 hover:bg-red-500 text-white", btnLabel: "Reject item" },
 };
 
@@ -46,7 +46,7 @@ export function ReviewDialog({ action, onConfirm, onClose }: Props) {
         {needsReason && (
           <div>
             <label htmlFor="review-reason" className="block text-xs font-medium text-gray-500 mb-1.5">Reason <span className="text-gray-400">*</span></label>
-            <textarea id="review-reason" rows={3} maxLength={2000} value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Enter a reason…" className="w-full rounded-xl bg-white border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none resize-none transition-colors" />
+            <textarea id="review-reason" rows={3} maxLength={2000} value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Enter a reason…" className="w-full rounded-xl bg-white border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none resize-none transition-colors" />
           </div>
         )}
         {error && <p className="text-sm text-red-600">{error}</p>}

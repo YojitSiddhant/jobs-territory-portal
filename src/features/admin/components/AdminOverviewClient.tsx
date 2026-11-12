@@ -19,7 +19,7 @@ export function AdminOverviewClient({ initialCounts }: Props) {
 
   const stats: { label: string; value: number; cls: string; href: string }[] = [
     { label: "Pending review", value: counts.PENDING, cls: "text-yellow-600", href: "/admin/companies" },
-    { label: "Approved", value: counts.APPROVED, cls: "text-emerald-600", href: "/admin/companies?status=APPROVED" },
+    { label: "Approved", value: counts.APPROVED, cls: "text-blue-600", href: "/admin/companies?status=APPROVED" },
     { label: "Rejected", value: counts.REJECTED, cls: "text-red-600", href: "/admin/companies?status=REJECTED" },
     { label: "Suspended", value: counts.SUSPENDED, cls: "text-orange-600", href: "/admin/companies?status=SUSPENDED" },
   ];
@@ -29,7 +29,7 @@ export function AdminOverviewClient({ initialCounts }: Props) {
       <div className="mx-auto max-w-3xl space-y-6">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-medium uppercase tracking-widest text-emerald-600 mb-1">Jobs Territory — Admin</p>
+            <p className="text-xs font-medium uppercase tracking-widest text-blue-600 mb-1">Jobs Territory — Admin</p>
             <h1 className="text-2xl font-semibold tracking-tight text-gray-900">Dashboard</h1>
           </div>
           <button type="button" onClick={handleRefresh} disabled={isRefreshing} aria-label="Refresh" className="rounded-lg border border-gray-200 p-2 text-gray-500 hover:border-gray-300 hover:text-gray-900 disabled:opacity-40 transition-colors">

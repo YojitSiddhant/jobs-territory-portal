@@ -7,7 +7,7 @@ import { fetchPendingCompanies } from "../api";
 
 const statusConfig: Record<string, { label: string; cls: string }> = {
   PENDING: { label: "Pending", cls: "border-yellow-200 bg-yellow-50 text-yellow-600" },
-  APPROVED: { label: "Approved", cls: "border-emerald-200 bg-emerald-50 text-emerald-600" },
+  APPROVED: { label: "Approved", cls: "border-blue-200 bg-blue-50 text-blue-600" },
   REJECTED: { label: "Rejected", cls: "border-red-200 bg-red-50 text-red-600" },
   SUSPENDED: { label: "Suspended", cls: "border-orange-200 bg-orange-50 text-orange-600" },
 };
@@ -29,7 +29,7 @@ export function CompanyListClient({ initialCompanies }: Props) {
       <div className="mx-auto max-w-3xl space-y-6">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-medium uppercase tracking-widest text-emerald-600 mb-1">Jobs Territory — Admin</p>
+            <p className="text-xs font-medium uppercase tracking-widest text-blue-600 mb-1">Jobs Territory — Admin</p>
             <h1 className="text-2xl font-semibold tracking-tight text-gray-900">Pending verification</h1>
             <p className="mt-1 text-sm text-gray-500">{companies.length} compan{companies.length !== 1 ? "ies" : "y"} awaiting review</p>
           </div>
@@ -58,7 +58,7 @@ export function CompanyListClient({ initialCompanies }: Props) {
                   <Link href={`/admin/companies/${company.id}`} className="group block rounded-2xl bg-white border border-gray-200 p-5 hover:border-gray-300 hover:shadow-sm transition-colors shadow-sm">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <h3 className="text-base font-semibold text-gray-900 group-hover:text-emerald-600 transition-colors truncate">{company.name ?? "—"}</h3>
+                        <h3 className="text-base font-semibold text-gray-900 group-hover:text-blue-600 transition-colors truncate">{company.name ?? "—"}</h3>
                         <p className="text-xs text-gray-500 mt-0.5">{company.industry ?? "—"} · {company.owner.email}</p>
                       </div>
                       <span className={`shrink-0 rounded-full border px-2.5 py-0.5 text-xs font-medium ${sc.cls}`}>{sc.label}</span>

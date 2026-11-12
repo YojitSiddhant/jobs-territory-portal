@@ -7,7 +7,7 @@ import { JobForm } from "./JobForm";
 
 const statusConfig: Record<string, { label: string; cls: string }> = {
   DRAFT: { label: "Draft", cls: "border-gray-300 text-gray-500" },
-  PUBLISHED: { label: "Published", cls: "border-emerald-200 text-emerald-600 bg-emerald-50" },
+  PUBLISHED: { label: "Published", cls: "border-blue-200 text-blue-600 bg-blue-50" },
   CLOSED: { label: "Closed", cls: "border-gray-200 text-gray-400 bg-gray-50" },
 };
 
@@ -69,7 +69,7 @@ export function JobsManagementClient({ initialJobs }: Props) {
       <main className="min-h-screen bg-white px-4 py-10 sm:px-6">
         <div className="mx-auto max-w-2xl space-y-6">
           <div>
-            <p className="text-xs font-medium uppercase tracking-widest text-emerald-600 mb-1">Jobs Territory</p>
+            <p className="text-xs font-medium uppercase tracking-widest text-blue-600 mb-1">Jobs Territory</p>
             <h1 className="text-2xl font-semibold tracking-tight text-gray-900">{job ? "Edit job" : "Create job"}</h1>
           </div>
           <div className="rounded-2xl bg-white border border-gray-200 p-6 shadow-sm">
@@ -85,12 +85,12 @@ export function JobsManagementClient({ initialJobs }: Props) {
       <div className="mx-auto max-w-3xl space-y-6">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-medium uppercase tracking-widest text-emerald-600 mb-1">Jobs Territory</p>
+            <p className="text-xs font-medium uppercase tracking-widest text-blue-600 mb-1">Jobs Territory</p>
             <h1 className="text-2xl font-semibold tracking-tight text-gray-900">Job management</h1>
             <p className="mt-1 text-sm text-gray-500">{jobs.length} job{jobs.length !== 1 ? "s" : ""}</p>
           </div>
           <div className="flex items-center gap-2">
-            <button type="button" onClick={() => setEditing("new")} className="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500 transition-colors">
+            <button type="button" onClick={() => setEditing("new")} className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 transition-colors">
               + New job
             </button>
             <button type="button" onClick={handleRefresh} disabled={isRefreshing} aria-label="Refresh" className="rounded-lg border border-gray-200 p-2 text-gray-500 hover:border-gray-300 hover:text-gray-900 disabled:opacity-40 transition-colors">
@@ -103,7 +103,7 @@ export function JobsManagementClient({ initialJobs }: Props) {
         </div>
 
         {error && <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">{error}</div>}
-        {success && <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{success}</div>}
+        {success && <div className="rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-700">{success}</div>}
 
         {jobs.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-gray-300 p-12 text-center">
@@ -134,7 +134,7 @@ export function JobsManagementClient({ initialJobs }: Props) {
                       {job.status === "DRAFT" && (
                         <>
                           <button type="button" onClick={() => setEditing(job)} className="text-xs text-gray-500 hover:text-gray-900 transition-colors">Edit</button>
-                          <button type="button" onClick={() => handlePublish(job.id)} disabled={isPending} className="rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-1.5 text-xs font-medium text-emerald-600 hover:bg-emerald-100 disabled:opacity-50 transition-colors">Publish</button>
+                          <button type="button" onClick={() => handlePublish(job.id)} disabled={isPending} className="rounded-lg bg-blue-50 border border-blue-200 px-3 py-1.5 text-xs font-medium text-blue-600 hover:bg-blue-100 disabled:opacity-50 transition-colors">Publish</button>
                         </>
                       )}
                       {job.status === "PUBLISHED" && (

@@ -18,7 +18,7 @@ const emptyEntry = (): Experience => ({
 });
 
 const inputClass =
-  "w-full rounded-lg bg-white border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors";
+  "w-full rounded-lg bg-white border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors";
 
 function formatDateForDisplay(iso: string | null | undefined): string {
   if (!iso) return "";
@@ -116,7 +116,7 @@ function ExperienceForm({
           onChange={(e) => {
             onChange({ ...entry, isCurrent: e.target.checked, endDate: e.target.checked ? null : entry.endDate });
           }}
-          className="h-4 w-4 rounded border-gray-300 accent-emerald-600"
+          className="h-4 w-4 rounded border-gray-300 accent-blue-600"
         />
         <span className="text-xs text-gray-500">I currently work here</span>
       </label>
@@ -139,7 +139,7 @@ function ExperienceForm({
         <button
           type="button"
           onClick={onSave}
-          className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-500 transition-colors"
+          className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-500 transition-colors"
         >
           Save
         </button>
