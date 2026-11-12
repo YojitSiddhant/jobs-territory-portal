@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 type Props = {
   label: string;
   fileKey: string | null;
@@ -8,9 +10,10 @@ type Props = {
   onUpload: (file: File) => Promise<void>;
   isUploading?: boolean;
   uploadProgress?: number;
+  previewUrl?: string | null;
 };
 
-export function UploadField({ label, fileKey, onClear, onUpload, isUploading = false, uploadProgress = 0 }: Props) {
+export function UploadField({ label, fileKey, kind, onClear, onUpload, isUploading = false, uploadProgress = 0, previewUrl }: Props) {
   const hasFile = Boolean(fileKey);
 
   return (
@@ -20,12 +23,14 @@ export function UploadField({ label, fileKey, onClear, onUpload, isUploading = f
       {hasFile ? (
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2 min-w-0">
+            {previewUrl && kind === "profile-photo" && <Image src={previewUrl} alt="Profile preview" width={40} height={40} className="h-10 w-10 rounded-full object-cover" unoptimized />}
             <span className="text-emerald-600">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <path d="M13.5 5.5L6 13L2.5 9.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </span>
             <span className="text-xs text-gray-500 truncate font-mono">{fileKey}</span>
+            {previewUrl && kind === "resume" && <a href={previewUrl} target="_blank" rel="noreferrer" className="text-xs text-emerald-700 hover:underline">Preview</a>}
           </div>
           <button
             type="button"

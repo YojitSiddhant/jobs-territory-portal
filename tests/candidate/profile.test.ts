@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { calculateProfileCompletion } from "../../src/server/candidates/profile-completion";
 import { candidateProfileSchema } from "../../src/shared/validation/candidate-profile";
-import { normalizeCandidateProfile } from "../../src/features/candidate-profile/api";
+import { normalizeCandidateProfile, parseUploadResponse, privateFileUrl } from "../../src/features/candidate-profile/api";
 
 describe("candidate profile", () => {
   it("calculates completion from profile sections", () => {
@@ -65,5 +65,16 @@ describe("candidate profile", () => {
     } finally {
       globalThis.fetch = originalFetch;
     }
+  });
+
+  it("builds protected preview URLs without exposing filesystem paths", () => {
+    assert.equal(privateFileUrl("private/candidates/user-1/profile-photo/photo.png"), "/api/private-files/private/candidates/user-1/profile-photo/photo.png");
+    assert.equal(privateFileUrl(null), null);
+  });
+
+  it("parses upload success and errors from the standard API envelope", () => {
+    assert.deepEqual(parseUploadResponse(201, JSON.stringify({ data: { key: "private/candidates/user-1/resume/file.pdf" } })), { key: "private/candidates/user-1/resume/file.pdf" });
+    assert.throws(() => parseUploadResponse(201, JSON.stringify({ data: {} })), /upload failed/i);
+    assert.throws(() => parseUploadResponse(403, JSON.stringify({ error: { message: "Forbidden" } })), /forbidden/i);
   });
 });

@@ -41,7 +41,20 @@ export async function uploadCandidateFile(kind: "profile-photo" | "resume", file
     xhr.open("POST", "/api/candidate/profile/files");
     xhr.upload.onprogress = (event) => { if (event.lengthComputable) onProgress?.(Math.round((event.loaded / event.total) * 100)); };
     xhr.onerror = () => reject(new Error("Upload failed. Check your connection and try again."));
-    xhr.onload = () => { let data: { key?: string; error?: { message?: string } } = {}; try { data = JSON.parse(xhr.responseText); } catch { /* handled below */ } if (xhr.status < 200 || xhr.status >= 300 || !data.key) reject(new Error(data.error?.message ?? "Upload failed.")); else resolve({ key: data.key }); };
+    xhr.onload = () => { try { resolve(parseUploadResponse(xhr.status, xhr.responseText)); } catch (error) { reject(error); } };
     xhr.send(form);
   });
+}
+
+export function privateFileUrl(key: string | null | undefined) {
+  if (!key) return null;
+  return `/api/private-files/${key.split("/").map(encodeURIComponent).join("/")}`;
+}
+
+export function parseUploadResponse(status: number, responseText: string) {
+  let data: { data?: { key?: string }; error?: { message?: string } } = {};
+  try { data = JSON.parse(responseText); } catch { /* handled below */ }
+  const key = data.data?.key;
+  if (status < 200 || status >= 300 || !key) throw new Error(data.error?.message ?? "Upload failed.");
+  return { key };
 }

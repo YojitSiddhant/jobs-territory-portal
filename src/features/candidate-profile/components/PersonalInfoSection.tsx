@@ -17,6 +17,7 @@ type Props = {
   onUpload: (file: File) => Promise<void>;
   isUploading?: boolean;
   uploadProgress?: number;
+  previewUrl?: string | null;
 };
 
 function Field({
@@ -41,7 +42,7 @@ function Field({
 const inputClass =
   "w-full rounded-lg bg-white border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors";
 
-export function PersonalInfoSection({ value, onChange, onUpload, isUploading, uploadProgress }: Props) {
+export function PersonalInfoSection({ value, onChange, onUpload, isUploading, uploadProgress, previewUrl }: Props) {
   const set = (key: keyof PersonalInfo, v: string | null) =>
     onChange({ ...value, [key]: v });
 
@@ -120,6 +121,7 @@ export function PersonalInfoSection({ value, onChange, onUpload, isUploading, up
         onUpload={onUpload}
         isUploading={isUploading}
         uploadProgress={uploadProgress}
+        previewUrl={previewUrl}
       />
     </section>
   );
