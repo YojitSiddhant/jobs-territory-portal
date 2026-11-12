@@ -57,6 +57,17 @@ GET  /api/auth/me
 
 Successful registration/login creates a server-side session and sets an HttpOnly, SameSite cookie. Only a SHA-256 hash of the random session token is stored in MySQL. Passwords are hashed with bcrypt and password hashes are never returned. Invalid credentials return `401`; duplicate emails return `409`; unauthenticated protected requests return `401` and role failures return `403`.
 
+### Local admin bootstrap
+
+There is no public admin registration route. With `.env.local` loaded, create or update one local admin using runtime-only variables (never commit them):
+
+```bash
+set -a; . ./.env.local; set +a
+ADMIN_EMAIL=admin@example.com ADMIN_PASSWORD='use-a-local-password-at-least-12-chars' npm run admin:bootstrap
+```
+
+The command is idempotent and preserves the `ADMIN` role. If the email belongs to a candidate or company account, it refuses to change that account unless `CONFIRM_PROMOTE_TO_ADMIN=YES` is also supplied explicitly. It prints only a success message, never the password or hash. You can omit the variables to enter them interactively.
+
 Use `requireAuthenticatedUser()` or `requireRole("CANDIDATE")`, `requireRole("COMPANY")`, or `requireRole("ADMIN")` from `src/server/auth/authorization.ts` inside future protected Route Handlers. Do not trust role values from request bodies.
 
 ## Candidate profile API
