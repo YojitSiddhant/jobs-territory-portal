@@ -110,7 +110,6 @@ export function CompanyDashboardClient({ initialProfile }: Props) {
         {profile && (
           <section className="rounded-2xl bg-white border border-gray-200 p-6 shadow-sm">
             <DocumentsSection
-              companyId={profile.id}
               documents={profile.documents}
               canEdit={canEdit}
               onRefresh={handleRefresh}

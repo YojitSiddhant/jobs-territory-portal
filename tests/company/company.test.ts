@@ -21,6 +21,7 @@ describe("company verification", () => {
 
   it("accepts only private company document references", () => {
     assert.equal(companyDocumentSchema.safeParse({ type: "REGISTRATION_CERTIFICATE", storageKey: "private/companies/company-1/company-document/file.pdf", originalName: "registration.pdf", mimeType: "application/pdf" }).success, true);
+  assert.equal(companyDocumentSchema.safeParse({ type: "ADDRESS_PROOF", storageKey: "private/companies/company-1/company-document/address.pdf", originalName: "address.pdf", mimeType: "application/pdf" }).success, true);
     assert.equal(companyDocumentSchema.safeParse({ type: "OTHER", storageKey: "public/file.pdf", originalName: "file.pdf", mimeType: "application/pdf" }).success, false);
   });
 

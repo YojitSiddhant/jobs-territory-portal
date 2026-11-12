@@ -1,5 +1,5 @@
 export type CompanyStatus = "PENDING" | "APPROVED" | "REJECTED" | "SUSPENDED";
-export type DocumentType = "REGISTRATION_CERTIFICATE" | "TAX_DOCUMENT" | "IDENTITY_DOCUMENT" | "OTHER";
+export type DocumentType = "REGISTRATION_CERTIFICATE" | "TAX_DOCUMENT" | "IDENTITY_DOCUMENT" | "ADDRESS_PROOF" | "OTHER";
 export type DocumentStatus = "PENDING" | "APPROVED" | "REJECTED";
 export type JobStatus = "DRAFT" | "PUBLISHED" | "CLOSED";
 
