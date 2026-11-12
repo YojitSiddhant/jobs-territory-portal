@@ -25,8 +25,7 @@ export function AdminOverviewClient({ initialCounts }: Props) {
   ];
 
   return (
-    <main className="min-h-screen bg-white">
-      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 space-y-6">
+    <main className="min-h-screen bg-white px-4 py-10 sm:px-6 lg:px-8 space-y-6">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs font-medium uppercase tracking-widest text-blue-600 mb-1">Jobs Territory — Admin</p>
@@ -59,7 +58,6 @@ export function AdminOverviewClient({ initialCounts }: Props) {
             </Link>
           </div>
         </div>
-      </div>
     </main>
   );
 }
