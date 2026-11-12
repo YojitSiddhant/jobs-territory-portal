@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useTransition, useMemo } from "react";
+import { useState, useCallback, useTransition, useMemo, useRef } from "react";
 import { SlidersHorizontal, ChevronLeft, ChevronRight, Search } from "lucide-react";
 import type { PublicJob, Pagination, JobDiscoveryQuery } from "../types";
 import { fetchJobs } from "../api";
@@ -21,16 +21,20 @@ export function JobsPage({ initialJobs, initialPagination, initialQuery }: Props
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const [showFilters, setShowFilters] = useState(false);
+  const requestSequence = useRef(0);
 
   const load = useCallback((next: JobDiscoveryQuery) => {
+    const requestId = ++requestSequence.current;
+    setQuery(next);
+    setError(null);
     startTransition(async () => {
-      setError(null);
       try {
         const res = await fetchJobs(next);
+        if (requestId !== requestSequence.current) return;
         setJobs(res.jobs);
         setPagination(res.pagination);
-        setQuery(next);
       } catch (err) {
+        if (requestId !== requestSequence.current) return;
         setError(err instanceof Error ? err.message : "Failed to load jobs.");
       }
     });
@@ -107,6 +111,8 @@ export function JobsPage({ initialJobs, initialPagination, initialQuery }: Props
                 {error}
               </div>
             )}
+
+            {isPending && <p role="status" className="mb-4 text-sm text-gray-500">Loading jobs…</p>}
 
             <div className={`space-y-3 ${isPending ? "opacity-60 pointer-events-none" : ""} transition-opacity`}>
               {jobs.length === 0 && !isPending ? (
