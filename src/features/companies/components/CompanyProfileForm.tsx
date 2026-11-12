@@ -86,9 +86,9 @@ export function CompanyProfileForm({ profile, onSaved, readonly = false }: Props
         <div className="flex items-center gap-3">
           <button type="submit" disabled={isPending} className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-60 transition-colors">
             {isPending ? <Spinner /> : null}
-            {isPending ? "Saving…" : profile ? "Save changes" : "Create profile"}
+            {isPending ? "Saving…" : "Save company details"}
           </button>
-          {success && <span className="text-sm text-emerald-600">Saved</span>}
+          {success && <span className="text-sm text-emerald-600">Company details saved successfully.</span>}
           {error && <span className="text-sm text-red-600">{error}</span>}
         </div>
       )}
