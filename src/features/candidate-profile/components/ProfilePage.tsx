@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import type { CandidateProfile, Education, Experience } from "../types";
-import { emptyCandidateProfile, fetchProfile, normalizeCandidateProfile, updateProfile, uploadCandidateFile } from "../api";
+import { emptyCandidateProfile, fetchProfile, normalizeCandidateProfile, privateFileUrl, updateProfile, uploadCandidateFile } from "../api";
 import { ProfileCompletion } from "./ProfileCompletion";
 import { PersonalInfoSection } from "./PersonalInfoSection";
 import { EducationSection } from "./EducationSection";
@@ -188,6 +188,7 @@ export function ProfilePage({ initialProfile }: Props) {
           onUpload={(file) => handleUpload("profile-photo", file)}
           isUploading={uploadingKind === "profile-photo"}
           uploadProgress={uploadingKind === "profile-photo" ? uploadProgress : 0}
+          previewUrl={privateFileUrl(form.profilePhotoKey)}
         />
 
         {/* Resume */}
@@ -201,6 +202,7 @@ export function ProfilePage({ initialProfile }: Props) {
             onUpload={(file) => handleUpload("resume", file)}
             isUploading={uploadingKind === "resume"}
             uploadProgress={uploadingKind === "resume" ? uploadProgress : 0}
+            previewUrl={privateFileUrl(form.resumeKey)}
           />
           {uploadError && <p className="text-sm text-red-600">{uploadError}</p>}
         </section>
