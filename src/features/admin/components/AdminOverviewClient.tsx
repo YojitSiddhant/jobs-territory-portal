@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
+import { RefreshCw } from "lucide-react";
 import type { VerificationCounts } from "../types";
 import { fetchVerificationCounts } from "../api";
 
@@ -31,11 +32,8 @@ export function AdminOverviewClient({ initialCounts }: Props) {
             <p className="text-xs font-medium uppercase tracking-widest text-blue-600 mb-1">Jobs Territory — Admin</p>
             <h1 className="text-2xl font-semibold tracking-tight text-gray-900">Dashboard</h1>
           </div>
-          <button type="button" onClick={handleRefresh} disabled={isRefreshing} aria-label="Refresh" className="rounded-lg border border-gray-200 p-2 text-gray-500 hover:border-gray-300 hover:text-gray-900 disabled:opacity-40 transition-colors">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className={isRefreshing ? "animate-spin" : ""} aria-hidden>
-              <path d="M13.5 2.5A6.5 6.5 0 1 1 8 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              <path d="M13.5 2.5V6h-3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+          <button type="button" onClick={handleRefresh} disabled={isRefreshing} aria-label="Refresh dashboard" title="Refresh" className="rounded-lg border border-gray-200 p-2 text-gray-500 hover:border-gray-300 hover:text-gray-900 disabled:opacity-40 transition-colors">
+            <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} aria-hidden />
           </button>
         </div>
 

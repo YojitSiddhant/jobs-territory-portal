@@ -24,5 +24,5 @@ export function CandidateNavLinks() {
   );
 }
 
-const linkCls = "rounded-lg px-3 py-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors";
-const activeLinkCls = "rounded-lg bg-blue-50 px-3 py-1.5 font-medium text-blue-700 transition-colors";
+const linkCls = "rounded-lg px-3 py-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors w-full sm:w-auto";
+const activeLinkCls = "rounded-lg bg-blue-50 px-3 py-2 font-medium text-blue-700 transition-colors w-full sm:w-auto";

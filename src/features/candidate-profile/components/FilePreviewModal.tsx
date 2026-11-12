@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import Image from "next/image";
+import { Download, X } from "lucide-react";
 
 type Props = { kind: "profile-photo" | "resume"; previewUrl: string; onClose: () => void };
 
@@ -18,9 +19,12 @@ export function FilePreviewModal({ kind, previewUrl, onClose }: Props) {
       <div className="relative max-h-[90vh] w-full max-w-3xl rounded-2xl bg-white p-4 shadow-xl">
         <div className="mb-3 flex items-center justify-between gap-4">
           <h2 id="file-preview-title" className="text-base font-semibold text-gray-900">{kind === "profile-photo" ? "Profile photo preview" : "Resume preview"}</h2>
-          <button ref={closeRef} type="button" onClick={onClose} aria-label="Close preview" className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50">Close</button>
+          <button ref={closeRef} type="button" onClick={onClose} aria-label="Close preview" title="Close preview" className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+            <X className="h-4 w-4" aria-hidden />
+            Close
+          </button>
         </div>
-        {kind === "profile-photo" ? <div className="flex max-h-[75vh] justify-center overflow-auto rounded-lg bg-gray-50 p-2"><Image src={previewUrl} alt="Profile photo" width={800} height={800} className="max-h-[70vh] w-auto max-w-full object-contain" unoptimized /></div> : <><iframe title="Resume document preview" src={previewUrl} className="h-[70vh] w-full rounded-lg border border-gray-200" /><a href={`${previewUrl}?download=1`} download className="mt-3 inline-flex rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white">Download</a></>}
+        {kind === "profile-photo" ? <div className="flex max-h-[75vh] justify-center overflow-auto rounded-lg bg-gray-50 p-2"><Image src={previewUrl} alt="Profile photo" width={800} height={800} className="max-h-[70vh] w-auto max-w-full object-contain" unoptimized /></div> : <><iframe title="Resume document preview" src={previewUrl} className="h-[70vh] w-full rounded-lg border border-gray-200" /><a href={`${previewUrl}?download=1`} download className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-500 transition-colors"><Download className="h-4 w-4" aria-hidden />Download</a></>}
       </div>
     </div>
   );

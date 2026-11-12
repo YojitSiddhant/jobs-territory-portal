@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
+import { ArrowLeft, RefreshCw } from "lucide-react";
 import type { AdminCompany } from "../types";
 import { fetchPendingCompanies } from "../api";
 
@@ -33,12 +34,12 @@ export function CompanyListClient({ initialCompanies }: Props) {
             <p className="mt-1 text-sm text-gray-500">{companies.length} compan{companies.length !== 1 ? "ies" : "y"} awaiting review</p>
           </div>
           <div className="flex items-center gap-2">
-            <Link href="/admin/dashboard" className="rounded-lg border border-gray-200 px-3 py-2 text-xs text-gray-700 hover:border-gray-300 hover:bg-gray-50 transition-colors">← Dashboard</Link>
-            <button type="button" onClick={handleRefresh} disabled={isRefreshing} aria-label="Refresh" className="rounded-lg border border-gray-200 p-2 text-gray-500 hover:border-gray-300 hover:text-gray-900 disabled:opacity-40 transition-colors">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className={isRefreshing ? "animate-spin" : ""} aria-hidden>
-                <path d="M13.5 2.5A6.5 6.5 0 1 1 8 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                <path d="M13.5 2.5V6h-3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+            <Link href="/admin/dashboard" className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-2 text-xs text-gray-700 hover:border-gray-300 hover:bg-gray-50 transition-colors">
+              <ArrowLeft className="h-3.5 w-3.5" aria-hidden />
+              Dashboard
+            </Link>
+            <button type="button" onClick={handleRefresh} disabled={isRefreshing} aria-label="Refresh company list" title="Refresh" className="rounded-lg border border-gray-200 p-2 text-gray-500 hover:border-gray-300 hover:text-gray-900 disabled:opacity-40 transition-colors">
+              <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} aria-hidden />
             </button>
           </div>
         </div>

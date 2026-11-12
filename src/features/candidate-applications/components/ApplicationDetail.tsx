@@ -1,6 +1,7 @@
 import type { Application } from "../types";
 import { StatusBadge } from "./StatusBadge";
 import Link from "next/link";
+import { X } from "lucide-react";
 
 type Props = {
   application: Application;
@@ -29,9 +30,7 @@ export function ApplicationDetail({ application, onClose }: Props) {
           aria-label="Close application detail"
           className="shrink-0 rounded-lg border border-gray-200 p-2 text-gray-500 hover:border-gray-300 hover:text-gray-900 transition-colors"
         >
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
-            <path d="M2 2l10 10M12 2L2 12" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-          </svg>
+          <X className="h-3.5 w-3.5" aria-hidden />
         </button>
       </div>
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { RefreshCw, X } from "lucide-react";
 import type { CompanyApplication } from "../types";
 import { fetchCompanyApplication, fetchCompanyApplications, normalizeCompanyApplication, updateApplicationStatus } from "../api";
 
@@ -79,11 +80,8 @@ export function CompanyApplicationsClient({ initialApplications }: Props) {
             <h1 className="text-2xl font-semibold tracking-tight text-gray-900">Applications</h1>
             <p className="mt-1 text-sm text-gray-500">{applications.length} application{applications.length !== 1 ? "s" : ""} received</p>
           </div>
-          <button type="button" onClick={handleRefresh} disabled={isRefreshing} aria-label="Refresh" className="rounded-lg border border-gray-200 p-2 text-gray-500 hover:border-gray-300 hover:text-gray-900 disabled:opacity-40 transition-colors">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className={isRefreshing ? "animate-spin" : ""} aria-hidden>
-              <path d="M13.5 2.5A6.5 6.5 0 1 1 8 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              <path d="M13.5 2.5V6h-3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+          <button type="button" onClick={handleRefresh} disabled={isRefreshing} aria-label="Refresh applications" title="Refresh" className="rounded-lg border border-gray-200 p-2 text-gray-500 hover:border-gray-300 hover:text-gray-900 disabled:opacity-40 transition-colors">
+            <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} aria-hidden />
           </button>
         </div>
 
@@ -98,8 +96,8 @@ export function CompanyApplicationsClient({ initialApplications }: Props) {
                 {selected.candidate?.headline && <p className="text-xs text-gray-500 mt-0.5">{selected.candidate.headline}</p>}
                 {selected.candidate?.location && <p className="text-xs text-gray-400 mt-0.5">{selected.candidate.location}</p>}
               </div>
-              <button type="button" onClick={() => setSelected(null)} aria-label="Close" className="rounded-lg border border-gray-200 p-2 text-gray-500 hover:border-gray-300 hover:text-gray-900 transition-colors">
-                <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" /></svg>
+              <button type="button" onClick={() => setSelected(null)} aria-label="Close application details" title="Close" className="rounded-lg border border-gray-200 p-2 text-gray-500 hover:border-gray-300 hover:text-gray-900 transition-colors">
+                <X className="h-3.5 w-3.5" aria-hidden />
               </button>
             </div>
             <div className="flex items-center gap-2">

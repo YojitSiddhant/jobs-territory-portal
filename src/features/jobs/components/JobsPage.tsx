@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useTransition, useMemo } from "react";
+import { SlidersHorizontal, ChevronLeft, ChevronRight, Search } from "lucide-react";
 import type { PublicJob, Pagination, JobDiscoveryQuery } from "../types";
 import { fetchJobs } from "../api";
 import { JobCard } from "./JobCard";
@@ -71,9 +72,7 @@ export function JobsPage({ initialJobs, initialPagination, initialQuery }: Props
             aria-expanded={showFilters}
             className="lg:hidden flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 hover:border-gray-300 hover:bg-gray-50 transition-colors"
           >
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
-              <path d="M1 3h12M3 7h8M5 11h4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-            </svg>
+            <SlidersHorizontal className="h-4 w-4" aria-hidden />
             Filters
           </button>
           <div className="flex items-center gap-2 ml-auto">
@@ -160,9 +159,10 @@ function SearchBar({
       <button
         type="submit"
         disabled={isPending}
-        className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-500 disabled:opacity-60 transition-colors"
+        className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-500 disabled:opacity-60 transition-colors"
       >
-        Search
+        <Search className="h-4 w-4" aria-hidden />
+        <span className="hidden sm:inline">Search</span>
       </button>
     </form>
   );
@@ -241,9 +241,9 @@ function Pagination({
         disabled={current === 1 || isPending}
         onClick={() => onPage(current - 1)}
         aria-label="Previous page"
-        className="rounded-lg border border-gray-200 px-3 py-2 text-xs text-gray-500 hover:border-gray-300 hover:text-gray-900 disabled:opacity-30 transition-colors"
+        className="rounded-lg border border-gray-200 p-2 text-gray-500 hover:border-gray-300 hover:text-gray-900 disabled:opacity-30 transition-colors"
       >
-        ←
+        <ChevronLeft className="h-4 w-4" aria-hidden />
       </button>
       {pages.map((p, i) =>
         p === "…" ? (
@@ -272,9 +272,9 @@ function Pagination({
         disabled={current === total || isPending}
         onClick={() => onPage(current + 1)}
         aria-label="Next page"
-        className="rounded-lg border border-gray-200 px-3 py-2 text-xs text-gray-500 hover:border-gray-300 hover:text-gray-900 disabled:opacity-30 transition-colors"
+        className="rounded-lg border border-gray-200 p-2 text-gray-500 hover:border-gray-300 hover:text-gray-900 disabled:opacity-30 transition-colors"
       >
-        →
+        <ChevronRight className="h-4 w-4" aria-hidden />
       </button>
     </nav>
   );
