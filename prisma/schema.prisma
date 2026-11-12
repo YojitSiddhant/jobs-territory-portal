@@ -30,7 +30,23 @@ enum VerificationDocumentType {
 
 enum VerificationDocumentStatus {
   PENDING
-  ACCEPTED
+  VERIFIED
+  REJECTED
+}
+
+enum VerificationField {
+  NAME
+  REGISTRATION_NUMBER
+  WEBSITE
+  CONTACT_EMAIL
+  PHONE
+  ADDRESS
+  INDUSTRY
+  DESCRIPTION
+}
+
+enum VerificationItemDecision {
+  VERIFIED
   REJECTED
 }
 
@@ -71,18 +87,20 @@ enum ReviewDecision {
 }
 
 model User {
-  id                String            @id @default(cuid())
-  email             String            @unique
-  passwordHash      String            @map("password_hash")
-  role              UserRole
-  createdAt         DateTime          @default(now()) @map("created_at")
-  updatedAt         DateTime          @updatedAt @map("updated_at")
-  candidateProfile  CandidateProfile?
-  company           Company?
-  applications      Application[]
-  applicationStatusChanges ApplicationStatusHistory[] @relation("ApplicationStatusActors")
-  reviewRecords     AdminReviewRecord[]
-  sessions          Session[]
+  id                       String                          @id @default(cuid())
+  email                    String                          @unique
+  passwordHash             String                          @map("password_hash")
+  role                     UserRole
+  createdAt                DateTime                        @default(now()) @map("created_at")
+  updatedAt                DateTime                        @updatedAt @map("updated_at")
+  candidateProfile         CandidateProfile?
+  company                  Company?
+  applications             Application[]
+  applicationStatusChanges ApplicationStatusHistory[]      @relation("ApplicationStatusActors")
+  reviewRecords            AdminReviewRecord[]
+  verificationItemReviews  CompanyVerificationItemReview[] @relation("VerificationItemReviewers")
+  sessions                 Session[]
+
   @@index([role])
   @@map("users")
 }
@@ -94,122 +112,150 @@ model Session {
   expiresAt DateTime @map("expires_at")
   createdAt DateTime @default(now()) @map("created_at")
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId, expiresAt])
   @@map("sessions")
 }
 
 model CandidateProfile {
-  id              String   @id @default(cuid())
-  userId          String   @unique @map("user_id")
-  fullName        String?  @map("full_name")
+  id              String                @id @default(cuid())
+  userId          String                @unique @map("user_id")
+  fullName        String?               @map("full_name")
   phone           String?
   headline        String?
-  bio             String?  @db.Text
+  bio             String?               @db.Text
   location        String?
-  profilePhotoKey String?  @map("profile_photo_key")
-  resumeKey       String?  @map("resume_key")
+  profilePhotoKey String?               @map("profile_photo_key")
+  resumeKey       String?               @map("resume_key")
   skills          Json?
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt       DateTime              @default(now()) @map("created_at")
+  updatedAt       DateTime              @updatedAt @map("updated_at")
+  user            User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
   education       CandidateEducation[]
   experience      CandidateExperience[]
+
   @@map("candidate_profiles")
 }
 
 model CandidateEducation {
-  id           String   @id @default(cuid())
-  profileId    String   @map("profile_id")
-  institution  String
+  id            String           @id @default(cuid())
+  profileId     String           @map("profile_id")
+  institution   String
   qualification String
-  fieldOfStudy String?  @map("field_of_study")
-  startYear    Int?     @map("start_year")
-  endYear      Int?     @map("end_year")
-  description  String?  @db.Text
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
-  profile      CandidateProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  fieldOfStudy  String?          @map("field_of_study")
+  startYear     Int?             @map("start_year")
+  endYear       Int?             @map("end_year")
+  description   String?          @db.Text
+  createdAt     DateTime         @default(now()) @map("created_at")
+  updatedAt     DateTime         @updatedAt @map("updated_at")
+  profile       CandidateProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
   @@index([profileId])
   @@map("candidate_education")
 }
 
 model CandidateExperience {
-  id          String    @id @default(cuid())
-  profileId   String    @map("profile_id")
+  id          String           @id @default(cuid())
+  profileId   String           @map("profile_id")
   employer    String
-  jobTitle    String    @map("job_title")
-  startDate   DateTime  @map("start_date")
-  endDate     DateTime? @map("end_date")
-  isCurrent   Boolean   @default(false) @map("is_current")
-  description String?   @db.Text
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
+  jobTitle    String           @map("job_title")
+  startDate   DateTime         @map("start_date")
+  endDate     DateTime?        @map("end_date")
+  isCurrent   Boolean          @default(false) @map("is_current")
+  description String?          @db.Text
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
   profile     CandidateProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
   @@index([profileId, startDate])
   @@map("candidate_experience")
 }
 
 model Company {
-  id              String        @id @default(cuid())
-  ownerId         String        @unique @map("owner_id")
-  name            String
-  slug            String        @unique
-  registrationNumber String?     @unique @map("registration_number")
-  description     String?       @db.Text
-  website         String?
-  contactEmail    String        @map("contact_email")
-  phone           String?
-  address         String?       @db.Text
-  industry        String?
-  status          CompanyStatus @default(PENDING)
-  rejectionReason String?       @map("rejection_reason") @db.Text
-  verificationSubmittedAt DateTime? @map("verification_submitted_at")
-  createdAt       DateTime      @default(now()) @map("created_at")
-  updatedAt       DateTime      @updatedAt @map("updated_at")
-  owner           User                  @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  documents       VerificationDocument[]
-  jobs            Job[]
-  reviews         AdminReviewRecord[]
+  id                      String                          @id @default(cuid())
+  ownerId                 String                          @unique @map("owner_id")
+  name                    String
+  slug                    String                          @unique
+  registrationNumber      String?                         @unique @map("registration_number")
+  description             String?                         @db.Text
+  website                 String?
+  contactEmail            String                          @map("contact_email")
+  phone                   String?
+  address                 String?                         @db.Text
+  industry                String?
+  status                  CompanyStatus                   @default(PENDING)
+  rejectionReason         String?                         @map("rejection_reason") @db.Text
+  verificationSubmittedAt DateTime?                       @map("verification_submitted_at")
+  createdAt               DateTime                        @default(now()) @map("created_at")
+  updatedAt               DateTime                        @updatedAt @map("updated_at")
+  owner                   User                            @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  documents               VerificationDocument[]
+  jobs                    Job[]
+  reviews                 AdminReviewRecord[]
+  itemReviews             CompanyVerificationItemReview[]
+
   @@index([status])
   @@map("companies")
 }
 
 model VerificationDocument {
-  id              String                     @id @default(cuid())
-  companyId       String                     @map("company_id")
+  id              String                          @id @default(cuid())
+  companyId       String                          @map("company_id")
   type            VerificationDocumentType
-  storageKey      String                     @map("storage_key")
-  originalName    String                     @map("original_name")
-  mimeType        String                     @map("mime_type")
-  status          VerificationDocumentStatus @default(PENDING)
-  rejectionReason String?                    @map("rejection_reason") @db.Text
-  createdAt       DateTime                   @default(now()) @map("created_at")
-  updatedAt       DateTime                   @updatedAt @map("updated_at")
-  company         Company                    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  storageKey      String                          @map("storage_key")
+  originalName    String                          @map("original_name")
+  mimeType        String                          @map("mime_type")
+  status          VerificationDocumentStatus      @default(PENDING)
+  rejectionReason String?                         @map("rejection_reason") @db.Text
+  createdAt       DateTime                        @default(now()) @map("created_at")
+  updatedAt       DateTime                        @updatedAt @map("updated_at")
+  company         Company                         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  itemReviews     CompanyVerificationItemReview[]
+
   @@index([companyId, status])
   @@map("verification_documents")
 }
 
+model CompanyVerificationItemReview {
+  id         String                   @id @default(cuid())
+  companyId  String                   @map("company_id")
+  documentId String?                  @map("document_id")
+  field      VerificationField?
+  decision   VerificationItemDecision
+  reason     String?                  @db.Text
+  reviewerId String                   @map("reviewer_id")
+  createdAt  DateTime                 @default(now()) @map("created_at")
+  company    Company                  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  document   VerificationDocument?    @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  reviewer   User                     @relation("VerificationItemReviewers", fields: [reviewerId], references: [id], onDelete: Restrict)
+
+  @@index([companyId, field, createdAt])
+  @@index([documentId, createdAt])
+  @@index([reviewerId, createdAt])
+  @@map("company_verification_item_reviews")
+}
+
 model Job {
-  id             String    @id @default(cuid())
-  companyId      String    @map("company_id")
-  title          String
-  slug           String?   @unique
-  description    String    @db.Text
-  location       String?
-  workplaceType  WorkplaceType? @map("workplace_type")
-  employmentType String?   @map("employment_type")
-  experienceRequirement String? @map("experience_requirement")
-  requiredSkills Json?     @map("required_skills")
-  salaryMin      Decimal?  @map("salary_min") @db.Decimal(12, 2)
-  salaryMax      Decimal?  @map("salary_max") @db.Decimal(12, 2)
-  applicationDeadline DateTime? @map("application_deadline")
-  status         JobStatus @default(DRAFT)
-  publishedAt    DateTime? @map("published_at")
-  createdAt      DateTime  @default(now()) @map("created_at")
-  updatedAt      DateTime  @updatedAt @map("updated_at")
-  company        Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  applications   Application[]
+  id                    String         @id @default(cuid())
+  companyId             String         @map("company_id")
+  title                 String
+  slug                  String?        @unique
+  description           String         @db.Text
+  location              String?
+  workplaceType         WorkplaceType? @map("workplace_type")
+  employmentType        String?        @map("employment_type")
+  experienceRequirement String?        @map("experience_requirement")
+  requiredSkills        Json?          @map("required_skills")
+  salaryMin             Decimal?       @map("salary_min") @db.Decimal(12, 2)
+  salaryMax             Decimal?       @map("salary_max") @db.Decimal(12, 2)
+  applicationDeadline   DateTime?      @map("application_deadline")
+  status                JobStatus      @default(DRAFT)
+  publishedAt           DateTime?      @map("published_at")
+  createdAt             DateTime       @default(now()) @map("created_at")
+  updatedAt             DateTime       @updatedAt @map("updated_at")
+  company               Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  applications          Application[]
+
   @@index([status, publishedAt])
   @@index([status, applicationDeadline])
   @@index([companyId, status])
@@ -217,17 +263,18 @@ model Job {
 }
 
 model Application {
-  id          String            @id @default(cuid())
-  jobId       String            @map("job_id")
-  candidateId String            @map("candidate_id")
-  resumeKey   String?           @map("resume_key")
-  coverNote   String?           @map("cover_note") @db.Text
-  status      ApplicationStatus @default(APPLIED)
-  createdAt   DateTime          @default(now()) @map("created_at")
-  updatedAt   DateTime          @updatedAt @map("updated_at")
-  job         Job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  candidate   User              @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  id            String                     @id @default(cuid())
+  jobId         String                     @map("job_id")
+  candidateId   String                     @map("candidate_id")
+  resumeKey     String?                    @map("resume_key")
+  coverNote     String?                    @map("cover_note") @db.Text
+  status        ApplicationStatus          @default(APPLIED)
+  createdAt     DateTime                   @default(now()) @map("created_at")
+  updatedAt     DateTime                   @updatedAt @map("updated_at")
+  job           Job                        @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  candidate     User                       @relation(fields: [candidateId], references: [id], onDelete: Cascade)
   statusHistory ApplicationStatusHistory[]
+
   @@unique([jobId, candidateId])
   @@index([candidateId, status])
   @@index([jobId, status])
@@ -242,6 +289,7 @@ model ApplicationStatusHistory {
   createdAt     DateTime          @default(now()) @map("created_at")
   application   Application       @relation(fields: [applicationId], references: [id], onDelete: Cascade)
   actor         User              @relation("ApplicationStatusActors", fields: [actorId], references: [id], onDelete: Restrict)
+
   @@index([applicationId, createdAt])
   @@index([actorId, createdAt])
   @@map("application_status_history")
@@ -256,6 +304,7 @@ model AdminReviewRecord {
   createdAt DateTime       @default(now()) @map("created_at")
   admin     User           @relation(fields: [adminId], references: [id], onDelete: Restrict)
   company   Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
   @@index([companyId, createdAt])
   @@index([decision, createdAt])
   @@map("admin_review_records")

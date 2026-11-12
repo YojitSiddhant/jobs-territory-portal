@@ -18,6 +18,7 @@ export function JobsManagementClient({ initialJobs }: Props) {
   const [jobs, setJobs] = useState(initialJobs);
   const [editing, setEditing] = useState<CompanyJob | "new" | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [actionError, setActionError] = useState<{ jobId: string; message: string } | null>(null);
   const [isPending, startTransition] = useTransition();
   const [isRefreshing, startRefreshTransition] = useTransition();
@@ -59,6 +60,7 @@ export function JobsManagementClient({ initialJobs }: Props) {
     );
     setEditing(null);
     setError(null);
+    setSuccess(saved.status === "DRAFT" ? (jobs.some((j) => j.id === job.id) ? "Job draft saved successfully." : "Job draft created successfully.") : "Job saved successfully.");
   }
 
   if (editing !== null) {
@@ -101,6 +103,7 @@ export function JobsManagementClient({ initialJobs }: Props) {
         </div>
 
         {error && <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">{error}</div>}
+        {success && <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{success}</div>}
 
         {jobs.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-gray-300 p-12 text-center">

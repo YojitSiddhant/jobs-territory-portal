@@ -6,9 +6,20 @@ export type AdminDocument = {
   status: string;
   originalName: string;
   mimeType: string;
-  storageKey: string;
   rejectionReason: string | null;
+  reviewedAt: string | null;
+  reviewer: { id: string; email: string } | null;
+  previewPath: string;
   createdAt: string;
+};
+
+export type AdminVerificationField = {
+  field: string;
+  value: string | null;
+  status: "PENDING" | "VERIFIED" | "REJECTED";
+  reason: string | null;
+  reviewedAt: string | null;
+  reviewer: { id: string; email: string } | null;
 };
 
 export type AdminReview = {
@@ -34,6 +45,9 @@ export type AdminCompany = {
   rejectionReason: string | null;
   verificationSubmittedAt: string | null;
   documents: AdminDocument[];
+  fields: AdminVerificationField[];
+  itemReviewHistory: Array<{ id: string; field: string | null; documentId: string | null; decision: string; reason: string | null; createdAt: string; reviewer: { id: string; email: string } }>;
+  canApprove: boolean;
   reviews: AdminReview[];
   createdAt: string;
   updatedAt: string;

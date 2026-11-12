@@ -30,7 +30,10 @@ export default async function AdminCompanyDetailPage({ params }: PageProps) {
     documents: s.documents.map((d) => ({
       ...d,
       createdAt: d.createdAt instanceof Date ? d.createdAt.toISOString() : (d.createdAt as string),
+      reviewedAt: d.reviewedAt instanceof Date ? d.reviewedAt.toISOString() : (d.reviewedAt as string | null),
     })),
+    fields: s.fields.map((field) => ({ ...field, reviewedAt: field.reviewedAt instanceof Date ? field.reviewedAt.toISOString() : field.reviewedAt })),
+    itemReviewHistory: s.itemReviewHistory.map((review) => ({ ...review, createdAt: review.createdAt instanceof Date ? review.createdAt.toISOString() : review.createdAt })),
     reviews: s.reviews.map((r) => ({
       ...r,
       createdAt: r.createdAt instanceof Date ? r.createdAt.toISOString() : (r.createdAt as string),

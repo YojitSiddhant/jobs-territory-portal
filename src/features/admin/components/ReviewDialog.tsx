@@ -2,13 +2,15 @@
 
 import { useState, useTransition } from "react";
 
-type Action = "approve" | "reject" | "suspend" | "restore";
+type Action = "approve" | "reject" | "suspend" | "restore" | "verify-item" | "reject-item";
 
 const config: Record<Action, { title: string; desc: string; needsReason: boolean; btnCls: string; btnLabel: string }> = {
   approve: { title: "Approve company", desc: "This will approve the company and allow it to post jobs.", needsReason: false, btnCls: "bg-emerald-600 hover:bg-emerald-500 text-white", btnLabel: "Approve" },
   reject: { title: "Reject company", desc: "The company will be notified of the rejection. A reason is required.", needsReason: true, btnCls: "bg-red-600 hover:bg-red-500 text-white", btnLabel: "Reject" },
   suspend: { title: "Suspend company", desc: "The company's jobs will be hidden and cannot post new ones. A reason is required.", needsReason: true, btnCls: "bg-orange-600 hover:bg-orange-500 text-white", btnLabel: "Suspend" },
   restore: { title: "Restore company", desc: "This will restore the company from suspension to approved status.", needsReason: false, btnCls: "bg-emerald-600 hover:bg-emerald-500 text-white", btnLabel: "Restore" },
+  "verify-item": { title: "Verify item", desc: "Confirm that this company information or document is valid.", needsReason: false, btnCls: "bg-emerald-600 hover:bg-emerald-500 text-white", btnLabel: "Verify" },
+  "reject-item": { title: "Reject item", desc: "Explain what must be corrected before review can continue.", needsReason: true, btnCls: "bg-red-600 hover:bg-red-500 text-white", btnLabel: "Reject item" },
 };
 
 type Props = {

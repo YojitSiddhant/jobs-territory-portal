@@ -12,8 +12,8 @@ export async function POST() {
     if (!company) return Response.json({ error: { code: "COMPANY_PROFILE_NOT_FOUND", message: "Create a company profile first." } }, { status: 404 });
     if (company.status === "APPROVED" || company.status === "SUSPENDED") return Response.json({ error: { code: "COMPANY_STATUS_LOCKED", message: "This company status can only be changed by an administrator." } }, { status: 409 });
     companyProfileSchema.parse({ name: company.name, registrationNumber: company.registrationNumber, website: company.website, officialEmail: company.contactEmail, phone: company.phone, address: company.address, industry: company.industry, description: company.description });
-    if (!company.documents.some((document) => document.type === "REGISTRATION_CERTIFICATE" && document.status === "PENDING")) {
-      return Response.json({ error: { code: "REGISTRATION_PROOF_REQUIRED", message: "Add a pending registration proof document before submitting for review." } }, { status: 400 });
+    if (!company.documents.some((document) => document.type === "REGISTRATION_CERTIFICATE" && (document.status === "PENDING" || document.status === "VERIFIED"))) {
+      return Response.json({ error: { code: "REGISTRATION_PROOF_REQUIRED", message: "Add a registration proof document before submitting for review." } }, { status: 400 });
     }
     const updated = await prisma.company.update({ where: { id: company.id }, data: { status: "PENDING", rejectionReason: null, verificationSubmittedAt: new Date() }, include: companyInclude });
     return apiSuccess({ company: companyResponse(updated) });

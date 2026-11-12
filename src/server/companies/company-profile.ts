@@ -2,7 +2,7 @@ import type { Prisma } from "@prisma/client";
 import { prisma } from "@/server/db/prisma";
 import { AuthorizationError } from "@/server/auth/authorization";
 
-export const companyInclude = { documents: true } as const;
+export const companyInclude = { documents: true, itemReviews: { orderBy: { createdAt: "desc" as const } } } as const;
 export type CompanyWithDocuments = Prisma.CompanyGetPayload<{ include: typeof companyInclude }>;
 
 export async function getCurrentCompany(ownerId: string) {
@@ -28,6 +28,8 @@ export async function requireApprovedCompany(ownerId: string) {
 }
 
 export function companyResponse(company: CompanyWithDocuments) {
+  const fields = ["NAME", "REGISTRATION_NUMBER", "WEBSITE", "CONTACT_EMAIL", "PHONE", "ADDRESS", "INDUSTRY", "DESCRIPTION"] as const;
+  const values = { NAME: company.name, REGISTRATION_NUMBER: company.registrationNumber, WEBSITE: company.website, CONTACT_EMAIL: company.contactEmail, PHONE: company.phone, ADDRESS: company.address, INDUSTRY: company.industry, DESCRIPTION: company.description };
   return {
     id: company.id,
     name: company.name,
@@ -41,10 +43,13 @@ export function companyResponse(company: CompanyWithDocuments) {
     status: company.status,
     rejectionReason: company.rejectionReason,
     verificationSubmittedAt: company.verificationSubmittedAt,
+    verificationFields: fields.map((field) => {
+      const review = company.itemReviews.find((item) => item.field === field);
+      return { field, status: review?.decision ?? "PENDING", reason: review?.reason ?? null, reviewedAt: review?.createdAt ?? null, value: values[field] };
+    }),
     documents: company.documents.map((document) => ({
       id: document.id,
       type: document.type,
-      storageKey: document.storageKey,
       originalName: document.originalName,
       mimeType: document.mimeType,
       status: document.status,

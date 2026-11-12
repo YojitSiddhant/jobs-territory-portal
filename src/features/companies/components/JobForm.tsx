@@ -10,7 +10,9 @@ type Props = {
   onCancel?: () => void;
 };
 
-function jobToForm(j: CompanyJob): JobFormInput & { deadlineStr: string; skillsStr: string } {
+export type JobFormState = JobFormInput & { deadlineStr: string; skillsStr: string };
+
+export function jobToForm(j: CompanyJob): JobFormState {
   return {
     title: j.title, description: j.description, location: j.location ?? "",
     workplaceType: (j.workplaceType as JobFormInput["workplaceType"]) ?? "ONSITE",
@@ -24,13 +26,14 @@ function jobToForm(j: CompanyJob): JobFormInput & { deadlineStr: string; skillsS
   };
 }
 
-function emptyForm() {
+export function emptyJobForm(): JobFormState {
   return { title: "", description: "", location: "", workplaceType: "ONSITE" as const, employmentType: "FULL_TIME" as const, experienceRequirement: "", requiredSkills: [] as string[], skillsStr: "", salaryMin: undefined as number | undefined, salaryMax: undefined as number | undefined, applicationDeadline: undefined as string | undefined, deadlineStr: "" };
 }
 
 export function JobForm({ job, onSaved, onCancel }: Props) {
-  const [form, setForm] = useState(() => job ? jobToForm(job) : emptyForm());
+  const [form, setForm] = useState<JobFormState>(() => job ? jobToForm(job) : emptyJobForm());
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isPending, startTransition] = useTransition();
 
   function set<K extends keyof typeof form>(k: K, v: (typeof form)[K]) {
@@ -39,10 +42,16 @@ export function JobForm({ job, onSaved, onCancel }: Props) {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError(null);
+    setError(null); setFieldErrors({});
 
     const skills = form.skillsStr.split(",").map((s) => s.trim()).filter(Boolean);
-    if (skills.length === 0) { setError("At least one skill is required."); return; }
+    const nextFieldErrors: Record<string, string> = {};
+    if (!form.title.trim()) nextFieldErrors.title = "Job title is required.";
+    if (!form.description.trim()) nextFieldErrors.description = "Description is required.";
+    if (!form.experienceRequirement.trim()) nextFieldErrors.experienceRequirement = "Experience requirement is required.";
+    if (skills.length === 0) nextFieldErrors.skillsStr = "At least one skill is required.";
+    if (form.salaryMin !== undefined && form.salaryMax !== undefined && form.salaryMax !== null && form.salaryMin !== null && form.salaryMax < form.salaryMin) nextFieldErrors.salaryMax = "Salary maximum cannot be below salary minimum.";
+    if (Object.keys(nextFieldErrors).length > 0) { setFieldErrors(nextFieldErrors); setError("Please correct the highlighted fields."); return; }
 
     const input: JobFormInput = {
       title: form.title, description: form.description,
@@ -69,11 +78,13 @@ export function JobForm({ job, onSaved, onCancel }: Props) {
       <div>
         <label htmlFor="job-title" className={labelCls}>Job title <span className="text-gray-400">*</span></label>
         <input id="job-title" type="text" value={form.title} onChange={(e) => set("title", e.target.value)} required maxLength={180} className={inputCls} />
+        {fieldErrors.title && <p className="mt-1 text-xs text-red-600">{fieldErrors.title}</p>}
       </div>
 
       <div>
         <label htmlFor="job-desc" className={labelCls}>Description <span className="text-gray-400">*</span></label>
         <textarea id="job-desc" rows={6} value={form.description} onChange={(e) => set("description", e.target.value)} required maxLength={20000} className={`${inputCls} resize-y`} />
+        {fieldErrors.description && <p className="mt-1 text-xs text-red-600">{fieldErrors.description}</p>}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -84,6 +95,7 @@ export function JobForm({ job, onSaved, onCancel }: Props) {
         <div>
           <label htmlFor="job-experience" className={labelCls}>Experience requirement <span className="text-gray-400">*</span></label>
           <input id="job-experience" type="text" value={form.experienceRequirement} onChange={(e) => set("experienceRequirement", e.target.value)} required maxLength={160} placeholder="e.g. 0–1 years" className={inputCls} />
+          {fieldErrors.experienceRequirement && <p className="mt-1 text-xs text-red-600">{fieldErrors.experienceRequirement}</p>}
         </div>
         <div>
           <label htmlFor="job-workplace" className={labelCls}>Workplace type <span className="text-gray-400">*</span></label>
@@ -109,6 +121,7 @@ export function JobForm({ job, onSaved, onCancel }: Props) {
         <div>
           <label htmlFor="job-salary-max" className={labelCls}>Salary max (₹)</label>
           <input id="job-salary-max" type="number" min={0} value={form.salaryMax ?? ""} onChange={(e) => set("salaryMax", e.target.value ? Number(e.target.value) : undefined)} className={inputCls} />
+          {fieldErrors.salaryMax && <p className="mt-1 text-xs text-red-600">{fieldErrors.salaryMax}</p>}
         </div>
         <div>
           <label htmlFor="job-deadline" className={labelCls}>Application deadline</label>
@@ -119,6 +132,7 @@ export function JobForm({ job, onSaved, onCancel }: Props) {
       <div>
         <label htmlFor="job-skills" className={labelCls}>Required skills <span className="text-gray-400">*</span> <span className="text-gray-400 font-normal">(comma-separated)</span></label>
         <input id="job-skills" type="text" value={form.skillsStr} onChange={(e) => set("skillsStr", e.target.value)} required placeholder="React, TypeScript, Node.js" className={inputCls} />
+        {fieldErrors.skillsStr && <p className="mt-1 text-xs text-red-600">{fieldErrors.skillsStr}</p>}
       </div>
 
       {error && <p className="text-sm text-red-600">{error}</p>}
