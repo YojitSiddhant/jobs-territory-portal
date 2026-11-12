@@ -52,3 +52,18 @@ export async function restoreCompany(companyId: string): Promise<AdminCompany> {
   if (!res.ok) throw new Error(data?.error?.message ?? "Failed to restore company.");
   return data.company as AdminCompany;
 }
+
+async function reviewItem(url: string, body: { decision: "VERIFIED" | "REJECTED"; reason?: string }): Promise<AdminCompany> {
+  const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data?.error?.message ?? "Review action failed.");
+  return data.data?.company ?? data.company;
+}
+
+export function reviewCompanyField(companyId: string, field: string, decision: "VERIFIED" | "REJECTED", reason?: string) {
+  return reviewItem(`/api/admin/companies/${encodeURIComponent(companyId)}/review/field`, { decision, reason, field } as { decision: "VERIFIED" | "REJECTED"; reason?: string });
+}
+
+export function reviewCompanyDocument(companyId: string, documentId: string, decision: "VERIFIED" | "REJECTED", reason?: string) {
+  return reviewItem(`/api/admin/companies/${encodeURIComponent(companyId)}/review/document/${encodeURIComponent(documentId)}`, { decision, reason });
+}

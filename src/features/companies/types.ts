@@ -1,16 +1,16 @@
 export type CompanyStatus = "PENDING" | "APPROVED" | "REJECTED" | "SUSPENDED";
 export type DocumentType = "REGISTRATION_CERTIFICATE" | "TAX_DOCUMENT" | "IDENTITY_DOCUMENT" | "ADDRESS_PROOF" | "OTHER";
-export type DocumentStatus = "PENDING" | "APPROVED" | "REJECTED";
+export type DocumentStatus = "PENDING" | "VERIFIED" | "REJECTED";
 export type JobStatus = "DRAFT" | "PUBLISHED" | "CLOSED";
 
 export type CompanyDocument = {
   id: string;
   type: DocumentType;
-  storageKey: string;
   originalName: string;
   mimeType: string;
   status: DocumentStatus;
   rejectionReason: string | null;
+  reviewedAt?: string | null;
   createdAt: string;
 };
 
@@ -28,6 +28,7 @@ export type CompanyProfile = {
   rejectionReason: string | null;
   verificationSubmittedAt: string | null;
   documents: CompanyDocument[];
+  verificationFields?: Array<{ field: string; status: "PENDING" | "VERIFIED" | "REJECTED"; reason: string | null; reviewedAt: string | null }>;
   createdAt: string;
   updatedAt: string;
 };
