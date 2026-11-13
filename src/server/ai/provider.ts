@@ -19,10 +19,30 @@ function safeMessageForResponse(status: number, body: unknown) {
 function logProviderFailure(provider: string, status: number, message: unknown, stage: "request" | "response") { console.warn(`AI_PROVIDER_FAILURE provider=${provider} status=${status} stage=${stage} message=${safeProviderMessage(message)}`); }
 
 async function requestJson(provider: string, url: string, init: RequestInit) {
-  const controller = new AbortController(); const timeout = setTimeout(() => controller.abort(), timeoutMs);
-  try { const response = await fetch(url, { ...init, signal: controller.signal }); const body = await response.json().catch(() => null); if (!response.ok) { const safeMessage = safeMessageForResponse(response.status, body); logProviderFailure(provider, response.status, safeMessage, "response"); throw new AiProviderError(safeMessage); } console.info(`AI_STAGE stage=groq_response status=${response.status} message=content_length_${typeof body?.choices?.[0]?.message?.content === "string" ? body.choices[0].message.content.length : 0}`); return body; }
-  catch (error) { if (error instanceof AiProviderError) throw error; logProviderFailure(provider, 0, error instanceof Error && error.name === "AbortError" ? "Provider request timed out." : "Provider request failed.", "request"); throw new AiProviderError(); }
-  finally { clearTimeout(timeout); }
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const controller = new AbortController(); const timeout = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const response = await fetch(url, { ...init, signal: controller.signal });
+      const body = await response.json().catch(() => null);
+      if (!response.ok) {
+        const safeMessage = safeMessageForResponse(response.status, body);
+        if (response.status === 429 && attempt === 0) {
+          const retryAfter = Number(response.headers.get("retry-after"));
+          await new Promise((resolve) => setTimeout(resolve, Number.isFinite(retryAfter) && retryAfter > 0 ? Math.min(retryAfter * 1000, 2_000) : 500));
+          continue;
+        }
+        logProviderFailure(provider, response.status, safeMessage, "response");
+        throw new AiProviderError(safeMessage);
+      }
+      console.info(`AI_STAGE stage=groq_response status=${response.status} message=content_length_${typeof body?.choices?.[0]?.message?.content === "string" ? body.choices[0].message.content.length : 0}`);
+      return body;
+    } catch (error) {
+      if (error instanceof AiProviderError) throw error;
+      logProviderFailure(provider, 0, error instanceof Error && error.name === "AbortError" ? "Provider request timed out." : "Provider request failed.", "request");
+      throw new AiProviderError();
+    } finally { clearTimeout(timeout); }
+  }
+  throw new AiProviderError();
 }
 function parseJsonText(value: unknown): unknown { if (typeof value !== "string") { console.warn("AI_STAGE stage=json_parse status=502 message=missing-content"); throw new AiProviderError("The AI provider returned invalid JSON."); } const fenced = value.match(/```(?:json)?\s*([\s\S]*?)\s*```/i)?.[1] ?? value; try { return JSON.parse(fenced); } catch { console.warn("AI_STAGE stage=json_parse status=502 message=invalid-json"); throw new AiProviderError("The AI provider returned invalid JSON."); } }
 

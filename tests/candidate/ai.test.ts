@@ -66,6 +66,18 @@ test("Groq uses a configured model override", async () => {
   try { await getAiProvider().generateJson("prompt"); } finally { globalThis.fetch = originalFetch; }
 });
 
+test("Groq retries one transient rate-limit response", async () => {
+  setAiEnv({ AI_PROVIDER: "groq", GROQ_API_KEY: "secret" });
+  const originalFetch = globalThis.fetch;
+  let attempts = 0;
+  globalThis.fetch = async () => {
+    attempts++;
+    if (attempts === 1) return new Response(JSON.stringify({ error: { message: "rate limited" } }), { status: 429 });
+    return new Response(JSON.stringify({ choices: [{ message: { content: "{\"ok\":true}" } }] }), { status: 200 });
+  };
+  try { assert.deepEqual(await getAiProvider().generateJson("prompt"), { ok: true }); assert.equal(attempts, 2); } finally { globalThis.fetch = originalFetch; }
+});
+
 for (const [name, status, message] of [["invalid key", 401, "Groq API key is invalid."], ["rate limit", 429, "Groq API quota or rate limit reached."], ["model unavailable", 404, "Groq model is unavailable. Check GROQ_MODEL and update it to a currently supported model."], ["oversized request", 413, "Resume analysis input is too large. Please use a shorter resume."]] as const) {
   test(`Groq ${name} response is safe`, async () => {
     setAiEnv({ AI_PROVIDER: "groq", GROQ_API_KEY: "secret" });
