@@ -41,7 +41,7 @@ export function AdminOverviewClient({ initialCounts }: Props) {
         </div>
 
         {/* Count cards */}
-        <div className="grid grid-cols-1 min-[420px]:grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="grid min-w-0 grid-cols-1 gap-3 min-[420px]:grid-cols-2 sm:grid-cols-4 [&>*]:min-w-0">
           {stats.map((s) => (
             <Link key={s.label} href={adminStatusHref(s.status)} aria-label={`${s.label}: ${s.value}. View ${s.label.toLowerCase()} companies`} className="group flex min-h-44 flex-col items-center justify-center rounded-2xl border bg-white p-5 text-center shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
               <span className={`mb-3 inline-flex rounded-full border p-3 ${s.cls}`}><s.icon className="h-6 w-6" aria-hidden /></span>
