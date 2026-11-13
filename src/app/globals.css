@@ -43,23 +43,6 @@ body {
   @media (min-width: 1024px) { .page-container { padding-inline: 32px; } }
   @media (min-width: 1536px) { .page-container { padding-inline: 40px; } }
 
-  /* Filters must remain part of the document's single normal scroll flow. */
-  .jobs-filter-wrapper,
-  .jobs-filter-panel {
-    position: static !important;
-    top: auto !important;
-    right: auto !important;
-    bottom: auto !important;
-    left: auto !important;
-    inset: auto !important;
-    height: auto !important;
-    max-height: none !important;
-    overflow: visible !important;
-    overflow-y: visible !important;
-    overscroll-behavior: auto !important;
-    transform: none !important;
-    contain: none !important;
-  }
 }
 
 /* Focus rings */
