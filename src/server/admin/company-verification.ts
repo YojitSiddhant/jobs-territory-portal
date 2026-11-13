@@ -3,6 +3,13 @@ import { AuthorizationError } from "@/server/auth/authorization";
 import { prisma } from "@/server/db/prisma";
 
 export const verificationFields = ["NAME", "REGISTRATION_NUMBER", "WEBSITE", "CONTACT_EMAIL", "PHONE", "ADDRESS", "INDUSTRY", "DESCRIPTION"] as const;
+
+export const listableCompanyStatuses = ["PENDING", "APPROVED", "REJECTED", "SUSPENDED"] as const;
+export type ListableCompanyStatus = (typeof listableCompanyStatuses)[number];
+
+export function normalizeCompanyListStatus(value: string | null | undefined): ListableCompanyStatus {
+  return listableCompanyStatuses.includes(value as ListableCompanyStatus) ? (value as ListableCompanyStatus) : "PENDING";
+}
 export type VerificationField = (typeof verificationFields)[number];
 export type ItemDecision = "VERIFIED" | "REJECTED";
 

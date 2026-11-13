@@ -4,20 +4,25 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/server/auth/session";
 import { prisma } from "@/server/db/prisma";
-import { adminCompanyInclude, serializeAdminCompany } from "@/server/admin/company-verification";
+import { adminCompanyInclude, normalizeCompanyListStatus, serializeAdminCompany } from "@/server/admin/company-verification";
 import { CompanyListClient } from "@/features/admin/components/CompanyListClient";
 import type { AdminCompany } from "@/features/admin/types";
 
-export const metadata: Metadata = { title: "Pending Verification – Admin – Jobs Territory" };
+export const metadata: Metadata = { title: "Companies – Admin – Jobs Territory" };
 
-export default async function AdminCompaniesPage() {
+type PageProps = { searchParams: Promise<Record<string, string | string[] | undefined>> };
+
+export default async function AdminCompaniesPage({ searchParams }: PageProps) {
   const user = await getSessionUser();
   if (!user || user.role !== "ADMIN") redirect("/");
 
+  const rawStatus = (await searchParams).status;
+  const status = normalizeCompanyListStatus(Array.isArray(rawStatus) ? rawStatus[0] : rawStatus);
+
   const raw = await prisma.company.findMany({
-    where: { status: "PENDING", verificationSubmittedAt: { not: null } },
+    where: { status, ...(status === "PENDING" ? { verificationSubmittedAt: { not: null } } : {}) },
     include: adminCompanyInclude,
-    orderBy: { verificationSubmittedAt: "asc" },
+    orderBy: status === "PENDING" ? { verificationSubmittedAt: "asc" } : { updatedAt: "desc" },
   });
 
   const companies: AdminCompany[] = raw.map((c) => {
@@ -41,5 +46,5 @@ export default async function AdminCompaniesPage() {
     };
   });
 
-  return <CompanyListClient initialCompanies={companies} />;
+  return <CompanyListClient initialCompanies={companies} initialStatus={status} />;
 }

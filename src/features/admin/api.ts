@@ -21,14 +21,18 @@ export async function fetchVerificationCounts(): Promise<VerificationCounts> {
   const res = await fetch("/api/admin/verification/counts");
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data?.error?.message ?? "Failed to load counts.");
-  return data.counts as VerificationCounts;
+  return (data?.data?.counts ?? data?.counts) as VerificationCounts;
 }
 
-export async function fetchPendingCompanies(): Promise<AdminCompany[]> {
-  const res = await fetch("/api/admin/companies");
+export async function fetchAdminCompanies(status?: string): Promise<AdminCompany[]> {
+  const res = await fetch(`/api/admin/companies${status ? `?status=${encodeURIComponent(status)}` : ""}`);
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data?.error?.message ?? "Failed to load companies.");
-  return (data.companies ?? []) as AdminCompany[];
+  return (data?.data?.companies ?? data?.companies ?? []) as AdminCompany[];
+}
+
+export function fetchPendingCompanies(): Promise<AdminCompany[]> {
+  return fetchAdminCompanies("PENDING");
 }
 
 export async function fetchAdminCompany(companyId: string): Promise<AdminCompany> {

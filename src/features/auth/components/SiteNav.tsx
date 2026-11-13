@@ -40,7 +40,7 @@ export async function SiteNav() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-gray-200 bg-white">
-      <div className="relative mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
+      <div className="page-container relative flex items-center justify-between gap-4 py-3">
         <Link href="/" className="flex items-center gap-2 font-semibold text-gray-900 hover:text-blue-600 transition-colors shrink-0">
           <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-blue-600 text-white text-xs font-bold select-none">JT</span>
           <span className="text-sm">Jobs Territory</span>

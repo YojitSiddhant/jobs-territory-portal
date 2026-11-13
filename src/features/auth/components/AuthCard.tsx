@@ -10,8 +10,9 @@ type Props = {
 
 export function AuthCard({ title, subtitle, children, footer }: Props) {
   return (
-    <main className="min-h-[calc(100vh-57px)] bg-gradient-to-br from-blue-50 via-white to-white flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md space-y-6">
+    <main className="min-h-[calc(100vh-57px)] bg-gradient-to-br from-blue-50 via-white to-white flex items-center py-12">
+      <div className="page-container flex justify-center">
+        <div className="w-full max-w-md space-y-6">
         <div>
           <Link href="/" className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-blue-600 hover:text-blue-500 transition-colors">
             <span className="inline-flex h-5 w-5 items-center justify-center rounded bg-blue-600 text-white text-[9px] font-bold">JT</span>
@@ -33,6 +34,7 @@ export function AuthCard({ title, subtitle, children, footer }: Props) {
             </Link>
           </p>
         )}
+      </div>
       </div>
     </main>
   );

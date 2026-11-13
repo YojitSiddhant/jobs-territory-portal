@@ -13,7 +13,7 @@ export default async function AdminDashboardPage() {
   const user = await getSessionUser();
   if (!user || user.role !== "ADMIN") redirect("/");
 
-  const grouped = await prisma.company.groupBy({ by: ["status"], _count: { _all: true } });
+  const grouped = await prisma.company.groupBy({ by: ["status"], where: { OR: [{ status: { not: "PENDING" } }, { status: "PENDING", verificationSubmittedAt: { not: null } }] }, _count: { _all: true } });
   const counts: VerificationCounts = { PENDING: 0, APPROVED: 0, REJECTED: 0, SUSPENDED: 0 };
   for (const item of grouped) {
     if (item.status in counts) counts[item.status as keyof VerificationCounts] = item._count._all;
