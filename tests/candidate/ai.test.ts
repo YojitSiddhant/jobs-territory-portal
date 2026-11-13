@@ -66,7 +66,7 @@ test("Groq uses a configured model override", async () => {
   try { await getAiProvider().generateJson("prompt"); } finally { globalThis.fetch = originalFetch; }
 });
 
-for (const [name, status, message] of [["invalid key", 401, "Groq API key is invalid."], ["rate limit", 429, "Groq API quota or rate limit reached."], ["model unavailable", 404, "Groq model is unavailable. Check GROQ_MODEL and update it to a currently supported model."]] as const) {
+for (const [name, status, message] of [["invalid key", 401, "Groq API key is invalid."], ["rate limit", 429, "Groq API quota or rate limit reached."], ["model unavailable", 404, "Groq model is unavailable. Check GROQ_MODEL and update it to a currently supported model."], ["oversized request", 413, "Resume analysis input is too large. Please use a shorter resume."]] as const) {
   test(`Groq ${name} response is safe`, async () => {
     setAiEnv({ AI_PROVIDER: "groq", GROQ_API_KEY: "secret" });
     const originalFetch = globalThis.fetch;
@@ -103,7 +103,7 @@ test("Resume extraction supports text-bearing documents and rejects empty or ove
   assert.equal(extractResumeText(compressedPdf, "application/pdf"), "Compressed resume text");
   assert.throws(() => extractResumeText(new Uint8Array(), "application/pdf"), (error) => error instanceof ResumeExtractionError && error.message === "Resume text could not be extracted.");
   assert.throws(() => extractResumeText(new Uint8Array(10 * 1024 * 1024 + 1), "application/pdf"), /too large/i);
-  assert.ok(maxResumeTextLength > 0);
+  assert.equal(maxResumeTextLength, 8_000);
 });
 
 test("Resume analysis Zod validation returns a safe error", () => {

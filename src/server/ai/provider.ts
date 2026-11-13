@@ -12,6 +12,7 @@ function safeMessageForResponse(status: number, body: unknown) {
   const errorMessage = typeof providerError?.message === "string" ? providerError.message.toLowerCase() : "";
   if (status === 401 || status === 403) return "Groq API key is invalid.";
   if (status === 404 || errorCode.includes("model") || errorMessage.includes("model") && (errorMessage.includes("not found") || errorMessage.includes("unavailable") || errorMessage.includes("decommission"))) return "Groq model is unavailable. Check GROQ_MODEL and update it to a currently supported model.";
+  if (status === 413) return "Resume analysis input is too large. Please use a shorter resume.";
   if (status === 429) return "Groq API quota or rate limit reached.";
   return "Resume analysis temporarily failed.";
 }
