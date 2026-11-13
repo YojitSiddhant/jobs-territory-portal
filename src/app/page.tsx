@@ -14,12 +14,12 @@ export default async function Home() {
     <main className="flex flex-1 flex-col bg-white">
       {/* Hero */}
       <section className="border-b border-gray-100 bg-gradient-to-br from-blue-50 via-white to-white px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
-          <div className="mx-auto w-full max-w-2xl space-y-6 text-center">
+          <div className="page-container space-y-6 text-center">
             <div className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
               <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
               Trusted job platform
             </div>
-            <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+            <h1 className="mx-auto max-w-2xl text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
               A trusted foundation<br className="hidden sm:block" /> for better careers.
             </h1>
             <p className="mx-auto max-w-xl text-lg leading-8 text-gray-600">
@@ -41,7 +41,7 @@ export default async function Home() {
 
       {/* Access panels */}
       <section className="px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mx-auto w-full max-w-5xl">
+        <div className="page-container">
           <h2 className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-6">Access by role</h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <AccessCard

@@ -72,7 +72,7 @@ export function CompanyDetailClient({ initialCompany }: Props) {
     } finally { setIsActionPending(false); }
   }
 
-  if (!company) return <main className="min-h-screen bg-gray-50"><div className="mx-auto w-full max-w-4xl px-4 py-10 sm:px-6 lg:px-8"><div className="rounded-2xl border border-gray-200 bg-white p-6 text-sm text-gray-600 shadow-sm">Company details are unavailable. Refresh the page or return to the company list.</div></div></main>;
+  if (!company) return <main className="min-h-screen bg-gray-50"><div className="page-container py-10"><div className="rounded-2xl border border-gray-200 bg-white p-6 text-sm text-gray-600 shadow-sm">Company details are unavailable. Refresh the page or return to the company list.</div></div></main>;
 
   const sc = statusConfig[company.status] ?? { label: company.status, cls: "border-zinc-700 text-zinc-400" };
 
@@ -91,7 +91,7 @@ export function CompanyDetailClient({ initialCompany }: Props) {
         />
       )}
 
-      <div className="mx-auto w-full max-w-4xl px-4 py-10 sm:px-6 lg:px-8 space-y-6">
+      <div className="page-container py-10 space-y-6">
         {/* Back + header */}
         <div className="flex items-start justify-between gap-4">
           <div>
