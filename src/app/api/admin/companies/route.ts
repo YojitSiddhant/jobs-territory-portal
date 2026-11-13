@@ -2,14 +2,18 @@ import { requireRole } from "@/server/auth/authorization";
 import { prisma } from "@/server/db/prisma";
 import { apiError } from "@/server/http/api-error";
 import { apiSuccess } from "@/server/http/api-response";
-import { serializeAdminCompany, adminCompanyInclude } from "@/server/admin/company-verification";
+import { serializeAdminCompany, adminCompanyInclude, normalizeCompanyListStatus } from "@/server/admin/company-verification";
 
 export async function GET(request: Request) {
   try {
-    void request.url;
     await requireRole("ADMIN");
-    const companies = await prisma.company.findMany({ where: { status: "PENDING", verificationSubmittedAt: { not: null } }, include: adminCompanyInclude, orderBy: { verificationSubmittedAt: "asc" } });
-    return apiSuccess({ companies: companies.map(serializeAdminCompany) });
+    const status = normalizeCompanyListStatus(new URL(request.url).searchParams.get("status"));
+    const companies = await prisma.company.findMany({
+      where: { status, ...(status === "PENDING" ? { verificationSubmittedAt: { not: null } } : {}) },
+      include: adminCompanyInclude,
+      orderBy: status === "PENDING" ? { verificationSubmittedAt: "asc" } : { updatedAt: "desc" },
+    });
+    return apiSuccess({ companies: companies.map(serializeAdminCompany), status });
   } catch (error) {
     return apiError(error);
   }
