@@ -9,10 +9,18 @@ export class ResumeExtractionError extends Error { status = 422; code = "RESUME_
 export async function getCandidateContext(userId: string) {
   const profile = await prisma.candidateProfile.findUnique({ where: { userId }, include: { education: true, experience: true } });
   if (!profile) throw new Error("Candidate profile not found.");
+  console.info(`AI_STAGE stage=resume_reference status=200 message=${profile.resumeKey ? "present" : "missing"}`);
   let resumeText = "No resume text was available.";
   if (profile.resumeKey) {
-    const file = await getPrivateStorage().get(profile.resumeKey);
-    resumeText = extractResumeText(file.body, file.contentType);
+    try {
+      const file = await getPrivateStorage().get(profile.resumeKey);
+      console.info(`AI_STAGE stage=private_file status=200 message=mime_${file.contentType === "application/pdf" ? "pdf" : "other"}`);
+      resumeText = extractResumeText(file.body, file.contentType);
+      console.info(`AI_STAGE stage=text_extraction status=200 message=non_empty_length_${Math.min(resumeText.length, maxResumeTextLength)}`);
+    } catch (error) {
+      console.warn(`AI_STAGE stage=${error instanceof ResumeExtractionError ? "text_extraction" : "private_file"} status=${error instanceof Error && "status" in error ? Number(error.status) || 500 : 500} message=${error instanceof Error ? error.name : "unknown"}`);
+      throw error;
+    }
   }
   return {
     profile: { fullName: profile.fullName, headline: profile.headline, bio: profile.bio, location: profile.location, skills: Array.isArray(profile.skills) ? profile.skills : [] },

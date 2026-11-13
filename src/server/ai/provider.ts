@@ -15,7 +15,7 @@ function safeMessageForResponse(status: number, body: unknown) {
   if (status === 429) return "Groq API quota or rate limit reached.";
   return "Resume analysis temporarily failed.";
 }
-function logProviderFailure(provider: string, status: number, message: unknown, stage: "request" | "response") { console.warn("AI provider request failed", { provider, status, message: safeProviderMessage(message), stage }); }
+function logProviderFailure(provider: string, status: number, message: unknown, stage: "request" | "response") { console.warn(`AI_PROVIDER_FAILURE provider=${provider} status=${status} stage=${stage} message=${safeProviderMessage(message)}`); }
 
 async function requestJson(provider: string, url: string, init: RequestInit) {
   const controller = new AbortController(); const timeout = setTimeout(() => controller.abort(), timeoutMs);
