@@ -86,8 +86,8 @@ export function JobDetailClient({ job, hasApplied: initialHasApplied, isCandidat
     : null;
 
   return (
-    <main className="min-h-screen bg-white px-4 py-10 sm:px-6 lg:px-8">
-      <div className="max-w-3xl">
+    <main className="min-h-screen bg-gray-50">
+      <div className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
         {/* Back link */}
         <Link
           href="/jobs"
@@ -101,7 +101,7 @@ export function JobDetailClient({ job, hasApplied: initialHasApplied, isCandidat
 
         {/* Job header */}
         <div className="rounded-2xl bg-white border border-gray-200 p-6 mb-5 shadow-sm">
-          <div className="flex items-start justify-between gap-4">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <p className="text-xs font-medium text-blue-600 mb-1">{job.company.name}</p>
               <h1 className="text-2xl font-semibold tracking-tight text-gray-900">{job.title}</h1>

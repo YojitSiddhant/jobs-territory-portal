@@ -53,7 +53,8 @@ export function JobsPage({ initialJobs, initialPagination, initialQuery }: Props
   }
 
   return (
-    <main className="min-h-screen bg-white px-4 py-10 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-gray-50">
+      <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
           <p className="text-xs font-medium uppercase tracking-widest text-blue-600 mb-1">
@@ -96,10 +97,10 @@ export function JobsPage({ initialJobs, initialPagination, initialQuery }: Props
           </div>
         </div>
 
-        <div className="mt-6 flex gap-8">
+        <div className="mt-6 flex flex-col gap-6 lg:flex-row lg:gap-8">
           {/* Filters sidebar */}
-          <div className={`lg:block w-64 shrink-0 ${showFilters ? "block" : "hidden"}`}>
-            <div className="rounded-2xl bg-gray-50 border border-gray-200 p-5">
+          <div className={`lg:block w-full lg:w-64 shrink-0 ${showFilters ? "block" : "hidden"}`}>
+            <div className="rounded-2xl bg-white border border-gray-200 p-5 shadow-sm">
               <JobFilters query={query} onChange={handleQueryChange} onReset={handleReset} />
             </div>
           </div>
@@ -132,6 +133,7 @@ export function JobsPage({ initialJobs, initialPagination, initialQuery }: Props
             )}
           </div>
         </div>
+      </div>
     </main>
   );
 }
