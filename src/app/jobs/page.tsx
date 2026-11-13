@@ -1,5 +1,6 @@
 export const instant = false;
 
+import { connection } from "next/server";
 import type { Metadata } from "next";
 import { normalizeDiscoveryQuery } from "@/shared/validation/job-discovery";
 import { prisma } from "@/server/db/prisma";
@@ -27,6 +28,7 @@ function flattenSearchParams(raw: Record<string, string | string[] | undefined>)
 }
 
 export default async function BrowseJobsPage({ searchParams }: PageProps) {
+  await connection();
   const raw = await searchParams;
   const params = new URLSearchParams(flattenSearchParams(raw));
   const query = normalizeDiscoveryQuery(params);

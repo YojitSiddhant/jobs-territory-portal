@@ -10,6 +10,7 @@ import { ExperienceSection } from "./ExperienceSection";
 import { SkillsSection } from "./SkillsSection";
 import { UploadField } from "./UploadField";
 import { FilePreviewModal } from "./FilePreviewModal";
+import { CandidateAiSection } from "@/features/candidate-ai/components/CandidateAiSection";
 
 type FormState = {
   fullName: string;
@@ -185,6 +186,8 @@ export function ProfilePage({ initialProfile }: Props) {
 
         {/* Profile completion */}
         <ProfileCompletion percentage={profile.completionPercentage} />
+
+        <CandidateAiSection />
 
         {/* Personal info */}
         <PersonalInfoSection

@@ -15,7 +15,7 @@ export function apiError(error: unknown) {
     );
   }
 
-  console.error(error);
+  console.error("Unhandled API error", { type: error instanceof Error ? error.name : "unknown" });
   return Response.json(
     { error: { code: "INTERNAL_SERVER_ERROR", message: "An unexpected error occurred." } },
     { status: 500 },

@@ -83,6 +83,10 @@ PATCH /api/candidate/profile
 
 Candidate files can be uploaded through `POST /api/candidate/profile/files` as multipart form data with `kind` (`profile-photo` or `resume`) and `file`. Companies can upload verification files through `POST /api/company/profile/documents/upload` with `type` and `file`; storage keys, original names, and MIME metadata are generated server-side. Local development uses `STORAGE_DRIVER=local` and stores files under the ignored `STORAGE_LOCAL_DIR` (the server also defaults to this adapter outside production). Set `STORAGE_DRIVER=s3` only in production with a configured private provider adapter. Files are served only through the authenticated `/api/private-files/...` route after ownership or admin checks, never as public URLs.
 
+## Candidate AI features
+
+The candidate profile and job-detail screens provide server-side resume analysis, resume-to-job match scores, and editable cover-letter generation. To enable Groq locally, set `AI_PROVIDER=groq` and `GROQ_API_KEY` in `.env.local`. `GROQ_MODEL` is optional and defaults to Groq's supported `openai/gpt-oss-20b`; set it to another currently supported model when needed. These variables are server-only and must not use a `NEXT_PUBLIC_` prefix.
+
 ## Admin company verification API
 
 Admin verification endpoints require a session whose server-side role is `ADMIN`. Company and candidate sessions receive `403`, and company users cannot approve or reject their own records.
