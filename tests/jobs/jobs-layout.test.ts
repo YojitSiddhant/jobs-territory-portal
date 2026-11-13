@@ -20,6 +20,7 @@ test("jobs filter parent does not create a fixed-height scroll container", () =>
 test("jobs filter wrappers defensively force normal document flow", () => {
   assert.match(jobsPage, /jobs-filter-wrapper/);
   assert.match(jobsPage, /jobs-filter-panel/);
+  assert.match(jobsPage, /style=\{\{ position: "static"/);
   assert.match(globalStyles, /\.jobs-filter-wrapper,[\s\S]*position:\s*static\s*!important/);
   assert.match(globalStyles, /\.jobs-filter-panel[\s\S]*overflow-y:\s*visible\s*!important/);
 });

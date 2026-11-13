@@ -97,10 +97,16 @@ export function JobsPage({ initialJobs, initialPagination, initialQuery }: Props
           </div>
         </div>
 
-        <div className="mt-6 flex min-w-0 flex-col gap-6 lg:flex-row lg:items-start lg:gap-8">
+        <div className="mt-6 grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-[minmax(18rem,20rem)_minmax(0,1fr)] lg:gap-8">
           {/* Filter panel stays in normal document flow. */}
-          <div className={`jobs-filter-wrapper lg:block w-full lg:w-80 shrink-0 ${showFilters ? "block" : "hidden"}`}>
-            <div className="jobs-filter-panel rounded-2xl bg-white border border-gray-200 p-5 shadow-sm">
+          <div
+            className={`jobs-filter-wrapper w-full ${showFilters ? "block" : "hidden lg:block"}`}
+            style={{ position: "static", top: "auto", bottom: "auto", inset: "auto", height: "auto", maxHeight: "none", overflow: "visible", overflowY: "visible", transform: "none", contain: "none" }}
+          >
+            <div
+              className="jobs-filter-panel rounded-2xl bg-white border border-gray-200 p-5 shadow-sm"
+              style={{ position: "static", top: "auto", bottom: "auto", inset: "auto", height: "auto", maxHeight: "none", overflow: "visible", overflowY: "visible", transform: "none", contain: "none" }}
+            >
               <JobFilters query={query} onChange={handleQueryChange} onReset={handleReset} />
             </div>
           </div>
