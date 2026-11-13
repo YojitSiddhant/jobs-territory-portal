@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useReducer, useState, useTransition } from "react";
 import Link from "next/link";
 import type { PublicJob } from "../types";
 import { applyToJob } from "../api";
 import { fetchJobMatch, generateCoverLetter, type JobMatch } from "@/features/candidate-ai/api";
+import { aiRequestReducer, createAiRequestState } from "@/features/candidate-ai/state";
 
 const workplaceLabels: Record<string, string> = {
   ONSITE: "On-site",
@@ -41,10 +42,12 @@ export function JobDetailClient({ job, hasApplied: initialHasApplied, isCandidat
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const [submitted, setSubmitted] = useState(false);
-  const [match, setMatch] = useState<JobMatch | null>(null);
-  const [aiText, setAiText] = useState("");
-  const [aiError, setAiError] = useState<string | null>(null);
-  const [aiLoading, setAiLoading] = useState<"match" | "letter" | null>(null);
+  const [matchState, dispatchMatch] = useReducer(aiRequestReducer<JobMatch>, undefined, createAiRequestState);
+  const [letterState, dispatchLetter] = useReducer(aiRequestReducer<string>, undefined, createAiRequestState);
+  const match = matchState.value;
+  const aiText = letterState.value ?? "";
+  const aiError = matchState.error ?? letterState.error;
+  const aiLoading = matchState.loading ? "match" : letterState.loading ? "letter" : null;
 
   const isExpired =
     job.applicationDeadline !== null && new Date(job.applicationDeadline) < new Date();
@@ -64,15 +67,13 @@ export function JobDetailClient({ job, hasApplied: initialHasApplied, isCandidat
   }
 
   async function handleMatch() {
-    setAiLoading("match"); setAiError(null);
-    try { setMatch(await fetchJobMatch(job.id)); } catch (err) { setAiError(err instanceof Error ? err.message : "Could not calculate a match."); }
-    finally { setAiLoading(null); }
+    dispatchMatch({ type: "start" });
+    try { dispatchMatch({ type: "success", value: await fetchJobMatch(job.id) }); } catch (err) { dispatchMatch({ type: "failure", message: err instanceof Error ? err.message : "Could not calculate a match." }); }
   }
 
   async function handleCoverLetter() {
-    setAiLoading("letter"); setAiError(null);
-    try { setAiText(await generateCoverLetter(job.id)); } catch (err) { setAiError(err instanceof Error ? err.message : "Could not generate a cover letter."); }
-    finally { setAiLoading(null); }
+    dispatchLetter({ type: "start" });
+    try { dispatchLetter({ type: "success", value: await generateCoverLetter(job.id) }); } catch (err) { dispatchLetter({ type: "failure", message: err instanceof Error ? err.message : "Could not generate a cover letter." }); }
   }
 
   const salary = formatSalary(job.salaryMin, job.salaryMax);
@@ -173,7 +174,7 @@ export function JobDetailClient({ job, hasApplied: initialHasApplied, isCandidat
         </div>
 
         {/* Apply form */}
-        {isCandidate && <div className="rounded-2xl border border-blue-100 bg-blue-50/40 p-6 mb-5 shadow-sm space-y-4"><div><h2 className="text-base font-semibold text-gray-900">AI job tools</h2><p className="mt-1 text-xs text-gray-500">Use these private, informational tools before applying. AI does not make hiring decisions.</p></div><div className="flex flex-wrap gap-2"><button type="button" onClick={handleMatch} disabled={Boolean(aiLoading)} className="rounded-lg bg-blue-600 px-3 py-2 text-xs font-semibold text-white disabled:opacity-50">{aiLoading === "match" ? "Calculating…" : "Check my match"}</button><button type="button" onClick={handleCoverLetter} disabled={Boolean(aiLoading)} className="rounded-lg border border-blue-200 bg-white px-3 py-2 text-xs font-semibold text-blue-700 disabled:opacity-50">{aiLoading === "letter" ? "Generating…" : "Generate cover letter"}</button></div>{aiError && <p className="text-sm text-red-600">{aiError}</p>}{match && <div className="rounded-xl border border-gray-200 bg-white p-4 space-y-2"><div className="flex justify-between"><span className="text-sm font-medium text-gray-700">Resume-to-job match</span><span className="text-lg font-semibold text-blue-600">{match.score}%</span></div><p className="text-sm text-gray-600">{match.explanation}</p><p className="text-xs text-gray-500"><strong>Matched:</strong> {match.matchedSkills.join(", ") || "None identified"}</p><p className="text-xs text-gray-500"><strong>Missing:</strong> {match.missingSkills.join(", ") || "None identified"}</p></div>}{aiText && <div className="space-y-2"><label htmlFor="ai-cover-letter" className="text-xs font-semibold uppercase tracking-wide text-gray-500">Editable cover letter</label><textarea id="ai-cover-letter" value={aiText} onChange={(event) => setAiText(event.target.value)} maxLength={4000} rows={10} className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 leading-relaxed" /><div className="flex flex-wrap gap-2"><button type="button" onClick={() => { localStorage.setItem(`jobs-territory-cover-letter:${job.id}`, aiText); setAiError("Draft saved in this browser."); }} className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700">Save draft</button><button type="button" onClick={() => void navigator.clipboard.writeText(aiText)} className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700">Copy</button><button type="button" onClick={handleCoverLetter} disabled={Boolean(aiLoading)} className="rounded-lg border border-blue-200 bg-white px-3 py-2 text-xs font-medium text-blue-700">Regenerate</button></div></div>}</div>}
+        {isCandidate && <div className="rounded-2xl border border-blue-100 bg-blue-50/40 p-6 mb-5 shadow-sm space-y-4"><div><h2 className="text-base font-semibold text-gray-900">AI job tools</h2><p className="mt-1 text-xs text-gray-500">Use these private, informational tools before applying. AI does not make hiring decisions.</p></div><div className="flex flex-wrap gap-2"><button type="button" onClick={handleMatch} disabled={Boolean(aiLoading)} className="rounded-lg bg-blue-600 px-3 py-2 text-xs font-semibold text-white disabled:opacity-50">{aiLoading === "match" ? "Calculating…" : "Check my match"}</button><button type="button" onClick={handleCoverLetter} disabled={Boolean(aiLoading)} className="rounded-lg border border-blue-200 bg-white px-3 py-2 text-xs font-semibold text-blue-700 disabled:opacity-50">{aiLoading === "letter" ? "Generating…" : "Generate cover letter"}</button></div>{aiError && <div className="text-sm text-red-600">{aiError}<button type="button" onClick={() => { dispatchMatch({ type: "dismiss" }); dispatchLetter({ type: "dismiss" }); }} className="ml-2 underline">Dismiss</button></div>}{match && <div className="rounded-xl border border-gray-200 bg-white p-4 space-y-2"><div className="flex justify-between"><span className="text-sm font-medium text-gray-700">Resume-to-job match</span><span className="text-lg font-semibold text-blue-600">{match.score}%</span></div><p className="text-sm text-gray-600">{match.explanation}</p><p className="text-xs text-gray-500"><strong>Matched:</strong> {match.matchedSkills.join(", ") || "None identified"}</p><p className="text-xs text-gray-500"><strong>Missing:</strong> {match.missingSkills.join(", ") || "None identified"}</p></div>}{aiText && <div className="space-y-2"><label htmlFor="ai-cover-letter" className="text-xs font-semibold uppercase tracking-wide text-gray-500">Editable cover letter</label><textarea id="ai-cover-letter" value={aiText} onChange={(event) => dispatchLetter({ type: "success", value: event.target.value })} maxLength={4000} rows={10} className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 leading-relaxed" /><div className="flex flex-wrap gap-2"><button type="button" onClick={() => { localStorage.setItem(`jobs-territory-cover-letter:${job.id}`, aiText); }} className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700">Save draft</button><button type="button" onClick={() => void navigator.clipboard.writeText(aiText)} className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700">Copy</button><button type="button" onClick={handleCoverLetter} disabled={Boolean(aiLoading)} className="rounded-lg border border-blue-200 bg-white px-3 py-2 text-xs font-medium text-blue-700">Regenerate</button></div></div>}</div>}
 
         {showForm && !hasApplied && !isExpired && (
           <div className="rounded-2xl bg-white border border-gray-200 p-6 mb-5 shadow-sm">
