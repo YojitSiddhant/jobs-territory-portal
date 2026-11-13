@@ -98,7 +98,7 @@ export function JobsPage({ initialJobs, initialPagination, initialQuery }: Props
         </div>
 
         <div className="mt-6 flex min-w-0 flex-col gap-6 lg:flex-row lg:items-start lg:gap-8">
-          {/* Filters remain in normal document flow so the page scrolls naturally. */}
+          {/* Filter panel stays in normal document flow. */}
           <div className={`lg:block w-full lg:w-80 shrink-0 ${showFilters ? "block" : "hidden"}`}>
             <div className="rounded-2xl bg-white border border-gray-200 p-5 shadow-sm">
               <JobFilters query={query} onChange={handleQueryChange} onReset={handleReset} />

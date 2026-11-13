@@ -10,7 +10,7 @@
     "db:seed:demo": "tsx --env-file=.env.local scripts/seed-demo.ts",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test tests/auth/*.test.ts tests/candidate/*.test.ts tests/company/*.test.ts tests/admin/*.test.ts tests/storage/*.test.ts"
+    "test": "tsx --test tests/auth/*.test.ts tests/candidate/*.test.ts tests/company/*.test.ts tests/admin/*.test.ts tests/jobs/*.test.ts tests/storage/*.test.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.19.0",
