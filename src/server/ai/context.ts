@@ -1,5 +1,6 @@
 import { prisma } from "@/server/db/prisma";
 import { getPrivateStorage } from "@/server/storage/private-storage";
+import { inflateRawSync, inflateSync } from "node:zlib";
 
 export const maxResumeTextLength = 24_000;
 const maxResumeBytes = 10 * 1024 * 1024;
@@ -26,7 +27,7 @@ export function extractResumeText(body: Uint8Array, contentType: string) {
   if (body.byteLength > maxResumeBytes) throw new ResumeExtractionError("Resume file is too large to analyze.");
   const raw = Buffer.from(body).toString("utf8");
   if (contentType === "application/pdf") {
-    const pdfText = [...raw.matchAll(/\(([^()]*)\)/g)].map((match) => match[1]).join(" ");
+    const pdfText = extractPdfText(body);
     const text = pdfText.replace(/\\[nrt]/g, " ").replace(/\s+/g, " ").trim();
     if (!text) throw new ResumeExtractionError("Resume text could not be extracted.");
     return text;
@@ -34,6 +35,20 @@ export function extractResumeText(body: Uint8Array, contentType: string) {
   const text = raw.replace(/<[^>]+>/g, " ").replace(/[^\x09\x0A\x0D\x20-\x7E]/g, " ").replace(/\s+/g, " ").trim();
   if (!text) throw new ResumeExtractionError("Resume text could not be extracted.");
   return text;
+}
+
+function extractPdfText(body: Uint8Array) {
+  const source = Buffer.from(body);
+  const chunks = [source.toString("latin1")];
+  for (const match of source.toString("latin1").matchAll(/stream\r?\n/g)) {
+    const end = source.indexOf(Buffer.from("\nendstream"), match.index ?? 0);
+    if (end < 0) continue;
+    const stream = source.subarray((match.index ?? 0) + match[0].length, end);
+    for (const inflate of [inflateSync, inflateRawSync]) {
+      try { chunks.push(inflate(stream).toString("latin1")); break; } catch { /* uncompressed or unsupported stream */ }
+    }
+  }
+  return chunks.flatMap((chunk) => [...chunk.matchAll(/\(([^()]*)\)/g)].map((match) => match[1])).join(" ");
 }
 
 export function publicJobContext(job: { id: string; title: string; description: string; location: string | null; workplaceType: string | null; employmentType: string | null; experienceRequirement: string | null; requiredSkills: unknown; company: { name: string } }) {

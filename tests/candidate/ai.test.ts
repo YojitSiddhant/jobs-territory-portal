@@ -5,6 +5,7 @@ import { coverLetterSchema, matchSchema, recommendationsSchema, resumeAnalysisSc
 import { assertAiRateLimit } from "../../src/server/ai/rate-limit";
 import { extractResumeText, maxResumeTextLength, ResumeExtractionError } from "../../src/server/ai/context";
 import { validateResumeAnalysis } from "../../src/server/ai/service";
+import { deflateSync } from "node:zlib";
 
 const originalEnv = { ...process.env };
 
@@ -98,6 +99,8 @@ test("Invalid Groq JSON has a safe error", async () => {
 test("Resume extraction supports text-bearing documents and rejects empty or oversized input", () => {
   assert.equal(extractResumeText(new TextEncoder().encode("resume text"), "application/msword"), "resume text");
   assert.equal(extractResumeText(new TextEncoder().encode("BT (Resume PDF text) ET"), "application/pdf"), "Resume PDF text");
+  const compressedPdf = Buffer.concat([Buffer.from("%PDF-1.5\nstream\n"), deflateSync(Buffer.from("BT (Compressed resume text) ET")), Buffer.from("\nendstream")]);
+  assert.equal(extractResumeText(compressedPdf, "application/pdf"), "Compressed resume text");
   assert.throws(() => extractResumeText(new Uint8Array(), "application/pdf"), (error) => error instanceof ResumeExtractionError && error.message === "Resume text could not be extracted.");
   assert.throws(() => extractResumeText(new Uint8Array(10 * 1024 * 1024 + 1), "application/pdf"), /too large/i);
   assert.ok(maxResumeTextLength > 0);
