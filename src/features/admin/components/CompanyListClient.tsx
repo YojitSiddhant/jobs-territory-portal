@@ -30,13 +30,14 @@ const headings: Record<string, { title: string; count: (n: number) => string; em
 type Props = { initialCompanies: AdminCompany[]; initialStatus?: string };
 
 export function CompanyListClient({ initialCompanies, initialStatus = "PENDING" }: Props) {
-  const [companies, setCompanies] = useState(initialCompanies);
+  const [refreshed, setRefreshed] = useState<{ status: string; companies: AdminCompany[] } | null>(null);
   const [isRefreshing, startRefreshTransition] = useTransition();
   const heading = headings[initialStatus] ?? headings.PENDING!;
+  const companies = refreshed?.status === initialStatus ? refreshed.companies : initialCompanies;
 
   function handleRefresh() {
     startRefreshTransition(async () => {
-      try { setCompanies(await fetchAdminCompanies(initialStatus)); } catch { /* silent */ }
+      try { setRefreshed({ status: initialStatus, companies: await fetchAdminCompanies(initialStatus) }); } catch { /* silent */ }
     });
   }
 
@@ -68,7 +69,7 @@ export function CompanyListClient({ initialCompanies, initialStatus = "PENDING" 
           {tabs.map((tab) => (
             <Link
               key={tab.status}
-              href={tab.status === "PENDING" ? "/admin/companies" : `/admin/companies?status=${tab.status}`}
+              href={`/admin/companies?status=${tab.status}`}
               aria-current={initialStatus === tab.status ? "page" : undefined}
               className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors ${
                 initialStatus === tab.status
