@@ -13,7 +13,7 @@ All AI routes require a candidate session and call the provider only from the se
 - `POST /api/candidate/ai/match` with `{ jobId }` — informational 0–100 resume/profile-to-job comparison.
 - `POST /api/candidate/ai/cover-letter` with `{ jobId }` — validated editable cover-letter text. It never submits an application.
 
-The provider-neutral `AiProvider` interface selects the Gemini or Grok adapter through `AI_PROVIDER`. Responses are JSON-parsed and validated with Zod. Requests have a timeout and an in-process per-user rate limit. Missing keys return `AI_NOT_CONFIGURED` with HTTP 503; no fake response is generated.
+The provider-neutral `AiProvider` interface selects the Gemini or Groq adapter through `AI_PROVIDER`. Responses are JSON-parsed and validated with Zod. Requests have a timeout and an in-process per-user rate limit. Missing keys return `AI_NOT_CONFIGURED` with HTTP 503; no fake response is generated.
 
 ## Environment
 
@@ -21,8 +21,8 @@ Set server-only values in `.env.local`:
 
 ```text
 GEMINI_API_KEY=
-GROK_API_KEY=
+GROQ_API_KEY=
 AI_PROVIDER=gemini
 ```
 
-To connect Grok later, set `AI_PROVIDER=grok` and provide `GROK_API_KEY`. To connect Gemini, set `AI_PROVIDER=gemini` and provide `GEMINI_API_KEY`. These variables must never use a `NEXT_PUBLIC_` prefix.
+To connect Groq, set `AI_PROVIDER=groq` and provide `GROQ_API_KEY`. To connect Gemini, set `AI_PROVIDER=gemini` and provide `GEMINI_API_KEY`. These variables must never use a `NEXT_PUBLIC_` prefix.

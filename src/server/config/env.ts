@@ -13,8 +13,8 @@ const envSchema = z.object({
   STORAGE_SECRET_ACCESS_KEY: z.string().optional(),
   STORAGE_LOCAL_DIR: z.string().default(".private-storage"),
   GEMINI_API_KEY: z.string().optional(),
-  GROK_API_KEY: z.string().optional(),
-  AI_PROVIDER: z.enum(["gemini", "grok"]).default("gemini"),
+  GROQ_API_KEY: z.string().optional(),
+  AI_PROVIDER: z.enum(["gemini", "groq"]).default("gemini"),
 });
 
 export function getEnv() {
@@ -31,7 +31,7 @@ export function getEnv() {
     STORAGE_SECRET_ACCESS_KEY: process.env.STORAGE_SECRET_ACCESS_KEY,
     STORAGE_LOCAL_DIR: process.env.STORAGE_LOCAL_DIR,
     GEMINI_API_KEY: process.env.GEMINI_API_KEY,
-    GROK_API_KEY: process.env.GROK_API_KEY,
+    GROQ_API_KEY: process.env.GROQ_API_KEY,
     AI_PROVIDER: process.env.AI_PROVIDER,
   });
 }

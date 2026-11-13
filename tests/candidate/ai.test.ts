@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { getAiProvider, AiConfigurationError } from "../../src/server/ai/provider";
+import { getAiProvider, AiConfigurationError, AiProviderError } from "../../src/server/ai/provider";
 import { coverLetterSchema, matchSchema, recommendationsSchema, resumeAnalysisSchema } from "../../src/server/ai/schemas";
 import { assertAiRateLimit } from "../../src/server/ai/rate-limit";
 
@@ -11,7 +11,7 @@ function setAiEnv(values: Record<string, string | undefined>) {
   process.env.AUTH_SECRET = "12345678901234567890123456789012";
   process.env.AI_PROVIDER = values.AI_PROVIDER ?? "gemini";
   if (values.GEMINI_API_KEY === undefined) delete process.env.GEMINI_API_KEY; else process.env.GEMINI_API_KEY = values.GEMINI_API_KEY;
-  if (values.GROK_API_KEY === undefined) delete process.env.GROK_API_KEY; else process.env.GROK_API_KEY = values.GROK_API_KEY;
+  if (values.GROQ_API_KEY === undefined) delete process.env.GROQ_API_KEY; else process.env.GROQ_API_KEY = values.GROQ_API_KEY;
 }
 
 test.after(() => {
@@ -24,11 +24,47 @@ test("AI provider selection returns a clear missing-key configuration error", ()
   assert.throws(() => getAiProvider(), (error) => error instanceof AiConfigurationError && error.status === 503);
 });
 
-test("AI provider selection supports Gemini and Grok without exposing keys", () => {
+test("AI provider selection supports Gemini and Groq without exposing keys", () => {
   setAiEnv({ AI_PROVIDER: "gemini", GEMINI_API_KEY: "gemini-secret" });
   assert.equal(getAiProvider().name, "gemini");
-  setAiEnv({ AI_PROVIDER: "grok", GROK_API_KEY: "grok-secret" });
-  assert.equal(getAiProvider().name, "grok");
+  setAiEnv({ AI_PROVIDER: "groq", GROQ_API_KEY: "groq-secret" });
+  const provider = getAiProvider();
+  assert.equal(provider.name, "groq");
+  assert.equal(JSON.stringify(provider).includes("groq-secret"), false);
+});
+
+test("Groq missing key has a safe message", () => {
+  setAiEnv({ AI_PROVIDER: "groq" });
+  assert.throws(() => getAiProvider(), (error) => error instanceof AiConfigurationError && error.message === "Groq API key is missing.");
+});
+
+test("Groq normalizes a successful OpenAI-compatible response", async () => {
+  setAiEnv({ AI_PROVIDER: "groq", GROQ_API_KEY: "secret" });
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async (input, init) => {
+    assert.equal(input, "https://api.groq.com/openai/v1/chat/completions");
+    assert.equal((init?.headers as Record<string, string>).Authorization, "Bearer secret");
+    const body = JSON.parse(String(init?.body));
+    assert.equal(body.model, "llama-3.3-70b-versatile");
+    return new Response(JSON.stringify({ choices: [{ message: { content: "{\"ok\":true}" } }] }), { status: 200 });
+  };
+  try { assert.deepEqual(await getAiProvider().generateJson("prompt"), { ok: true }); } finally { globalThis.fetch = originalFetch; }
+});
+
+for (const [name, status, message] of [["invalid key", 401, "Groq API key is invalid."], ["rate limit", 429, "Groq API quota or rate limit reached."], ["model unavailable", 404, "Groq model is unavailable."]] as const) {
+  test(`Groq ${name} response is safe`, async () => {
+    setAiEnv({ AI_PROVIDER: "groq", GROQ_API_KEY: "secret" });
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async () => new Response(JSON.stringify({ error: { message: "secret resume data" } }), { status });
+    try { await assert.rejects(() => getAiProvider().generateJson("prompt"), (error) => error instanceof AiProviderError && error.message === message && !error.message.includes("secret")); } finally { globalThis.fetch = originalFetch; }
+  });
+}
+
+test("Groq timeout returns a safe normalized error", async () => {
+  setAiEnv({ AI_PROVIDER: "groq", GROQ_API_KEY: "secret" });
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () => { throw Object.assign(new Error("secret"), { name: "AbortError" }); };
+  try { await assert.rejects(() => getAiProvider().generateJson("prompt"), (error) => error instanceof AiProviderError && error.message === "Resume analysis temporarily failed."); } finally { globalThis.fetch = originalFetch; }
 });
 
 test("AI response schemas reject malformed provider output", () => {
