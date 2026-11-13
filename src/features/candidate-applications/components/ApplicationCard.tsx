@@ -22,7 +22,7 @@ export function ApplicationCard({ application, onClick }: Props) {
     <button
       type="button"
       onClick={onClick}
-      className="group w-full text-left rounded-2xl bg-white border border-gray-200 p-5 hover:border-gray-300 hover:shadow-sm transition-all"
+      className="group w-full text-left rounded-2xl bg-white border border-gray-200 p-5 shadow-sm hover:border-gray-300 hover:shadow-md transition-all"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">

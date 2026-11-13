@@ -73,7 +73,8 @@ export function CompanyApplicationsClient({ initialApplications }: Props) {
   }
 
   return (
-    <main className="min-h-screen bg-white px-4 py-10 sm:px-6 lg:px-8 space-y-6">
+    <main className="min-h-screen bg-gray-50">
+      <div className="mx-auto w-full max-w-4xl px-4 py-10 sm:px-6 lg:px-8 space-y-6">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs font-medium uppercase tracking-widest text-blue-600 mb-1">Jobs Territory</p>
@@ -133,7 +134,7 @@ export function CompanyApplicationsClient({ initialApplications }: Props) {
           <ul className="space-y-3">
             {applications.map((app) => (
               <li key={app.id}>
-                <button type="button" onClick={() => selected?.id === app.id ? setSelected(null) : selectApplication(app)} className={`group w-full text-left rounded-2xl border p-5 transition-colors ${selected?.id === app.id ? "bg-gray-50 border-gray-300" : "bg-white border-gray-200 hover:border-gray-300"}`}>
+                <button type="button" onClick={() => selected?.id === app.id ? setSelected(null) : selectApplication(app)} className={`group w-full text-left rounded-2xl border p-5 shadow-sm transition-colors ${selected?.id === app.id ? "bg-white border-blue-300" : "bg-white border-gray-200 hover:border-gray-300"}`}>
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="text-xs text-gray-400 mb-0.5">{app.job?.title ?? "Job details unavailable"}</p>
@@ -148,6 +149,7 @@ export function CompanyApplicationsClient({ initialApplications }: Props) {
             ))}
           </ul>
         )}
+      </div>
     </main>
   );
 }

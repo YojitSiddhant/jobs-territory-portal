@@ -47,8 +47,8 @@ export function CompanyDashboardClient({ initialProfile }: Props) {
   }
 
   return (
-    <main className="min-h-screen bg-white px-4 py-10 sm:px-6 lg:px-8">
-      <div className="space-y-6">
+    <main className="min-h-screen bg-gray-50">
+      <div className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6 lg:px-8 space-y-6">
         {/* Header */}
         <div className="flex items-start justify-between gap-4">
           <div>
