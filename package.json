@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "admin:bootstrap": "tsx scripts/bootstrap-admin.ts",
+    "db:seed:demo": "tsx --env-file=.env.local scripts/seed-demo.ts",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "tsx --test tests/auth/*.test.ts tests/candidate/*.test.ts tests/company/*.test.ts tests/storage/*.test.ts"
