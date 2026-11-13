@@ -97,9 +97,9 @@ export function JobsPage({ initialJobs, initialPagination, initialQuery }: Props
           </div>
         </div>
 
-        <div className="mt-6 flex flex-col gap-6 lg:flex-row lg:gap-8">
-          {/* Filters sidebar */}
-          <div className={`lg:block w-full lg:w-64 shrink-0 ${showFilters ? "block" : "hidden"}`}>
+        <div className="mt-6 flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-8">
+          {/* Filters sidebar: static positioning so it scrolls away with the page */}
+          <div className={`static lg:block w-full lg:w-64 shrink-0 ${showFilters ? "block" : "hidden"}`}>
             <div className="rounded-2xl bg-white border border-gray-200 p-5 shadow-sm">
               <JobFilters query={query} onChange={handleQueryChange} onReset={handleReset} />
             </div>
