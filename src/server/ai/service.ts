@@ -7,14 +7,16 @@ function prompt(task: string, payload: unknown) { return `You are a careful care
 
 export function validateResumeAnalysis(value: unknown): ResumeAnalysis {
   const parsed = resumeAnalysisSchema.safeParse(value);
-  if (!parsed.success) throw new AiProviderError("The AI provider returned an invalid resume analysis.");
+  if (!parsed.success) { console.warn("AI_STAGE stage=zod_validation status=502 message=invalid-resume-analysis"); throw new AiProviderError("The AI provider returned an invalid resume analysis."); }
   console.info("AI_STAGE stage=zod_validation status=200 message=resume-analysis-valid");
   return parsed.data;
 }
 
 export async function analyzeCandidateResume(userId: string): Promise<ResumeAnalysis> {
   const context = await getCandidateContext(userId);
-  const result = await getAiProvider().generateJson(prompt("Analyze this candidate resume and profile with summary, skills, education, experience, strengths, missingInformation, and suggestions.", context));
+  const requestPrompt = prompt("Analyze this candidate resume and profile with summary, skills, education, experience, strengths, missingInformation, and suggestions. Keep every list concise and return exactly the requested JSON object.", context);
+  console.info(`AI_STAGE stage=groq_request status=200 message=prompt_length_${requestPrompt.length}`);
+  const result = await getAiProvider().generateJson(requestPrompt);
   console.info("AI_STAGE stage=json_parse status=200 message=provider-json-parsed");
   return validateResumeAnalysis(result);
 }
