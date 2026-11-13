@@ -1,12 +1,20 @@
 import { getAiProvider } from "./provider";
 import { coverLetterSchema, matchSchema, recommendationsSchema, resumeAnalysisSchema, type CoverLetter, type JobMatch, type Recommendation, type ResumeAnalysis } from "./schemas";
 import { getCandidateContext, publicJobContext } from "./context";
+import { AiProviderError } from "./provider";
 
 function prompt(task: string, payload: unknown) { return `You are a careful career assistant. Do not make hiring decisions. Return only JSON matching the requested schema. Do not include private storage keys, passwords, emails, tokens, or filesystem paths.\nTask: ${task}\nInput:\n${JSON.stringify(payload)}`; }
 
+export function validateResumeAnalysis(value: unknown): ResumeAnalysis {
+  const parsed = resumeAnalysisSchema.safeParse(value);
+  if (!parsed.success) throw new AiProviderError("The AI provider returned an invalid resume analysis.");
+  return parsed.data;
+}
+
 export async function analyzeCandidateResume(userId: string): Promise<ResumeAnalysis> {
   const context = await getCandidateContext(userId);
-  return resumeAnalysisSchema.parse(await getAiProvider().generateJson(prompt("Analyze this candidate resume and profile with summary, skills, education, experience, strengths, missingInformation, and suggestions.", context)));
+  const result = await getAiProvider().generateJson(prompt("Analyze this candidate resume and profile with summary, skills, education, experience, strengths, missingInformation, and suggestions.", context));
+  return validateResumeAnalysis(result);
 }
 
 export async function recommendJobs(userId: string, jobs: unknown[]): Promise<Recommendation[]> {

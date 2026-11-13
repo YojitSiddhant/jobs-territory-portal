@@ -3,6 +3,8 @@ import assert from "node:assert/strict";
 import { getAiProvider, AiConfigurationError, AiProviderError } from "../../src/server/ai/provider";
 import { coverLetterSchema, matchSchema, recommendationsSchema, resumeAnalysisSchema } from "../../src/server/ai/schemas";
 import { assertAiRateLimit } from "../../src/server/ai/rate-limit";
+import { extractResumeText, maxResumeTextLength, ResumeExtractionError } from "../../src/server/ai/context";
+import { validateResumeAnalysis } from "../../src/server/ai/service";
 
 const originalEnv = { ...process.env };
 
@@ -47,6 +49,7 @@ test("Groq normalizes a successful OpenAI-compatible response", async () => {
     assert.equal((init?.headers as Record<string, string>).Authorization, "Bearer secret");
     const body = JSON.parse(String(init?.body));
     assert.equal(body.model, "openai/gpt-oss-20b");
+    assert.equal("response_format" in body, false);
     return new Response(JSON.stringify({ choices: [{ message: { content: "{\"ok\":true}" } }] }), { status: 200 });
   };
   try { assert.deepEqual(await getAiProvider().generateJson("prompt"), { ok: true }); } finally { globalThis.fetch = originalFetch; }
@@ -76,6 +79,32 @@ test("Groq timeout returns a safe normalized error", async () => {
   const originalFetch = globalThis.fetch;
   globalThis.fetch = async () => { throw Object.assign(new Error("secret"), { name: "AbortError" }); };
   try { await assert.rejects(() => getAiProvider().generateJson("prompt"), (error) => error instanceof AiProviderError && error.message === "Resume analysis temporarily failed."); } finally { globalThis.fetch = originalFetch; }
+});
+
+test("Groq markdown-wrapped JSON is normalized", async () => {
+  setAiEnv({ AI_PROVIDER: "groq", GROQ_API_KEY: "secret" });
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () => new Response(JSON.stringify({ choices: [{ message: { content: "```json\n{\"ok\":true}\n```" } }] }), { status: 200 });
+  try { assert.deepEqual(await getAiProvider().generateJson("prompt"), { ok: true }); } finally { globalThis.fetch = originalFetch; }
+});
+
+test("Invalid Groq JSON has a safe error", async () => {
+  setAiEnv({ AI_PROVIDER: "groq", GROQ_API_KEY: "secret" });
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () => new Response(JSON.stringify({ choices: [{ message: { content: "not json" } }] }), { status: 200 });
+  try { await assert.rejects(() => getAiProvider().generateJson("prompt"), /invalid JSON/i); } finally { globalThis.fetch = originalFetch; }
+});
+
+test("Resume extraction supports text-bearing documents and rejects empty or oversized input", () => {
+  assert.equal(extractResumeText(new TextEncoder().encode("resume text"), "application/msword"), "resume text");
+  assert.equal(extractResumeText(new TextEncoder().encode("BT (Resume PDF text) ET"), "application/pdf"), "Resume PDF text");
+  assert.throws(() => extractResumeText(new Uint8Array(), "application/pdf"), (error) => error instanceof ResumeExtractionError && error.message === "Resume text could not be extracted.");
+  assert.throws(() => extractResumeText(new Uint8Array(10 * 1024 * 1024 + 1), "application/pdf"), /too large/i);
+  assert.ok(maxResumeTextLength > 0);
+});
+
+test("Resume analysis Zod validation returns a safe error", () => {
+  assert.throws(() => validateResumeAnalysis({ summary: "missing required fields" }), /invalid resume analysis/i);
 });
 
 test("AI response schemas reject malformed provider output", () => {
