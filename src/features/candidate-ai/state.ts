@@ -21,7 +21,7 @@ export function aiRequestReducer<T>(state: AiRequestState<T>, action: AiRequestA
     case "success":
       return { value: action.value, error: null, loading: false };
     case "failure":
-      return { ...state, error: action.message, loading: false };
+      return { value: null, error: action.message, loading: false };
     case "dismiss":
       return { ...state, error: null };
   }

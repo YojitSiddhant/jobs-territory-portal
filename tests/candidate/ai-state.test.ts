@@ -12,9 +12,9 @@ test("AI request success replaces the result and clears the error", () => {
   assert.deepEqual(state, { value: "new", error: null, loading: false });
 });
 
-test("AI request failure preserves the last successful result", () => {
+test("AI request failure removes the displayed result before showing the error", () => {
   const state = aiRequestReducer({ value: "result", error: null, loading: true }, { type: "failure", message: "failed again" });
-  assert.deepEqual(state, { value: "result", error: "failed again", loading: false });
+  assert.deepEqual(state, { value: null, error: "failed again", loading: false });
 });
 
 test("AI request dismiss clears only the error", () => {
