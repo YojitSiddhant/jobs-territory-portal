@@ -1,5 +1,4 @@
 export type ResumeAnalysis = { summary: string; skills: string[]; education: string[]; experience: string[]; strengths: string[]; missingInformation: string[]; suggestions: string[] };
-export type Recommendation = { jobId: string; matchPercentage: number; reasons: string[]; matchingSkills: string[]; missingSkills: string[]; job?: { id: string; slug: string | null; title: string; company: string; location: string | null } };
 export type JobMatch = { score: number; matchedSkills: string[]; missingSkills: string[]; explanation: string };
 
 async function request<T>(url: string, init?: RequestInit): Promise<T> {
@@ -10,6 +9,5 @@ async function request<T>(url: string, init?: RequestInit): Promise<T> {
 }
 
 export async function analyzeResume() { return (await request<{ analysis: ResumeAnalysis }>("/api/candidate/ai/resume-analysis", { method: "POST" })).analysis; }
-export async function fetchRecommendations() { return (await request<{ recommendations: Recommendation[] }>("/api/candidate/ai/recommendations")).recommendations; }
 export async function fetchJobMatch(jobId: string) { return (await request<{ match: JobMatch }>("/api/candidate/ai/match", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ jobId }) })).match; }
 export async function generateCoverLetter(jobId: string) { return (await request<{ result: { coverLetter: string } }>("/api/candidate/ai/cover-letter", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ jobId }) })).result.coverLetter; }

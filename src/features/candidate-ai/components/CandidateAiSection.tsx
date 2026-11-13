@@ -1,24 +1,20 @@
 "use client";
 
 import { useReducer } from "react";
-import { analyzeResume, fetchRecommendations, type Recommendation, type ResumeAnalysis } from "../api";
+import { analyzeResume, type ResumeAnalysis } from "../api";
 import { aiRequestReducer, createAiRequestState } from "../state";
 
 export function CandidateAiSection() {
   const [analysisState, dispatchAnalysis] = useReducer(aiRequestReducer<ResumeAnalysis>, undefined, createAiRequestState);
-  const [recommendationState, dispatchRecommendations] = useReducer(aiRequestReducer<Recommendation[]>, undefined, createAiRequestState);
-  const loading = analysisState.loading ? "analysis" : recommendationState.loading ? "recommendations" : null;
+  const loading = analysisState.loading;
 
   async function runAnalysis() { dispatchAnalysis({ type: "start" }); try { dispatchAnalysis({ type: "success", value: await analyzeResume() }); } catch (err) { dispatchAnalysis({ type: "failure", message: err instanceof Error ? err.message : "Could not analyze your resume." }); } }
-  async function loadRecommendations() { dispatchRecommendations({ type: "start" }); try { dispatchRecommendations({ type: "success", value: await fetchRecommendations() }); } catch (err) { dispatchRecommendations({ type: "failure", message: err instanceof Error ? err.message : "Could not load recommendations." }); } }
 
   return <section className="rounded-2xl border border-blue-100 bg-blue-50/40 p-6 space-y-5 shadow-sm">
     <div><p className="text-xs font-medium uppercase tracking-widest text-blue-600">AI career tools</p><h2 className="mt-1 text-base font-semibold text-gray-900">Improve your job search</h2><p className="mt-1 text-sm text-gray-500">AI uses your profile and private resume on the server. Results are informational, not hiring decisions.</p></div>
-    <div className="flex flex-wrap gap-2"><button type="button" onClick={runAnalysis} disabled={Boolean(loading)} className="rounded-lg bg-blue-600 px-3 py-2 text-xs font-semibold text-white disabled:opacity-50">{loading === "analysis" ? "Analyzing…" : "Analyze my resume"}</button><button type="button" onClick={loadRecommendations} disabled={Boolean(loading)} className="rounded-lg border border-blue-200 bg-white px-3 py-2 text-xs font-semibold text-blue-700 disabled:opacity-50">{loading === "recommendations" ? "Finding matches…" : "Recommend jobs"}</button></div>
+    <div className="flex flex-wrap gap-2"><button type="button" onClick={runAnalysis} disabled={loading} className="rounded-lg bg-blue-600 px-3 py-2 text-xs font-semibold text-white disabled:opacity-50">{loading ? "Analyzing…" : "Analyze my resume"}</button></div>
     {analysisState.error && <AiError message={analysisState.error} onDismiss={() => dispatchAnalysis({ type: "dismiss" })} />}
-    {recommendationState.error && <AiError message={recommendationState.error} onDismiss={() => dispatchRecommendations({ type: "dismiss" })} />}
     {analysisState.value && <div className="space-y-3 rounded-xl border border-gray-200 bg-white p-4"><h3 className="text-sm font-semibold text-gray-900">Resume analysis</h3><p className="text-sm text-gray-700">{analysisState.value.summary}</p><AiList label="Skills" items={analysisState.value.skills} /><AiList label="Strengths" items={analysisState.value.strengths} /><AiList label="Suggestions" items={analysisState.value.suggestions} /><AiList label="Missing information" items={analysisState.value.missingInformation} /></div>}
-    {recommendationState.value && <div className="space-y-3 rounded-xl border border-gray-200 bg-white p-4"><h3 className="text-sm font-semibold text-gray-900">Recommended jobs</h3>{recommendationState.value.length === 0 ? <p className="text-sm text-gray-500">No strong matches are available yet.</p> : recommendationState.value.map((item) => <div key={item.jobId} className="border-t border-gray-100 pt-3 first:border-0 first:pt-0"><div className="flex justify-between gap-3"><p className="text-sm font-medium text-gray-900">{item.job?.title ?? "Job"}</p><span className="text-sm font-semibold text-blue-600">{item.matchPercentage}% match</span></div><p className="text-xs text-gray-500">{item.job?.company}{item.job?.location ? ` · ${item.job.location}` : ""}</p><p className="mt-1 text-xs text-gray-600">{item.reasons.join(" ")}</p></div>)}</div>}
   </section>;
 }
 

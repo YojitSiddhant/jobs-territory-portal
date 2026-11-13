@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { getAiProvider, AiConfigurationError, AiProviderError } from "../../src/server/ai/provider";
-import { coverLetterSchema, matchSchema, recommendationsSchema, resumeAnalysisSchema } from "../../src/server/ai/schemas";
+import { coverLetterSchema, matchSchema, resumeAnalysisSchema } from "../../src/server/ai/schemas";
 import { assertAiRateLimit } from "../../src/server/ai/rate-limit";
 import { extractResumeText, maxResumeTextLength, ResumeExtractionError } from "../../src/server/ai/context";
 import { validateResumeAnalysis } from "../../src/server/ai/service";
@@ -130,7 +130,6 @@ test("Resume analysis normalizes structured education and experience items befor
 
 test("AI response schemas reject malformed provider output", () => {
   assert.equal(resumeAnalysisSchema.safeParse({ summary: "only" }).success, false);
-  assert.equal(recommendationsSchema.safeParse([{ jobId: "job", matchPercentage: 101, reasons: [], matchingSkills: [], missingSkills: [] }]).success, false);
   assert.equal(matchSchema.safeParse({ score: 20, matchedSkills: [], missingSkills: [], explanation: "ok" }).success, true);
   assert.equal(coverLetterSchema.safeParse({ coverLetter: "too short" }).success, false);
 });

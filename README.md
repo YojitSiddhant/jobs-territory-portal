@@ -85,7 +85,7 @@ Candidate files can be uploaded through `POST /api/candidate/profile/files` as m
 
 ## Candidate AI features
 
-The candidate profile and job-detail screens provide server-side resume analysis, job recommendations, resume-to-job match scores, and editable cover-letter generation. To enable Groq locally, set `AI_PROVIDER=groq` and `GROQ_API_KEY` in `.env.local`. `GROQ_MODEL` is optional and defaults to Groq's supported `openai/gpt-oss-20b`; set it to another currently supported model when needed. These variables are server-only and must not use a `NEXT_PUBLIC_` prefix.
+The candidate profile and job-detail screens provide server-side resume analysis, resume-to-job match scores, and editable cover-letter generation. To enable Groq locally, set `AI_PROVIDER=groq` and `GROQ_API_KEY` in `.env.local`. `GROQ_MODEL` is optional and defaults to Groq's supported `openai/gpt-oss-20b`; set it to another currently supported model when needed. These variables are server-only and must not use a `NEXT_PUBLIC_` prefix.
 
 ## Admin company verification API
 

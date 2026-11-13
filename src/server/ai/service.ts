@@ -1,5 +1,5 @@
 import { getAiProvider } from "./provider";
-import { coverLetterSchema, matchSchema, recommendationsSchema, resumeAnalysisSchema, type CoverLetter, type JobMatch, type Recommendation, type ResumeAnalysis } from "./schemas";
+import { coverLetterSchema, matchSchema, resumeAnalysisSchema, type CoverLetter, type JobMatch, type ResumeAnalysis } from "./schemas";
 import { getCandidateContext, publicJobContext } from "./context";
 import { AiProviderError } from "./provider";
 
@@ -31,13 +31,6 @@ export async function analyzeCandidateResume(userId: string): Promise<ResumeAnal
   const result = await getAiProvider().generateJson(requestPrompt);
   console.info("AI_STAGE stage=json_parse status=200 message=provider-json-parsed");
   return validateResumeAnalysis(result);
-}
-
-export async function recommendJobs(userId: string, jobs: unknown[]): Promise<Recommendation[]> {
-  const context = await getCandidateContext(userId);
-  const result = recommendationsSchema.parse(await getAiProvider().generateJson(prompt("Rank only these jobs for this candidate. Return jobId, matchPercentage, reasons, matchingSkills, and missingSkills.", { candidate: context, jobs })));
-  const allowed = new Set(jobs.map((job) => (job as { id: string }).id));
-  return result.filter((item) => allowed.has(item.jobId));
 }
 
 export async function matchCandidateToJob(userId: string, job: Parameters<typeof publicJobContext>[0]): Promise<JobMatch> {
