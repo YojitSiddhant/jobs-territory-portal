@@ -122,6 +122,12 @@ test("Resume analysis Zod validation returns a safe error", () => {
   assert.throws(() => validateResumeAnalysis({ summary: "missing required fields" }), /invalid resume analysis/i);
 });
 
+test("Resume analysis normalizes structured education and experience items before Zod validation", () => {
+  const analysis = validateResumeAnalysis({ summary: "Summary", skills: ["TypeScript"], education: [{ institution: "University", qualification: "BSc" }], experience: [{ employer: "Company", jobTitle: "Engineer" }], strengths: [], missingInformation: [], suggestions: [] });
+  assert.equal(analysis.education[0], "institution: University; qualification: BSc");
+  assert.equal(analysis.experience[0], "employer: Company; jobTitle: Engineer");
+});
+
 test("AI response schemas reject malformed provider output", () => {
   assert.equal(resumeAnalysisSchema.safeParse({ summary: "only" }).success, false);
   assert.equal(recommendationsSchema.safeParse([{ jobId: "job", matchPercentage: 101, reasons: [], matchingSkills: [], missingSkills: [] }]).success, false);
