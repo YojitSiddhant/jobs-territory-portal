@@ -103,7 +103,7 @@ test("Resume extraction supports text-bearing documents and rejects empty or ove
   assert.equal(extractResumeText(compressedPdf, "application/pdf"), "Compressed resume text");
   assert.throws(() => extractResumeText(new Uint8Array(), "application/pdf"), (error) => error instanceof ResumeExtractionError && error.message === "Resume text could not be extracted.");
   assert.throws(() => extractResumeText(new Uint8Array(10 * 1024 * 1024 + 1), "application/pdf"), /too large/i);
-  assert.equal(maxResumeTextLength, 8_000);
+  assert.equal(maxResumeTextLength, 2_000);
 });
 
 test("Resume analysis Zod validation returns a safe error", () => {

@@ -3,7 +3,7 @@ import { getPrivateStorage } from "@/server/storage/private-storage";
 import { inflateRawSync, inflateSync } from "node:zlib";
 
 // Keep the complete prompt below Groq's request-size limit after profile context is added.
-export const maxResumeTextLength = 8_000;
+export const maxResumeTextLength = 2_000;
 const maxResumeBytes = 10 * 1024 * 1024;
 export class ResumeExtractionError extends Error { status = 422; code = "RESUME_EXTRACTION_FAILED"; constructor(message: string) { super(message); this.name = "RESUME_EXTRACTION_FAILED"; } }
 
