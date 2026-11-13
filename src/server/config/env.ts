@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const defaultGroqModel = "llama-3.3-70b-versatile";
+export const defaultGroqModel = "openai/gpt-oss-20b";
 
 const envSchema = z.object({
   DATABASE_URL: z.string().min(1),

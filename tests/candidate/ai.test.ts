@@ -46,7 +46,7 @@ test("Groq normalizes a successful OpenAI-compatible response", async () => {
     assert.equal(input, "https://api.groq.com/openai/v1/chat/completions");
     assert.equal((init?.headers as Record<string, string>).Authorization, "Bearer secret");
     const body = JSON.parse(String(init?.body));
-    assert.equal(body.model, "llama-3.3-70b-versatile");
+    assert.equal(body.model, "openai/gpt-oss-20b");
     return new Response(JSON.stringify({ choices: [{ message: { content: "{\"ok\":true}" } }] }), { status: 200 });
   };
   try { assert.deepEqual(await getAiProvider().generateJson("prompt"), { ok: true }); } finally { globalThis.fetch = originalFetch; }
