@@ -12,6 +12,7 @@ function setAiEnv(values: Record<string, string | undefined>) {
   process.env.AI_PROVIDER = values.AI_PROVIDER ?? "gemini";
   if (values.GEMINI_API_KEY === undefined) delete process.env.GEMINI_API_KEY; else process.env.GEMINI_API_KEY = values.GEMINI_API_KEY;
   if (values.GROQ_API_KEY === undefined) delete process.env.GROQ_API_KEY; else process.env.GROQ_API_KEY = values.GROQ_API_KEY;
+  if (values.GROQ_MODEL === undefined) delete process.env.GROQ_MODEL; else process.env.GROQ_MODEL = values.GROQ_MODEL;
 }
 
 test.after(() => {
@@ -51,7 +52,17 @@ test("Groq normalizes a successful OpenAI-compatible response", async () => {
   try { assert.deepEqual(await getAiProvider().generateJson("prompt"), { ok: true }); } finally { globalThis.fetch = originalFetch; }
 });
 
-for (const [name, status, message] of [["invalid key", 401, "Groq API key is invalid."], ["rate limit", 429, "Groq API quota or rate limit reached."], ["model unavailable", 404, "Groq model is unavailable."]] as const) {
+test("Groq uses a configured model override", async () => {
+  setAiEnv({ AI_PROVIDER: "groq", GROQ_API_KEY: "secret", GROQ_MODEL: "llama-3.1-8b-instant" });
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async (_input, init) => {
+    assert.equal(JSON.parse(String(init?.body)).model, "llama-3.1-8b-instant");
+    return new Response(JSON.stringify({ choices: [{ message: { content: "{\"ok\":true}" } }] }), { status: 200 });
+  };
+  try { await getAiProvider().generateJson("prompt"); } finally { globalThis.fetch = originalFetch; }
+});
+
+for (const [name, status, message] of [["invalid key", 401, "Groq API key is invalid."], ["rate limit", 429, "Groq API quota or rate limit reached."], ["model unavailable", 404, "Groq model is unavailable. Check GROQ_MODEL and update it to a currently supported model."]] as const) {
   test(`Groq ${name} response is safe`, async () => {
     setAiEnv({ AI_PROVIDER: "groq", GROQ_API_KEY: "secret" });
     const originalFetch = globalThis.fetch;

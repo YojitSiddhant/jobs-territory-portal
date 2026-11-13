@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+export const defaultGroqModel = "llama-3.3-70b-versatile";
+
 const envSchema = z.object({
   DATABASE_URL: z.string().min(1),
   APP_URL: z.string().url().default("http://localhost:3000"),
@@ -14,6 +16,7 @@ const envSchema = z.object({
   STORAGE_LOCAL_DIR: z.string().default(".private-storage"),
   GEMINI_API_KEY: z.string().optional(),
   GROQ_API_KEY: z.string().optional(),
+  GROQ_MODEL: z.preprocess((value) => typeof value === "string" && value.trim() === "" ? undefined : value, z.string().default(defaultGroqModel)),
   AI_PROVIDER: z.enum(["gemini", "groq"]).default("gemini"),
 });
 
@@ -32,6 +35,7 @@ export function getEnv() {
     STORAGE_LOCAL_DIR: process.env.STORAGE_LOCAL_DIR,
     GEMINI_API_KEY: process.env.GEMINI_API_KEY,
     GROQ_API_KEY: process.env.GROQ_API_KEY,
+    GROQ_MODEL: process.env.GROQ_MODEL,
     AI_PROVIDER: process.env.AI_PROVIDER,
   });
 }

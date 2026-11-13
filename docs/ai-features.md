@@ -22,7 +22,8 @@ Set server-only values in `.env.local`:
 ```text
 GEMINI_API_KEY=
 GROQ_API_KEY=
+GROQ_MODEL=llama-3.3-70b-versatile
 AI_PROVIDER=gemini
 ```
 
-To connect Groq, set `AI_PROVIDER=groq` and provide `GROQ_API_KEY`. To connect Gemini, set `AI_PROVIDER=gemini` and provide `GEMINI_API_KEY`. These variables must never use a `NEXT_PUBLIC_` prefix.
+To connect Groq, set `AI_PROVIDER=groq` and provide `GROQ_API_KEY`. `GROQ_MODEL` is optional and defaults to the supported production model `llama-3.3-70b-versatile`; update it when Groq changes its model catalog. To connect Gemini, set `AI_PROVIDER=gemini` and provide `GEMINI_API_KEY`. These variables must never use a `NEXT_PUBLIC_` prefix.
