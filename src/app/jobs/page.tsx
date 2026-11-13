@@ -4,9 +4,8 @@ import { connection } from "next/server";
 import type { Metadata } from "next";
 import { normalizeDiscoveryQuery } from "@/shared/validation/job-discovery";
 import { prisma } from "@/server/db/prisma";
-import { publicJobSelect, serializePublicJob } from "@/server/jobs/public-discovery";
+import { buildDiscoveryOrderBy, buildDiscoveryWhere, publicJobSelect, serializePublicJob } from "@/server/jobs/public-discovery";
 import { JobsPage } from "@/features/jobs/components/JobsPage";
-import type { Prisma } from "@prisma/client";
 import type { PublicJob } from "@/features/jobs/types";
 
 export const metadata: Metadata = {
@@ -32,44 +31,8 @@ export default async function BrowseJobsPage({ searchParams }: PageProps) {
   const raw = await searchParams;
   const params = new URLSearchParams(flattenSearchParams(raw));
   const query = normalizeDiscoveryQuery(params);
-  const now = new Date();
-
-  const andFilters: Prisma.JobWhereInput[] = [
-    { OR: [{ applicationDeadline: null }, { applicationDeadline: { gte: now } }] },
-  ];
-  if (query.q)
-    andFilters.push({
-      OR: [
-        { title: { contains: query.q } },
-        { description: { contains: query.q } },
-        { company: { name: { contains: query.q } } },
-        { requiredSkills: { string_contains: query.q } },
-      ],
-    });
-  if (query.company)
-    andFilters.push({
-      company: { is: { OR: [{ id: query.company }, { name: { contains: query.company } }] } },
-    });
-  if (query.salaryMin !== undefined)
-    andFilters.push({ OR: [{ salaryMax: null }, { salaryMax: { gte: query.salaryMin } }] });
-  if (query.salaryMax !== undefined)
-    andFilters.push({ OR: [{ salaryMin: null }, { salaryMin: { lte: query.salaryMax } }] });
-
-  const where: Prisma.JobWhereInput = {
-    status: "PUBLISHED",
-    company: { status: "APPROVED" },
-    AND: andFilters,
-    ...(query.location ? { location: { contains: query.location } } : {}),
-    ...(query.workplaceType ? { workplaceType: query.workplaceType } : {}),
-    ...(query.employmentType ? { employmentType: query.employmentType } : {}),
-    ...(query.experience ? { experienceRequirement: { contains: query.experience } } : {}),
-    ...(query.skill ? { requiredSkills: { string_contains: query.skill } } : {}),
-  };
-
-  const orderBy =
-    query.sort === "deadline"
-      ? [{ applicationDeadline: "asc" as const }, { publishedAt: "desc" as const }]
-      : [{ publishedAt: "desc" as const }];
+  const where = buildDiscoveryWhere(query, new Date());
+  const orderBy = buildDiscoveryOrderBy(query.sort);
 
   const [total, jobs] = await prisma.$transaction([
     prisma.job.count({ where }),

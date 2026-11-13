@@ -213,27 +213,38 @@ async function ensureCompany(spec: CompanySpec, passwordHash: string, adminId: s
     created.companies++;
   }
 
-  // Registration certificate (metadata + a real demo PDF in local private storage).
-  let document = await prisma.verificationDocument.findFirst({ where: { companyId: company.id, type: "REGISTRATION_CERTIFICATE" }, select: { id: true } });
-  if (!document) {
-    const storageKey = `private/companies/${ownerId}/company-document/demo-registration-certificate.pdf`;
-    await putDemoFile(storageKey, demoPdf([
-      "DEMO REGISTRATION CERTIFICATE - fictional document for local testing",
-      `Company: ${spec.name}`,
-      `Registration number: ${spec.registrationNumber}`,
-      "This document is generated demo data and has no legal meaning.",
-    ]), "application/pdf");
-    const docStatus = spec.status === "REJECTED" ? "REJECTED" : spec.status === "PENDING" ? "PENDING" : "VERIFIED";
-    document = await prisma.verificationDocument.create({
-      data: {
-        companyId: company.id, type: "REGISTRATION_CERTIFICATE", storageKey,
-        originalName: `${spec.slug}-registration-certificate.pdf`, mimeType: "application/pdf",
-        status: docStatus, rejectionReason: spec.status === "REJECTED" ? spec.rejectionReason : null,
-      },
-      select: { id: true },
-    });
-    created.documents++;
+  // Verification documents (metadata + real demo PDFs in local private storage).
+  // Every company gets a registration certificate; verified and pending
+  // companies also hold a tax document so admins can review multiple types.
+  const docStatus = spec.status === "REJECTED" ? "REJECTED" : spec.status === "PENDING" ? "PENDING" : "VERIFIED";
+  const documentSpecs: { type: "REGISTRATION_CERTIFICATE" | "TAX_DOCUMENT"; label: string; fileName: string }[] = [
+    { type: "REGISTRATION_CERTIFICATE", label: "DEMO REGISTRATION CERTIFICATE", fileName: "registration-certificate" },
+    ...(spec.status === "REJECTED" ? [] : [{ type: "TAX_DOCUMENT" as const, label: "DEMO TAX DOCUMENT", fileName: "tax-document" }]),
+  ];
+  let document: { id: string } | null = null;
+  for (const docSpec of documentSpecs) {
+    let doc = await prisma.verificationDocument.findFirst({ where: { companyId: company.id, type: docSpec.type }, select: { id: true } });
+    if (!doc) {
+      const storageKey = `private/companies/${ownerId}/company-document/demo-${docSpec.fileName}.pdf`;
+      await putDemoFile(storageKey, demoPdf([
+        `${docSpec.label} - fictional document for local testing`,
+        `Company: ${spec.name}`,
+        `Registration number: ${spec.registrationNumber}`,
+        "This document is generated demo data and has no legal meaning.",
+      ]), "application/pdf");
+      doc = await prisma.verificationDocument.create({
+        data: {
+          companyId: company.id, type: docSpec.type, storageKey,
+          originalName: `${spec.slug}-${docSpec.fileName}.pdf`, mimeType: "application/pdf",
+          status: docStatus, rejectionReason: spec.status === "REJECTED" ? spec.rejectionReason : null,
+        },
+        select: { id: true },
+      });
+      created.documents++;
+    }
+    if (docSpec.type === "REGISTRATION_CERTIFICATE") document = doc;
   }
+  if (!document) throw new Error(`Missing registration certificate for ${spec.name}.`);
 
   // Item reviews so approved companies show fully verified fields/documents,
   // and the rejected company shows a rejected document review.
@@ -246,10 +257,13 @@ async function ensureCompany(spec: CompanySpec, passwordHash: string, adminId: s
         created.fieldReviews++;
       }
     }
-    const docReviewed = fresh.itemReviews.some((r) => r.documentId === document.id && r.decision === "VERIFIED");
-    if (!docReviewed) {
-      await prisma.companyVerificationItemReview.create({ data: { companyId: company.id, documentId: document.id, decision: "VERIFIED", reviewerId: adminId } });
-      created.documentReviews++;
+    const allDocuments = await prisma.verificationDocument.findMany({ where: { companyId: company.id }, select: { id: true } });
+    for (const doc of allDocuments) {
+      const docReviewed = fresh.itemReviews.some((r) => r.documentId === doc.id && r.decision === "VERIFIED");
+      if (!docReviewed) {
+        await prisma.companyVerificationItemReview.create({ data: { companyId: company.id, documentId: doc.id, decision: "VERIFIED", reviewerId: adminId } });
+        created.documentReviews++;
+      }
     }
   }
   if (spec.status === "REJECTED") {

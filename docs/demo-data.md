@@ -54,8 +54,9 @@ Company account ↔ company mapping:
 - 60+ applications with full status histories covering APPLIED, REVIEWING,
   SHORTLISTED, REJECTED, and HIRED, spread over the last month so company
   analytics and recent-activity views have data.
-- Verified field reviews, registration-certificate documents, document reviews,
-  and admin audit records for approved companies; a pending queue, a rejected
+- Verification documents (registration certificates for every company, tax
+  documents for all but the rejected one), verified field and document reviews
+  plus admin audit records for approved companies, a pending queue, a rejected
   document review, and a suspension audit trail for the others.
 
 ## Limitations
