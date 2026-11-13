@@ -48,6 +48,7 @@ export function CompanyListClient({ initialCompanies, initialStatus = "PENDING" 
             <p className="text-xs font-medium uppercase tracking-widest text-blue-600 mb-1">Jobs Territory — Admin</p>
             <h1 className="text-2xl font-semibold tracking-tight text-gray-900">{heading.title}</h1>
             <p className="mt-1 text-sm text-gray-500">{heading.count(companies.length)}</p>
+            <p className="mt-2 inline-flex rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700">Showing {heading.title.toLowerCase()}</p>
           </div>
           <div className="flex items-center gap-2">
             <Link href="/admin/dashboard" className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-2 text-xs text-gray-700 hover:border-gray-300 hover:bg-gray-100 transition-colors">
@@ -59,6 +60,8 @@ export function CompanyListClient({ initialCompanies, initialStatus = "PENDING" 
             </button>
           </div>
         </div>
+
+        <Link href="/admin/dashboard" className="inline-flex rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-600 hover:border-gray-300 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">Clear filter</Link>
 
         {/* Status tabs */}
         <nav aria-label="Company status" className="flex flex-wrap gap-2">
