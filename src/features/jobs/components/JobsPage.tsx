@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useTransition, useMemo, useRef } from "react";
-import { SlidersHorizontal, ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { SlidersHorizontal, ChevronLeft, ChevronRight, Search, X } from "lucide-react";
 import type { PublicJob, Pagination, JobDiscoveryQuery } from "../types";
 import { fetchJobs } from "../api";
 import { JobCard } from "./JobCard";
@@ -75,7 +75,7 @@ export function JobsPage({ initialJobs, initialPagination, initialQuery }: Props
             type="button"
             onClick={() => setShowFilters((v) => !v)}
             aria-expanded={showFilters}
-            className="lg:hidden flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 hover:border-gray-300 hover:bg-gray-50 transition-colors"
+            className="flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 hover:border-gray-300 hover:bg-gray-50 transition-colors"
           >
             <SlidersHorizontal className="h-4 w-4" aria-hidden />
             Filters
@@ -97,16 +97,8 @@ export function JobsPage({ initialJobs, initialPagination, initialQuery }: Props
           </div>
         </div>
 
-        <div className="mt-6 flex min-w-0 flex-col gap-6 lg:flex-row lg:items-start lg:gap-8">
-          {/* Filters remain in normal document flow so the page scrolls naturally. */}
-          <div className={`lg:block w-full lg:w-80 shrink-0 ${showFilters ? "block" : "hidden"}`}>
-            <div className="rounded-2xl bg-white border border-gray-200 p-5 shadow-sm">
-              <JobFilters query={query} onChange={handleQueryChange} onReset={handleReset} />
-            </div>
-          </div>
-
-          {/* Jobs list */}
-          <div className="flex-1 min-w-0">
+        <div className="mt-6 min-w-0">
+          <div className="min-w-0">
             {error && (
               <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
                 {error}
@@ -134,7 +126,69 @@ export function JobsPage({ initialJobs, initialPagination, initialQuery }: Props
           </div>
         </div>
       </div>
+      <FloatingFilterButton open={showFilters} onOpenChange={setShowFilters}>
+        <JobFilters query={query} onChange={handleQueryChange} onReset={handleReset} />
+      </FloatingFilterButton>
     </main>
+  );
+}
+
+function FloatingFilterButton({ open, onOpenChange, children }: { open: boolean; onOpenChange: (open: boolean) => void; children: React.ReactNode }) {
+  const [position, setPosition] = useState({ right: 24, bottom: 24 });
+  const dragRef = useRef<{ pointerId: number; x: number; y: number; right: number; bottom: number } | null>(null);
+  const movedRef = useRef(false);
+
+  function handlePointerDown(event: React.PointerEvent<HTMLButtonElement>) {
+    dragRef.current = { pointerId: event.pointerId, x: event.clientX, y: event.clientY, right: position.right, bottom: position.bottom };
+    movedRef.current = false;
+    event.currentTarget.setPointerCapture(event.pointerId);
+  }
+
+  function handlePointerMove(event: React.PointerEvent<HTMLButtonElement>) {
+    const drag = dragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    if (Math.abs(event.clientX - drag.x) > 4 || Math.abs(event.clientY - drag.y) > 4) movedRef.current = true;
+    setPosition({
+      right: Math.max(12, Math.min(window.innerWidth - 68, drag.right - (event.clientX - drag.x))),
+      bottom: Math.max(12, Math.min(window.innerHeight - 68, drag.bottom - (event.clientY - drag.y))),
+    });
+  }
+
+  function handlePointerUp(event: React.PointerEvent<HTMLButtonElement>) {
+    if (dragRef.current?.pointerId === event.pointerId) dragRef.current = null;
+  }
+
+  return (
+    <>
+      {open && (
+        <div className="fixed inset-0 z-50 bg-slate-900/25" onClick={() => onOpenChange(false)} aria-hidden />
+      )}
+      {open && (
+        <section className="fixed inset-y-0 right-0 z-50 w-full max-w-sm overflow-y-auto bg-white p-5 shadow-2xl" aria-label="Job filters" role="dialog" aria-modal="true">
+          <div className="mb-5 flex items-center justify-between gap-4">
+            <h2 className="text-base font-semibold text-gray-900">Filter jobs</h2>
+            <button type="button" onClick={() => onOpenChange(false)} aria-label="Close filters" className="rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500">
+              <X className="h-5 w-5" aria-hidden />
+            </button>
+          </div>
+          {children}
+        </section>
+      )}
+      <button
+        type="button"
+        aria-label="Open job filters. Drag to reposition."
+        title="Drag or click to open filters"
+        onClick={() => { if (!movedRef.current) onOpenChange(!open); movedRef.current = false; }}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        style={{ right: position.right, bottom: position.bottom, touchAction: "none" }}
+        className="fixed z-40 inline-flex items-center gap-2 rounded-full bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-200 transition-colors hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+      >
+        <SlidersHorizontal className="h-4 w-4" aria-hidden />
+        Filters
+      </button>
+    </>
   );
 }
 
